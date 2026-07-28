@@ -10,6 +10,9 @@ k = "k"
 mg = "mg"
 ca = "ca"
 s = "s"
+nh4 = "nh4"
+no3 = "no3"
+ec_coeff = "ec_coeff"
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
