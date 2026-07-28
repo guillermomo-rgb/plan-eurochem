@@ -14,30 +14,29 @@ s = "s"
 nh4 = "nh4"
 no3 = "no3"
 ec_coeff = "ec_coeff"
-
-# === TU BASE DE DATOS DE CULTIVOS COMPLETA ===
+# === BASE DE DATOS DE CULTIVOS CON COMILLAS (100% SEGURA) ===
 CULTIVOS_DB = {
-    "Caqui (Kaki)": { n: 4.00, p: 1.00, k: 3.50, mg: 0.60, ca: 1.50, s: 0.80, "limite_salino": 1.3 },
-    "Pimiento": { n: 4.40, p: 1.60, k: 5.50, mg: 0.80, ca: 2.50, s: 1.80, "limite_salino": 1.8},
-    "Tomate": { n: 2.20, p: 0.80, k: 2.60, mg: 0.70, ca: 2.00, s: 1.50,"limite_salino": 2.5 },
-    "Limonero": { n: 5.00, p: 1.20, k: 4.00, mg: 0.80, ca: 1.80, s: 0.90, "limite_salino": 1.7 },
-    "Mandarino": { n: 5.30, p: 1.10, k: 3.80, mg: 0.70, ca: 1.60, s: 0.85, "limite_salino": 1.7 },
-    "Naranjo": { n: 4.10, p: 1.50, k: 3.50, mg: 0.40, ca: 2, s: 1.20, "limite_salino": 1.7 },
-    "Olivar SI": { n: 8.00, p: 4.00, k: 12.00, mg: 1.20, ca: 2.50, s: 1.00, "limite_salino": 2.5  },
-    "Olivar": { n: 12.00, p: 4.00, k: 10.00, mg: 4.00, ca: 8.00, s: 2.00, "limite_salino": 2.5 },
-    "Aguacate": { n: 12.00, p: 7.00, k: 20.00, mg: 1.50, ca: 3.5, s: 2, "limite_salino": 0.6 },
-    "Almendro (pepita)": { n: 65.00, p: 25.00, k: 70.00, mg: 2.00, ca: 8.00, s: 10.00, "limite_salino": 1.5 },
-    "Cebolla": { n: 3.50, p: 1.50, k: 4.00, mg: 0.50, ca: 1.80, s: 3.8, "limite_salino": 1.2 },
-    "Patata": { n: 4.50, p: 1.80, k: 7.50, mg: 0.80, ca: 1.00, s: 0.90, "limite_salino": 1.7 },
-    "Fresa": { n: 4.50, p: 1.50, k: 6.50, mg: 1.00, ca: 2.00, s: 1.00, "limite_salino": 1.0 },
-    "Pistacho (grano seco)": { n: 55.00, p: 20.00, k: 60.00, mg: 12.00, ca: 18.00, s: 4.50, "limite_salino": 6.0 },
-    "Vid vinificación": { n: 4.00, p: 1.50, k: 5.00, mg: 1.00, ca: 2.00, s: 0.90, "limite_salino": 1.5 },
-    "Melocotón": { n: 3.50, p: 1.80, k: 4.00, mg: 0.80, ca: 1.70, s: 1.20, "limite_salino": 1.7 },
-    "Nectarina": { n: 4.00, p: 1.00, k: 6.00, mg: 1.00, ca: 1.80, s: 1.20, "limite_salino": 1.7 },
-    "Nispero": { n: 8.00, p: 4.00, k: 8.00, mg: 1.00, ca: 2.20, s: 1.5, "limite_salino": 1.5 },
-    "Espárrago": { n: 10.00, p: 3.00, k: 12.00, mg: 1.50, ca: 3.00, s: 2.0, "limite_salino": 4.1 },
-    "Sandía": { n: 2.40, p: 1.30, k: 3.20, mg: 0.80, ca: 2.00, s: 1.20, "limite_salino": 2.0 },
-    "Algodón": { n: 55.00, p: 25.00, k: 55.00, mg: 12.00, ca: 18.00, s: 6.00, "limite_salino": 7.7 }
+    "Caqui (Kaki)": { "n": 4.00, "p": 1.00, "k": 3.50, "mg": 0.60, "ca": 1.50, "s": 0.80, "limite_salino": 1.3 },
+    "Pimiento": { "n": 4.40, "p": 1.60, "k": 5.50, "mg": 0.80, "ca": 2.50, "s": 1.80, "limite_salino": 1.8 },
+    "Tomate": { "n": 2.20, "p": 0.80, "k": 2.60, "mg": 0.70, "ca": 2.00, "s": 1.50, "limite_salino": 2.5 },
+    "Limonero": { "n": 5.00, "p": 1.20, "k": 4.00, "mg": 0.80, "ca": 1.80, "s": 0.90, "limite_salino": 1.7 },
+    "Mandarino": { "n": 5.30, "p": 1.10, "k": 3.80, "mg": 0.70, "ca": 1.60, "s": 0.85, "limite_salino": 1.7 },
+    "Naranjo": { "n": 4.10, "p": 1.50, "k": 3.50, "mg": 0.40, "ca": 2.00, "s": 1.20, "limite_salino": 1.7 },
+    "Olivar SI": { "n": 8.00, "p": 4.00, "k": 12.00, "mg": 1.20, "ca": 2.50, "s": 1.00, "limite_salino": 2.5 },
+    "Olivar": { "n": 12.00, "p": 4.00, "k": 10.00, "mg": 4.00, "ca": 8.00, "s": 2.00, "limite_salino": 2.5 },
+    "Aguacate": { "n": 12.00, "p": 7.00, "k": 20.00, "mg": 1.50, "ca": 3.50, "s": 2.00, "limite_salino": 0.6 },
+    "Almendro (pepita)": { "n": 65.00, "p": 25.00, "k": 70.00, "mg": 2.00, "ca": 8.00, "s": 10.00, "limite_salino": 1.5 },
+    "Cebolla": { "n": 3.50, "p": 1.50, "k": 4.00, "mg": 0.50, "ca": 1.80, "s": 3.80, "limite_salino": 1.2 },
+    "Patata": { "n": 4.50, "p": 1.80, "k": 7.50, "mg": 0.80, "ca": 1.00, "s": 0.90, "limite_salino": 1.7 },
+    "Fresa": { "n": 4.50, "p": 1.50, "k": 6.50, "mg": 1.00, "ca": 2.00, "s": 1.00, "limite_salino": 1.0 },
+    "Pistacho (grano seco)": { "n": 55.00, "p": 20.00, "k": 60.00, "mg": 12.00, "ca": 18.00, "s": 4.50, "limite_salino": 6.0 },
+    "Vid vinificación": { "n": 4.00, "p": 1.50, "k": 5.00, "mg": 1.00, "ca": 2.00, "s": 0.90, "limite_salino": 1.5 },
+    "Melocotón": { "n": 3.50, "p": 1.80, "k": 4.00, "mg": 0.80, "ca": 1.70, "s": 1.20, "limite_salino": 1.7 },
+    "Nectarina": { "n": 4.00, "p": 1.00, "k": 6.00, "mg": 1.00, "ca": 1.80, "s": 1.20, "limite_salino": 1.7 },
+    "Nispero": { "n": 8.00, "p": 4.00, "k": 8.00, "mg": 1.00, "ca": 2.20, "s": 1.50, "limite_salino": 1.5 },
+    "Espárrago": { "n": 10.00, "p": 3.00, "k": 12.00, "mg": 1.50, "ca": 3.00, "s": 2.00, "limite_salino": 4.1 },
+    "Sandía": { "n": 2.40, "p": 1.30, "k": 3.20, "mg": 0.80, "ca": 2.00, "s": 1.20, "limite_salino": 2.0 },
+    "Algodón": { "n": 55.00, "p": 25.00, "k": 55.00, "mg": 12.00, "ca": 18.00, "s": 6.00, "limite_salino": 7.7 }
 }
 
 GRANULADOS_DB = {
@@ -195,13 +194,14 @@ def al_cambiar_cultivo():
     datos = CULTIVOS_DB[nuevo_cultivo]
     rendimiento = st.session_state.yield_val
     
-    # Convertimos los valores base del nuevo cultivo multiplicados por el rendimiento
-    st.session_state.u_n = float(datos[n] * rendimiento)
-    st.session_state.u_p = float(datos[p] * rendimiento)
-    st.session_state.u_k = float(datos[k] * rendimiento)
-    st.session_state.u_mg = float(datos[mg] * rendimiento)
-    st.session_state.u_ca = float(datos[ca] * rendimiento)
-    st.session_state.u_s = float(datos[s] * rendimiento)
+    # Convertimos los valores usando comillas ("n", "p", etc.)
+    # ¡De esta forma evitamos cualquier conflicto de variables!
+    st.session_state.u_n = float(datos["n"] * rendimiento)
+    st.session_state.u_p = float(datos["p"] * rendimiento)
+    st.session_state.u_k = float(datos["k"] * rendimiento)
+    st.session_state.u_mg = float(datos["mg"] * rendimiento)
+    st.session_state.u_ca = float(datos["ca"] * rendimiento)
+    st.session_state.u_s = float(datos["s"] * rendimiento)
     
     # Guardamos el nombre en memoria
     st.session_state.crop = nuevo_cultivo
