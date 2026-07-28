@@ -4,6 +4,12 @@ import pandas as pd
 import numpy as np
 import base64
 import matplotlib.pyplot as plt
+n = "n"
+p = "p"
+k = "k"
+mg = "mg"
+ca = "ca"
+s = "s"
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
@@ -71,46 +77,69 @@ st.markdown("""
 
 # ----------------- BASE DE DATOS AGRONÓMICA -----------------
 CULTIVOS_DB = {
-    "Caqui (Kaki)": {"n": 2.2, "p": 0.8, "k": 3.5, "mg": 0.6, "ca": 1.5, "s": 0.8, "limite_salino": 2.0},
-    "Cítricos (Tempranas)": {"n": 1.8, "p": 0.5, "k": 2.4, "mg": 0.4, "ca": 2.1, "s": 0.5, "limite_salino": 1.7},
-    "Cítricos (Tardías)": {"n": 1.9, "p": 0.5, "k": 2.6, "mg": 0.4, "ca": 2.2, "s": 0.5, "limite_salino": 1.7},
-    "Limonero": {"n": 2.0, "p": 0.5, "k": 2.5, "mg": 0.4, "ca": 2.0, "s": 0.5, "limite_salino": 1.7},
-    "Albaricoque": {"n": 3.5, "p": 1.0, "k": 5.0, "mg": 0.6, "ca": 1.8, "s": 0.6, "limite_salino": 2.0},
-    "Melocotonero": {"n": 4.0, "p": 1.2, "k": 6.0, "mg": 0.7, "ca": 2.0, "s": 0.7, "limite_salino": 1.7},
-    "Pimiento": {"n": 3.0, "p": 0.8, "k": 4.5, "mg": 0.5, "ca": 1.2, "s": 0.5, "limite_salino": 1.5},
-    "Tomate": {"n": 2.8, "p": 0.7, "k": 5.0, "mg": 0.6, "ca": 1.6, "s": 0.7, "limite_salino": 2.5}
+ 	    "Caqui (Kaki)": { n: 4.00, p: 1.00, k: 3.50, mg: 0.60, ca: 1.50, s: 0.80, "limite_salino": 1.3 },
+            "Pimiento": { n: 4.40, p: 1.60, k: 5.50, mg: 0.80, ca: 2.50, s: 1.80, "limite_salino": 1.8},
+            "Tomate": { n: 2.20, p: 0.80, k: 2.60, mg: 0.70, ca: 2.00, s: 1.50,"limite_salino": 2.5 },
+            "Limonero": { n: 5.00, p: 1.20, k: 4.00, mg: 0.80, ca: 1.80, s: 0.90, "limite_salino": 1.7 },
+            "Mandarino": { n: 5.30, p: 1.10, k: 3.80, mg: 0.70, ca: 1.60, s: 0.85, "limite_salino": 1.7 },
+            "Naranjo": { n: 4.10, p: 1.50, k: 3.50, mg: 0.40, ca: 2, s: 1.20, "limite_salino": 1.7 },
+            "Olivar SI": { n: 8.00, p: 4.00, k: 12.00, mg: 1.20, ca: 2.50, s: 1.00, "limite_salino": 2.5  },
+            "Olivar": { n: 12.00, p: 4.00, k: 10.00, mg: 4.00, ca: 8.00, s: 2.00, "limite_salino": 2.5 },
+            "Aguacate": { n: 12.00, p: 7.00, k: 20.00, mg: 1.50, ca: 3.5, s: 2, "limite_salino": 0.6 },
+            "Almendro (pepita)": { n: 65.00, p: 25.00, k: 70.00, mg: 2.00, ca: 8.00, s: 10.00, "limite_salino": 1.5 },
+            "Cebolla": { n: 3.50, p: 1.50, k: 4.00, mg: 0.50, ca: 1.80, s: 3.8, "limite_salino": 1.2 },
+            "Patata": { n: 4.50, p: 1.80, k: 7.50, mg: 0.80, ca: 1.00, s: 0.90, "limite_salino": 1.7 },
+            "Fresa": { n: 4.50, p: 1.50, k: 6.50, mg: 1.00, ca: 2.00, s: 1.00, "limite_salino": 1.0 },
+            "Pistacho (grano seco)": { n: 55.00, p: 20.00, k: 60.00, mg: 12.00, ca: 18.00, s: 4.50, "limite_salino": 6.0 },
+            "Vid vinificación": { n: 4.00, p: 1.50, k: 5.00, mg: 1.00, ca: 2.00, s: 0.90, "limite_salino": 1.5 },
+            "Melocotón": { n: 3.50, p: 1.80, k: 4.00, mg: 0.80, ca: 1.70, s: 1.20, "limite_salino": 1.7 },
+            "Nectarina": { n: 4.00, p: 1.00, k: 6.00, mg: 1.00, ca: 1.80, s: 1.20, "limite_salino": 1.7 },
+            "Nispero": { n: 8.00, p: 4.00, k: 8.00, mg: 1.00, ca: 2.20, s: 1.5, "limite_salino": 1.5 },
+            "Espárrago": { n: 10.00, p: 3.00, k: 12.00, mg: 1.50, ca: 3.00, s: 2.0, "limite_salino": 4.1 },
+            "Sandía": { n: 2.40, p: 1.30, k: 3.20, mg: 0.80, ca: 2.00, s: 1.20, "limite_salino": 2.0 },
+            "Algodón": { n: 55.00, p: 25.00, k: 55.00, mg: 12.00, ca: 18.00, s: 6.00, "limite_salino": 7.7 }
+    
 }
 
 GRANULADOS_DB = {
-    "ENTEC Nitrofoska Especial 14-7-17": {"n": 14.0, "p": 7.0, "k": 17.0, "mg": 2.0, "ca": 0.0, "s": 10.0},
-    "ENTEC 20-10-10": {"n": 20.0, "p": 10.0, "k": 10.0, "mg": 3.0, "ca": 0.0, "s": 5.0},
-    "Nitrofoska Perfect 15-5-20": {"n": 15.0, "p": 5.0, "k": 20.0, "mg": 2.0, "ca": 0.0, "s": 8.0},
-    "ENTEC Premium 15-3-20": {"n": 15.0, "p": 3.0, "k": 20.0, "mg": 2.0, "ca": 0.0, "s": 10.0}
+ 	    "ENTEC Nitrofoska Especial 12-12-17": { n: 12, p: 12, k: 17, mg: 3, ca: 0, s: 20 },
+            "ENTEC 20-10-10": { n: 20, p: 10, k: 10, mg: 0, ca: 0, s: 7.5 },
+            "Nitrofoska Perfect 15-5-20": { n: 15, p: 5, k: 20, mg: 2, ca: 0, s: 20 },
+            "Nitrofoska Super 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 12.5 },
+            "ENTEC 20-8-10": { n: 20, p: 8, k: 10, mg: 2, ca: 0, s: 7.5 },
+            "ENTEC 25-15": { n: 25, p: 15, k: 0, mg: 0, ca: 0, s: 5 },
+            "ENTEC 15-13-13": { n: 15, p: 13, k: 13, mg: 0, ca: 0, s: 12.5 },
+            "ENTEC Nitrofoska 14": { n: 14, p: 7, k: 17, mg: 2, ca: 0, s: 22.5 },
+            "ENTEC 13-10-20": { n: 13, p: 10, k: 20, mg: 0, ca: 0, s: 7.5 },
+            "Nitrofoska NPlus 22-5-5": { n: 22, p: 5, k: 5, mg: 2, ca: 0, s: 5 },
+            "ENTEC Evo 27S": { n: 27, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
+            "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 }
+   
 }
 
 SOLUBLES_DB = {
-    "ENTEC Solub 21": {"n": 21.0, "p": 0.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 60.0, "ec_coeff": 0.35, "nh4": 21.0, "no3": 0.0},
-    "ENTEC Solub 20-5-10": {"n": 20.0, "p": 5.0, "k": 10.0, "mg": 2.0, "ca": 0.0, "s": 12.0, "ec_coeff": 0.28, "nh4": 12.0, "no3": 8.0},
-    "ENTEC Solub 15-5-30": {"n": 15.0, "p": 5.0, "k": 30.0, "mg": 2.0, "ca": 0.0, "s": 15.0, "ec_coeff": 0.32, "nh4": 9.5, "no3": 5.5},
-    "ENTEC Solub 16-10-17": {"n": 16.0, "p": 10.0, "k": 17.0, "mg": 2.0, "ca": 0.0, "s": 15.0, "ec_coeff": 0.30, "nh4": 10.0, "no3": 6.0},
-    "ENTEC Solub 11-11-21": {"n": 11.0, "p": 11.0, "k": 21.0, "mg": 2.0, "ca": 0.0, "s": 15.0, "ec_coeff": 0.29, "nh4": 7.0, "no3": 4.0},
-    "Nitrofoska Solub 20-20-20": {"n": 20.0, "p": 20.0, "k": 20.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.25, "nh4": 10.0, "no3": 10.0},
-    "Nitrofoska Solub 15-10-15": {"n": 15.0, "p": 10.0, "k": 15.0, "mg": 2.0, "ca": 0.0, "s": 10.0, "ec_coeff": 0.26, "nh4": 8.5, "no3": 6.5},
-    "Nitrofoska Solub 13-40-13": {"n": 13.0, "p": 40.0, "k": 13.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.27, "nh4": 8.5, "no3": 4.5},
-    "Nitrofoska Solub 12-5-30": {"n": 12.0, "p": 5.0, "k": 30.0, "mg": 1.0, "ca": 0.0, "s": 10.0, "ec_coeff": 0.31, "nh4": 4.5, "no3": 7.5},
-    "Nitrofoska Solub 15-30-15": {"n": 15.0, "p": 30.0, "k": 15.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.28, "nh4": 9.0, "no3": 6.0},
-    "Nitrofoska Solub 18-18-18": {"n": 18.0, "p": 18.0, "k": 18.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.26, "nh4": 9.0, "no3": 9.0},
-    "Nitrofoska Solub 8-12-24": {"n": 8.0, "p": 12.0, "k": 24.0, "mg": 4.0, "ca": 0.0, "s": 10.0, "ec_coeff": 0.33, "nh4": 3.0, "no3": 5.0},
-    "Nitrato Cálcico Soluble": {"n": 15.5, "p": 0.0, "k": 0.0, "mg": 0.0, "ca": 26.3, "s": 0.0, "ec_coeff": 0.42, "nh4": 1.1, "no3": 14.4},
-    "Nitrato Magnésico Soluble": {"n": 11.0, "p": 0.0, "k": 0.0, "mg": 15.4, "ca": 0.0, "s": 0.0, "ec_coeff": 0.38, "nh4": 0.0, "no3": 11.0},
-    "Nitrato Potásico Soluble": {"n": 13.0, "p": 0.0, "k": 46.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.48, "nh4": 0.0, "no3": 13.0},
-    "MAP (Fosfato Monoamónico)": {"n": 12.0, "p": 61.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.22, "nh4": 12.0, "no3": 0.0},
-    "Sulfato Amónico": {"n": 21.0, "p": 0.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 60.0, "ec_coeff": 0.36, "nh4": 21.0, "no3": 0.0},
-    "Sulfato de Potasio": {"n": 0.0, "p": 0.0, "k": 51.0, "mg": 0.0, "ca": 0.0, "s": 45.0, "ec_coeff": 0.44, "nh4": 0.0, "no3": 0.0},
-    "Sulfato de Magnesio": {"n": 0.0, "p": 0.0, "k": 0.0, "mg": 16.0, "ca": 0.0, "s": 32.0, "ec_coeff": 0.24, "nh4": 0.0, "no3": 0.0},
-    "Urea Soluble": {"n": 46.0, "p": 0.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.02, "nh4": 0.0, "no3": 0.0},
-    "Ácido Fosfórico (75%)": {"n": 0.0, "p": 54.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.15, "nh4": 0.0, "no3": 0.0},
-    "Ácido Nítrico (60%)": {"n": 15.0, "p": 0.0, "k": 0.0, "mg": 0.0, "ca": 0.0, "s": 0.0, "ec_coeff": 0.18, "nh4": 0.0, "no3": 15.0}
+    	    "ENTEC Solub 21": { n: 21, p: 0, k: 0, mg: 0, ca: 0, s: 60, nh4: 21, no3: 0, ec_coeff: 0.8 },
+            "ENTEC Solub 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 27, nh4: 6, no3: 5, ec_coeff: 0.7 },
+            "ENTEC Solub 11-5-30": { n: 11, p: 5, k: 30, mg: 2, ca: 0, s: 27, nh4: 9, no3: 6, ec_coeff: 0.75 },
+            "ENTEC Solub 16-10-17": { n: 16, p: 10, k: 17, mg: 2, ca: 0, s: 12, nh4: 10, no3: 6, ec_coeff: 0.7 },
+            "Nitrofoska Solub Calcium K": { n: 14, p: 7, k: 17, mg: 0, ca: 13, s: 0, nh4: 2, no3: 12, ec_coeff: 0.75 },
+            "Nitrofoska Solub 7-5-40": { n: 7, p: 5, k: 40, mg: 0, ca: 0, s: 28, nh4: 3, no3: 4, ec_coeff: 0.6 },
+            "Nitrofoska Solub 15-10-15": { n: 15, p: 10, k: 15, mg: 2, ca: 0, s: 30, nh4: 10.7, no3: 4.3, ec_coeff: 0.65 },
+            "Nitrofoska Solub 13-40-13": { n: 13, p: 40, k: 13, mg: 0, ca: 0, s: 1.9, nh4: 8.8, no3: 4.2, ec_coeff: 0.55 },
+            "Nitrofoska Solub 12-5-30": { n: 12, p: 5, k: 30, mg: 1, ca: 0, s: 22, nh4: 1.9, no3: 5.1, ec_coeff: 0.8 },
+            "Nitrofoska Solub 7-12-40": { n: 7, p: 12, k: 40, mg: 0, ca: 0, s: 18.4, nh4: 9, no3: 6, ec_coeff: 0.6 },
+            "Nitrofoska Solub 18-18-18": { n: 18, p: 18, k: 18, mg: 0, ca: 0, s: 11.5, nh4: 10, no3: 8, ec_coeff: 0.6 },
+            "Nitrofoska Solub 20-5-5": { n: 20, p: 5, k: 5, mg: 2, ca: 0, s: 37, nh4: 15.6, no3: 4.4, ec_coeff: 0.85 },
+            "Nitrato Cálcico Soluble": { n: 15.5, p: 0, k: 0, mg: 0, ca: 26.3, s: 0, nh4: 1.1, no3: 14.4, ec_coeff: 0.72 },
+            "Nitrato Magnésico Soluble": { n: 11, p: 0, k: 0, mg: 15.4, ca: 0, s: 0, nh4: 0, no3: 11, ec_coeff: 0.68 },
+            "NOP Solub": { n: 13, p: 0, k: 46, mg: 0, ca: 0, s: 0, nh4: 0, no3: 13, ec_coeff: 0.8 },
+            "MAP Solub": { n: 12, p: 61, k: 0, mg: 0, ca: 0, s: 0, nh4: 12, no3: 0, ec_coeff: 0.52 },
+            "UP solub": { n: 18, p: 44, k: 0, mg: 0, ca: 0, s: 0, nh4: 18, no3: 0, ec_coeff: 0.82 },
+            "SOP solub": { n: 0, p: 0, k: 52, mg: 0, ca: 0, s: 45, nh4: 0, no3: 0, ec_coeff: 0.88 },
+            "Sulfato de Magnesio": { n: 0, p: 0, k: 0, mg: 16, ca: 0, s: 32, nh4: 0, no3: 0, ec_coeff: 0.62 },
+            "Ácido Fosfórico": { n: 0, p: 52, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 0, ec_coeff: 0.48 },
+            "Ácido Nítrico": { n: 15, p: 0, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 15, ec_coeff: 0.5 }
+
 }
 
 # --- INICIALIZACIÓN DE VARIABLES EN SESSION_STATE ---
