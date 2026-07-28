@@ -181,10 +181,54 @@ with st.sidebar:
     st.session_state.farm = st.text_input("Finca / Productor:", st.session_state.farm)
     st.session_state.date_issue = st.text_input("Fecha Emisión:", st.session_state.date_issue)
     
-    st.markdown("---")
-    st.markdown("### 🌾 Configuración Cultivo")
-    st.session_state.crop = st.selectbox("Seleccione Cultivo:", list(CULTIVOS_DB.keys()), index=list(CULTIVOS_DB.keys()).index(st.session_state.crop), on_change=on_crop_change)
-    st.session_state.yield_val = st.number_input("Rendimiento Esperado (t/ha):", value=st.session_state.yield_val, min_value=0.1, step=5.0)
+    # 1. Nos aseguramos de que el cultivo y el rendimiento estén inicializados en la memoria
+if "crop" not in st.session_state:
+    st.session_state.crop = "Caqui (Kaki)"
+
+if "yield_val" not in st.session_state:
+    st.session_state.yield_val = 10.0
+
+# 2. Función que se ejecuta AL INSTANTE cuando el usuario cambia de cultivo
+def al_cambiar_cultivo():
+    # Leemos el nuevo cultivo elegido en el desplegable
+    nuevo_cultivo = st.session_state.crop_select
+    datos = CULTIVOS_DB[nuevo_cultivo]
+    rendimiento = st.session_state.yield_val
+    
+    # Convertimos los valores base del nuevo cultivo multiplicados por el rendimiento
+    st.session_state.u_n = float(datos[n] * rendimiento)
+    st.session_state.u_p = float(datos[p] * rendimiento)
+    st.session_state.u_k = float(datos[k] * rendimiento)
+    st.session_state.u_mg = float(datos[mg] * rendimiento)
+    st.session_state.u_ca = float(datos[ca] * rendimiento)
+    st.session_state.u_s = float(datos[s] * rendimiento)
+    
+    # Guardamos el nombre en memoria
+    st.session_state.crop = nuevo_cultivo
+
+# 3. Dibujamos los controles visuales corregidos
+st.markdown("---")
+st.markdown("### 🌾 Configuración Cultivo")
+
+crop_list = list(CULTIVOS_DB.keys())
+index_actual = crop_list.index(st.session_state.crop) if st.session_state.crop in crop_list else 0
+
+# Usamos 'crop_select' como llave para que Streamlit se encargue de la memoria
+st.selectbox(
+    "Seleccione Cultivo:", 
+    crop_list, 
+    index=index_actual, 
+    key="crop_select", 
+    on_change=al_cambiar_cultivo
+)
+
+# Entrada para el rendimiento esperado
+st.session_state.yield_val = st.number_input(
+    "Rendimiento Esperado (t/ha):", 
+    value=st.session_state.yield_val, 
+    min_value=0.1, 
+    step=1.0
+)
 
 # --- CABECERA PRINCIPAL ---
 st.markdown(f"""
