@@ -5,6 +5,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import base64  # 👈 Esta línea es vital para que cargue el logotipo de Eurochem
 
+# =====================================================================
+if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
+if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
+if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
+if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
+if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
+if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
+# =====================================================================
 # === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES DE SEGURIDAD) ===
 n = "n"
 p = "p"
@@ -337,12 +345,12 @@ fondo_sum_n, fondo_sum_p, fondo_sum_k, fondo_sum_mg, fondo_sum_ca, fondo_sum_s =
 for item in st.session_state.fondo_items:
     p = GRANULADOS_DB.get(item["name"])
     if p:
-        fondo_sum_n += item["dosis"] * p["n"] / 100
-        fondo_sum_p += item["dosis"] * p["p"] / 100
-        fondo_sum_k += item["dosis"] * p["k"] / 100
-        fondo_sum_mg += item["dosis"] * p["mg"] / 100
-        fondo_sum_ca += item["dosis"] * p["ca"] / 100
-        fondo_sum_s += item["dosis"] * p["s"] / 100
+st.session_state.fondo_sum_n = dosis_fondo * (riqueza_n / 100.0)
+st.session_state.fondo_sum_p = dosis_fondo * (riqueza_p / 100.0)
+st.session_state.fondo_sum_k = dosis_fondo * (riqueza_k / 100.0)
+st.session_state.fondo_sum_mg = dosis_fondo * (riqueza_mg / 100.0)
+st.session_state.fondo_sum_ca = dosis_fondo * (riqueza_ca / 100.0)
+st.session_state.fondo_sum_s = dosis_fondo * (riqueza_s / 100.0) 
 
 # Bucle mensual para acumular agua, ácidos y solubles
 water_annual_sum_n, water_annual_sum_p, water_annual_sum_k, water_annual_sum_mg, water_annual_sum_ca, water_annual_sum_s = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
@@ -448,7 +456,6 @@ with st.expander("✏️ Editar Coeficientes de Extracción del Cultivo (kg/t):"
     col_c4.number_input("Coeficiente MgO:", key="coeff_mg", step=0.1)
     col_c5.number_input("Coeficiente CaO:", key="coeff_ca", step=0.1)
     col_c6.number_input("Coeficiente SO₃:", key="coeff_s", step=0.1)
-
 # === TABLA DE BALANCE (Caso sin sangría extra) ===
 balance_data = {
     "Concepto Nutriente (kg/ha)": [
@@ -461,6 +468,12 @@ balance_data = {
         "TOTAL APLICADO SOLUBLES",
         "BALANCE / DIFERENCIA"
     ], 
+    base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
+    base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
+    base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
+    base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
+    base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
+    base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
     "Nitrógeno (N)": [
         base_n_ha, 
