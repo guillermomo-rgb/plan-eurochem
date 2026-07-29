@@ -469,6 +469,9 @@ balance_data = {
         "TOTAL APLICADO SOLUBLES",
         "BALANCE / DIFERENCIA"
     ], 
+   # =====================================================================
+    # 1️⃣ PRIMERO: Los cálculos matemáticos (FUERA del diccionario, con "=")
+    # =====================================================================
     base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
     base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
     base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
@@ -476,75 +479,91 @@ balance_data = {
     base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
     base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
-    "Nitrógeno (N)": [
-        base_n_ha, 
-        fondo_sum_n, 
-        water_annual_sum_n, 
-        acid_annual_sum_n, 
-        st.session_state.extra_n, 
-        target_n_val, 
-        solub_annual_sum_n, 
-        solub_annual_sum_n - target_n_val
-    ],
+    # =====================================================================
+    # 2️⃣ SEGUNDO: El diccionario de balance (AQUÍ sí se abren las llaves "{")
+    # =====================================================================
+    balance_data = {
+        "Concepto Nutriente (kg/ha)": [
+            "A) Necesidad Base Cultivo (A)",
+            "C) Abonado de Fondo (C)",
+            "D1) Crédito Agua de Riego (D1)",
+            "D2) Crédito Ácido Regulador (D2)",
+            "E) Compensación Extra (E)",
+            "OBJETIVO EN GOTERO (Target = A-C-D1-D2+E)",
+            "TOTAL APLICADO SOLUBLES",
+            "BALANCE / DIFERENCIA"
+        ], 
 
-    "Fósforo (P₂O₅)": [
-        base_p_ha, 
-        fondo_sum_p, 
-        water_annual_sum_p, 
-        acid_annual_sum_p, 
-        st.session_state.extra_p, 
-        target_p_val, 
-        solub_annual_sum_p, 
-        solub_annual_sum_p - target_p_val
-    ],
+        "Nitrógeno (N)": [
+            base_n_ha, 
+            st.session_state.fondo_sum_n,  # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_n, 
+            acid_annual_sum_n, 
+            st.session_state.extra_n, 
+            target_n_val, 
+            solub_annual_sum_n, 
+            solub_annual_sum_n - target_n_val
+        ],
 
-    "Potasio (K₂O)": [
-        base_k_ha, 
-        fondo_sum_k, 
-        water_annual_sum_k, 
-        0.0, 
-        st.session_state.extra_k, 
-        target_k_val, 
-        solub_annual_sum_k, 
-        solub_annual_sum_k - target_k_val
-    ],
+        "Fósforo (P₂O₅)": [
+            base_p_ha, 
+            st.session_state.fondo_sum_p,  # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_p, 
+            acid_annual_sum_p, 
+            st.session_state.extra_p, 
+            target_p_val, 
+            solub_annual_sum_p, 
+            solub_annual_sum_p - target_p_val
+        ],
 
-    "Magnesio (MgO)": [
-        base_mg_ha, 
-        fondo_sum_mg, 
-        water_annual_sum_mg, 
-        0.0, 
-        st.session_state.extra_mg, 
-        target_mg_val, 
-        solub_annual_sum_mg, 
-        solub_annual_sum_mg - target_mg_val
-    ],
+        "Potasio (K₂O)": [
+            base_k_ha, 
+            st.session_state.fondo_sum_k,  # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_k, 
+            0.0, 
+            st.session_state.extra_k, 
+            target_k_val, 
+            solub_annual_sum_k, 
+            solub_annual_sum_k - target_k_val
+        ],
 
-    "Calcio (CaO)": [
-        base_ca_ha, 
-        fondo_sum_ca, 
-        water_annual_sum_ca, 
-        0.0, 
-        st.session_state.extra_ca, 
-        target_ca_val, 
-        solub_annual_sum_ca, 
-        solub_annual_sum_ca - target_ca_val
-    ],
+        "Magnesio (MgO)": [
+            base_mg_ha, 
+            st.session_state.fondo_sum_mg, # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_mg, 
+            0.0, 
+            st.session_state.extra_mg, 
+            target_mg_val, 
+            solub_annual_sum_mg, 
+            solub_annual_sum_mg - target_mg_val
+        ],
 
-    "Azufre (SO₃)": [
-        base_s_ha, 
-        fondo_sum_s, 
-        water_annual_sum_s, 
-        acid_annual_sum_s, 
-        st.session_state.extra_s, 
-        target_s_val, 
-        solub_annual_sum_s, 
-        solub_annual_sum_s - target_s_val
-    ]
-}
-# Se crea el DataFrame (Sin espacios al principio de la línea)
-df_bal = pd.DataFrame(balance_data)
-st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
+        "Calcio (CaO)": [
+            base_ca_ha, 
+            st.session_state.fondo_sum_ca, # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_ca, 
+            0.0, 
+            st.session_state.extra_ca, 
+            target_ca_val, 
+            solub_annual_sum_ca, 
+            solub_annual_sum_ca - target_ca_val
+        ],
+
+        "Azufre (SO₃)": [
+            base_s_ha, 
+            st.session_state.fondo_sum_s,  # 👈 Conectado a la memoria del Punto 4
+            water_annual_sum_s, 
+            acid_annual_sum_s, 
+            st.session_state.extra_s, 
+            target_s_val, 
+            solub_annual_sum_s, 
+            solub_annual_sum_s - target_s_val  # 👈 Cerrado limpiamente
+        ]
+    } # 👈 Aquí es donde se cierra el diccionario con la llave "}"
+
+    # Se crea y se dibuja la tabla
+    df_bal = pd.DataFrame(balance_data)
+    st.dataframe(df_bal.style.format(precision=1), use_container_width=True
 
 # === 📊 GRÁFICO DINÁMICO COMPARATIVO ===
 st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
