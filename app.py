@@ -81,24 +81,27 @@ SOLUBLES_DB = {
             "Ácido Nítrico": { n: 15, p: 0, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 15, ec_coeff: 0.5 }
 
 }
-
-# --- INICIALIZACIÓN DE VARIABLES EN SESSION_STATE ---
+# =====================================================================
+# ✅ NUEVA INICIALIZACIÓN INTELIGENTE (Pégalo aquí)
+# =====================================================================
 if "crop" not in st.session_state:
     st.session_state.crop = "Caqui (Kaki)"
 
 if "yield_val" not in st.session_state:
-    st.session_state.yield_val = 10.0  # Rendimiento inicial por defecto
+    st.session_state.yield_val = 10.0
 
-# Inicializar los coeficientes de extracción automáticos según el cultivo activo
+# Inicializamos los coeficientes del cultivo por defecto en memoria
 datos_iniciales = CULTIVOS_DB[st.session_state.crop]
-for coef_clave, letra in [("coeff_n", "n"), ("coeff_p", "p"), ("coeff_k", "k"), ("coeff_mg", "mg"), ("coeff_ca", "ca"), ("coeff_s", "s")]:
-    if coef_clave not in st.session_state:
-        st.session_state[coef_clave] = float(datos_iniciales[letra])
+for nutriente in ["n", "p", "k", "mg", "ca", "s"]:
+    key_coef = f"coeff_{nutriente}"
+    if key_coef not in st.session_state:
+        st.session_state[key_coef] = float(datos_iniciales[nutriente])
 
-# Inicializar las unidades fertilizantes totales recomendadas si no existen
+# Inicializar las unidades fertilizantes totales si no existen
 for nutriente_clave, letra in [("u_n", "n"), ("u_p", "p"), ("u_k", "k"), ("u_mg", "mg"), ("u_ca", "ca"), ("u_s", "s")]:
     if nutriente_clave not in st.session_state:
         st.session_state[nutriente_clave] = float(datos_iniciales[letra] * st.session_state.yield_val)
+
     
     st.session_state.extra_n = 0.0
     st.session_state.extra_p = 0.0
@@ -201,13 +204,16 @@ for nutriente_clave, letra in [("u_n", "n"), ("u_p", "p"), ("u_k", "k"), ("u_mg"
         st.session_state[nutriente_clave] = float(datos_iniciales[letra] * st.session_state.yield_val)
 
 # 2. Dibujar los controles visuales en la pantalla
+# =====================================================================
+# ✅ SECCIÓN DE CONFIGURACIÓN DEL CULTIVO + DETECTOR (Pégalo aquí)
+# =====================================================================
 st.markdown("---")
 st.markdown("### 🌾 Configuración Cultivo")
 
 crop_list = list(CULTIVOS_DB.keys())
 index_actual = crop_list.index(st.session_state.crop) if st.session_state.crop in crop_list else 0
 
-# Desplegable de cultivos (Ahora de forma directa y segura, sin callbacks conflictivos)
+# Desplegable de selección de cultivo
 cultivo_elegido = st.selectbox(
     "Seleccione Cultivo:", 
     crop_list, 
@@ -221,6 +227,43 @@ rendimiento_elegido = st.number_input(
     min_value=0.1, 
     step=1.0
 )
+
+# Sincronización automática de cultivo y rendimiento al cambiar de pestaña
+hubo_cambio = False
+
+if cultivo_elegido != st.session_state.crop:
+    st.session_state.crop = cultivo_elegido
+    datos_nuevos = CULTIVOS_DB[cultivo_elegido]
+    
+    st.session_state.coeff_n = float(datos_nuevos["n"])
+    st.session_state.coeff_p = float(datos_nuevos["p"])
+    st.session_state.coeff_k = float(datos_nuevos["k"])
+    st.session_state.coeff_mg = float(datos_nuevos["mg"])
+    st.session_state.coeff_ca = float(datos_nuevos["ca"])
+    st.session_state.coeff_s = float(datos_nuevos["s"])
+    
+    st.session_state.u_n = float(st.session_state.coeff_n * st.session_state.yield_val)
+    st.session_state.u_p = float(st.session_state.coeff_p * st.session_state.yield_val)
+    st.session_state.u_k = float(st.session_state.coeff_k * st.session_state.yield_val)
+    st.session_state.u_mg = float(st.session_state.coeff_mg * st.session_state.yield_val)
+    st.session_state.u_ca = float(st.session_state.coeff_ca * st.session_state.yield_val)
+    st.session_state.u_s = float(st.session_state.coeff_s * st.session_state.yield_val)
+    hubo_cambio = True
+
+if rendimiento_elegido != st.session_state.yield_val:
+    st.session_state.yield_val = rendimiento_elegido
+    
+    st.session_state.u_n = float(st.session_state.coeff_n * st.session_state.yield_val)
+    st.session_state.u_p = float(st.session_state.coeff_p * st.session_state.yield_val)
+    st.session_state.u_k = float(st.session_state.coeff_k * st.session_state.yield_val)
+    st.session_state.u_mg = float(st.session_state.coeff_mg * st.session_state.yield_val)
+    st.session_state.u_ca = float(st.session_state.coeff_ca * st.session_state.yield_val)
+    st.session_state.u_s = float(st.session_state.coeff_s * st.session_state.yield_val)
+    hubo_cambio = True
+
+if hubo_cambio:
+    st.rerun()
+
 
 # 3. DETECTOR DE CAMBIOS INTELIGENTE (Sincronización instantánea)
 hubo_cambio = False
@@ -389,16 +432,20 @@ with tab_bal:
         st.session_state.extra_mg = col_e4.number_input("MgO extra (kg/ha):", value=st.session_state.extra_mg)
         st.session_state.extra_ca = col_e5.number_input("CaO extra (kg/ha):", value=st.session_state.extra_ca)
         st.session_state.extra_s = col_e6.number_input("SO₃ extra (kg/ha):", value=st.session_state.extra_s)
-
-    # Editable Coeffs
-    with st.expander("✏️ Editar Coeficientes de Extracción del Cultivo (kg/t):"):
-        col_c1, col_c2, col_c3, col_c4, col_c5, col_c6 = st.columns(6)
-        st.session_state.coeff_n = col_c1.number_input("Coeficiente N:", value=st.session_state.coeff_n)
-        st.session_state.coeff_p = col_c2.number_input("Coeficiente P₂O₅:", value=st.session_state.coeff_p)
-        st.session_state.coeff_k = col_c3.number_input("Coeficiente K₂O:", value=st.session_state.coeff_k)
-        st.session_state.coeff_mg = col_c4.number_input("Coeficiente MgO:", value=st.session_state.coeff_mg)
-        st.session_state.coeff_ca = col_c5.number_input("Coeficiente CaO:", value=st.session_state.coeff_ca)
-        st.session_state.coeff_s = col_c6.number_input("Coeficiente SO₃:", value=st.session_state.coeff_s)
+# =====================================================================
+# ✅ CASILLAS DE EDICIÓN DE COEFICIENTES EN EL EXPANDER (Sustituye aquí)
+# =====================================================================
+# Al usar 'key="coeff_X"', Streamlit lee el valor automáticamente de la memoria 
+# al cambiar de cultivo y guarda de forma instantánea cualquier edición del usuario.
+with st.expander("✏️ Editar Coeficientes de Extracción del Cultivo (kg/t):"):
+    col_c1, col_c2, col_c3, col_c4, col_c5, col_c6 = st.columns(6)
+    col_c1.number_input("Coeficiente N:", key="coeff_n", step=0.1)
+    col_c2.number_input("Coeficiente P₂O₅:", key="coeff_p", step=0.1)
+    col_c3.number_input("Coeficiente K₂O:", key="coeff_k", step=0.1)
+    col_c4.number_input("Coeficiente MgO:", key="coeff_mg", step=0.1)
+    col_c5.number_input("Coeficiente CaO:", key="coeff_ca", step=0.1)
+    col_c6.number_input("Coeficiente SO₃:", key="coeff_s", step=0.1)
+    
 
     # Table of Balance
     balance_data = {
