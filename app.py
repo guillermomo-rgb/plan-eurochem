@@ -565,7 +565,7 @@ balance_data = {
     df_bal = pd.DataFrame(balance_data)
     st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
 
-    === 📊 GRÁFICO DINÁMICO COMPARATIVO ===
+    #=== 📊 GRÁFICO DINÁMICO COMPARATIVO ===
 st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
 fig, ax = plt.subplots(figsize=(10, 4))
 nutrientes = ["N", "P₂O₅", "K₂O", "MgO", "CaO", "SO₃"]
