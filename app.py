@@ -179,39 +179,66 @@ with st.sidebar:
     st.session_state.advisor = st.text_input("Asesor Agrónomo:", st.session_state.advisor)
     st.session_state.farm = st.text_input("Finca / Productor:", st.session_state.farm)
     st.session_state.date_issue = st.text_input("Fecha Emisión:", st.session_state.date_issue)
-    
-    # 1. Nos aseguramos de que el cultivo y el rendimiento estén inicializados en la memoria
+  
+  # 1. Inicializar variables básicas en la memoria si no existen
 if "crop" not in st.session_state:
     st.session_state.crop = "Caqui (Kaki)"
 
 if "yield_val" not in st.session_state:
     st.session_state.yield_val = 10.0
 
-# 2. Función que se ejecuta AL INSTANTE cuando el usuario cambia de cultivo
-def al_cambiar_cultivo():
-    # Leemos el nuevo cultivo elegido en el desplegable
-    nuevo_cultivo = st.session_state.crop_select
-    datos = CULTIVOS_DB[nuevo_cultivo]
-    rendimiento = st.session_state.yield_val
-    
-    # Convertimos los valores usando comillas ("n", "p", etc.)
-    # ¡De esta forma evitamos cualquier conflicto de variables!
-    st.session_state.u_n = float(datos["n"] * rendimiento)
-    st.session_state.u_p = float(datos["p"] * rendimiento)
-    st.session_state.u_k = float(datos["k"] * rendimiento)
-    st.session_state.u_mg = float(datos["mg"] * rendimiento)
-    st.session_state.u_ca = float(datos["ca"] * rendimiento)
-    st.session_state.u_s = float(datos["s"] * rendimiento)
-    
-    # Guardamos el nombre en memoria
-    st.session_state.crop = nuevo_cultivo
+# Inicializar los valores de Nitrógeno, Fósforo, etc., al arrancar
+datos_iniciales = CULTIVOS_DB[st.session_state.crop]
+for nutriente_clave, letra in [("u_n", "n"), ("u_p", "p"), ("u_k", "k"), ("u_mg", "mg"), ("u_ca", "ca"), ("u_s", "s")]:
+    if nutriente_clave not in st.session_state:
+        st.session_state[nutriente_clave] = float(datos_iniciales[letra] * st.session_state.yield_val)
 
-# 3. Dibujamos los controles visuales corregidos
+# 2. Dibujar los controles visuales en la pantalla
 st.markdown("---")
 st.markdown("### 🌾 Configuración Cultivo")
 
 crop_list = list(CULTIVOS_DB.keys())
 index_actual = crop_list.index(st.session_state.crop) if st.session_state.crop in crop_list else 0
+
+# Desplegable de cultivos (Ahora de forma directa y segura, sin callbacks conflictivos)
+cultivo_elegido = st.selectbox(
+    "Seleccione Cultivo:", 
+    crop_list, 
+    index=index_actual
+)
+
+# Entrada para el rendimiento esperado
+rendimiento_elegido = st.number_input(
+    "Rendimiento Esperado (t/ha):", 
+    value=st.session_state.yield_val, 
+    min_value=0.1, 
+    step=1.0
+)
+
+# 3. DETECTOR DE CAMBIOS INTELIGENTE (Sincronización instantánea)
+hubo_cambio = False
+
+# Si el usuario cambia el cultivo en el desplegable...
+if cultivo_elegido != st.session_state.crop:
+    st.session_state.crop = cultivo_elegido
+    hubo_cambio = True
+
+# Si el usuario cambia el rendimiento...
+if rendimiento_elegido != st.session_state.yield_val:
+    st.session_state.yield_val = rendimiento_elegido
+    hubo_cambio = True
+
+# Si ha ocurrido cualquiera de los dos cambios, recalculamos los valores recomendados
+if hubo_cambio:
+    datos_nuevos = CULTIVOS_DB[st.session_state.crop]
+    st.session_state.u_n = float(datos_nuevos["n"] * st.session_state.yield_val)
+    st.session_state.u_p = float(datos_nuevos["p"] * st.session_state.yield_val)
+    st.session_state.u_k = float(datos_nuevos["k"] * st.session_state.yield_val)
+    st.session_state.u_mg = float(datos_nuevos["mg"] * st.session_state.yield_val)
+    st.session_state.u_ca = float(datos_nuevos["ca"] * st.session_state.yield_val)
+    st.session_state.u_s = float(datos_nuevos["s"] * st.session_state.yield_val)
+    # Forzar recarga limpia de la página para aplicar los nuevos números de inmediato
+    st.rerun()
 
 # Usamos 'crop_select' como llave para que Streamlit se encargue de la memoria
 st.selectbox(
