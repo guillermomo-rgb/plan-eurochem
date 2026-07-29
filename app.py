@@ -450,11 +450,8 @@ base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
 base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
 base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
 base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
-base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
-# =====================================================================
-# ✅ TABLA DE BALANCE REESTRUCTURADA Y SIN ERRORES (Pega esto completo)
-# =====================================================================
+# === TABLA DE BALANCE (Caso sin sangría extra) ===
 balance_data = {
     "Concepto Nutriente (kg/ha)": [
         "A) Necesidad Base Cultivo (A)",
@@ -521,22 +518,22 @@ balance_data = {
         solub_annual_sum_ca, 
         solub_annual_sum_ca - target_ca_val
     ],
-"Azufre (SO₃)": [
-            base_s_ha, 
-            fondo_sum_s, 
-            water_annual_sum_s, 
-            acid_annual_sum_s, 
-            st.session_state.extra_s, 
-            target_s_val, 
-            solub_annual_sum_s, 
-            solub_annual_sum_s - target_s_val
-        ]
-    }
 
-    # Se crea el DataFrame a partir del diccionario balance_data
-    df_bal = pd.DataFrame(balance_data)
-    st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
+    "Azufre (SO₃)": [
+        base_s_ha, 
+        fondo_sum_s, 
+        water_annual_sum_s, 
+        acid_annual_sum_s, 
+        st.session_state.extra_s, 
+        target_s_val, 
+        solub_annual_sum_s, 
+        solub_annual_sum_s - target_s_val
+    ]
+}
 
+# Se crea y muestra el DataFrame alineado con el margen izquierdo
+df_bal = pd.DataFrame(balance_data)
+st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
     # =====================================================================
     # 📊 6. GRÁFICO DINÁMICO COMPARATIVO: OBJETIVO VS APLICADO
     # =====================================================================
