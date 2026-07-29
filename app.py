@@ -478,8 +478,7 @@ balance_data = {
     base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
     base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
     base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
-
-    # =====================================================================
+# =====================================================================
     # 2️⃣ SEGUNDO: El diccionario de balance (AQUÍ sí se abren las llaves "{")
     # =====================================================================
     balance_data = {
@@ -559,11 +558,12 @@ balance_data = {
             solub_annual_sum_s, 
             solub_annual_sum_s - target_s_val
         ]
-    } # 👈 Aquí cerramos el diccionario limpiamente
+    } # 👈 ¡ESTA LLAVE ES LA QUE CIERRA EL DICCIONARIO Y EVITA EL SYNTAXERROR!
 
-    # Se crea y muestra el DataFrame en la aplicación
+    # Se crea y muestra el DataFrame en la pestaña
     df_bal = pd.DataFrame(balance_data)
     st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
+   
 
     #=== 📊 GRÁFICO DINÁMICO COMPARATIVO ===
 st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
