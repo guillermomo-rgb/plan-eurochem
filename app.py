@@ -393,32 +393,33 @@ for m in range(1, 13):
     for sol in m_data["solubles"]:
         p = SOLUBLES_DB.get(sol["name"])
         if p:
-            solub_annual_sum_n += sol["dosis"] * p["n"] / 100
-            solub_annual_sum_p += sol["dosis"] * p["p"] / 100
-            solub_annual_sum_k += sol["dosis"] * p["k"] / 100
-            solub_annual_sum_mg += sol["dosis"] * p["mg"] / 100
-            solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
-            solub_annual_sum_s += sol["dosis"] * p["s"] / 100
+    solub_annual_sum_n += sol["dosis"] * p["n"] / 100
+    solub_annual_sum_p += sol["dosis"] * p["p"] / 100
+    solub_annual_sum_k += sol["dosis"] * p["k"] / 100
+    solub_annual_sum_mg += sol["dosis"] * p["mg"] / 100
+    solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
+    solub_annual_sum_s += sol["dosis"] * p["s"] / 100
 
 # =====================================================================
 # ✅ CÁLCULO DE NECESIDADES BÁSICAS (A) - COLOCADO ANTES DE LOS OBJETIVOS
 # =====================================================================
-# Multiplica el rendimiento por el coeficiente reactivo de la memoria (session_state)
-base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
-base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
-base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
-base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
-base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
-base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
+# Multiplica el rendimiento por el coeficiente reactivo de la memoria (session_state)		
+    base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
+    base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
+    base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
+    base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
+    base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
+    base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
 # Target in Gotero = A - C - D1 - D2 + E
-target_n_val = base_n_ha - fondo_sum_n - water_annual_sum_n - acid_annual_sum_n + st.session_state.extra_n
-target_p_val = base_p_ha - fondo_sum_p - water_annual_sum_p - acid_annual_sum_p + st.session_state.extra_p
-target_k_val = base_k_ha - fondo_sum_k - water_annual_sum_k + st.session_state.extra_k
-target_mg_val = base_mg_ha - fondo_sum_mg - water_annual_sum_mg + st.session_state.extra_mg
-target_ca_val = base_ca_ha - fondo_sum_ca - water_annual_sum_ca + st.session_state.extra_ca
-target_s_val = base_s_ha - fondo_sum_s - water_annual_sum_s - acid_annual_sum_s + st.session_state.extra_s
-
+# === CÁLCULO DE OBJETIVOS NETOS (TARGETS) EN EL GOTERO ===
+    # (Con 4 espacios al inicio de cada línea y conectados a st.session_state)
+    target_n_val = base_n_ha - st.session_state.fondo_sum_n - water_annual_sum_n - acid_annual_sum_n + st.session_state.extra_n
+    target_p_val = base_p_ha - st.session_state.fondo_sum_p - water_annual_sum_p - acid_annual_sum_p + st.session_state.extra_p
+    target_k_val = base_k_ha - st.session_state.fondo_sum_k - water_annual_sum_k + st.session_state.extra_k
+    target_mg_val = base_mg_ha - st.session_state.fondo_sum_mg - water_annual_sum_mg + st.session_state.extra_mg
+    target_ca_val = base_ca_ha - st.session_state.fondo_sum_ca - water_annual_sum_ca + st.session_state.extra_ca
+    target_s_val = base_s_ha - st.session_state.fondo_sum_s - water_annual_sum_s - acid_annual_sum_s + st.session_state.extra_s
 # --- CREACIÓN DE PESTAÑAS (MIGRACIÓN PASO A PASO) ---
 tab_bal, tab_water, tab_acid, tab_fondo, tab_monthly, tab_sonneveld, tab_dictamen = st.tabs([
     "🎯 Punto 1: Balance Anual",
@@ -437,12 +438,12 @@ with tab_bal:
     # Extra inputs
     with st.expander("➕ Compensación / Margen de Seguridad Extra (E):"):
         col_e1, col_e2, col_e3, col_e4, col_e5, col_e6 = st.columns(6)
-        st.session_state.extra_n = col_e1.number_input("N extra (kg/ha):", value=st.session_state.extra_n)
-        st.session_state.extra_p = col_e2.number_input("P₂O₅ extra (kg/ha):", value=st.session_state.extra_p)
-        st.session_state.extra_k = col_e3.number_input("K₂O extra (kg/ha):", value=st.session_state.extra_k)
-        st.session_state.extra_mg = col_e4.number_input("MgO extra (kg/ha):", value=st.session_state.extra_mg)
-        st.session_state.extra_ca = col_e5.number_input("CaO extra (kg/ha):", value=st.session_state.extra_ca)
-        st.session_state.extra_s = col_e6.number_input("SO₃ extra (kg/ha):", value=st.session_state.extra_s)
+    st.session_state.extra_n = col_e1.number_input("N extra (kg/ha):", value=st.session_state.extra_n)
+    st.session_state.extra_p = col_e2.number_input("P₂O₅ extra (kg/ha):", value=st.session_state.extra_p)
+    st.session_state.extra_k = col_e3.number_input("K₂O extra (kg/ha):", value=st.session_state.extra_k)
+    st.session_state.extra_mg = col_e4.number_input("MgO extra (kg/ha):", value=st.session_state.extra_mg)
+    st.session_state.extra_ca = col_e5.number_input("CaO extra (kg/ha):", value=st.session_state.extra_ca)
+    st.session_state.extra_s = col_e6.number_input("SO₃ extra (kg/ha):", value=st.session_state.extra_s)
 # =====================================================================
 # ✅ CASILLAS DE EDICIÓN DE COEFICIENTES EN EL EXPANDER (Sustituye aquí)
 # =====================================================================
