@@ -3,8 +3,9 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import base64  # 👈 Esta línea es vital para que cargue el logotipo de Eurochem
 
-# === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES) ===
+# === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES DE SEGURIDAD) ===
 n = "n"
 p = "p"
 k = "k"
@@ -14,7 +15,8 @@ s = "s"
 nh4 = "nh4"
 no3 = "no3"
 ec_coeff = "ec_coeff"
-# === BASE DE DATOS DE CULTIVOS CON COMILLAS (100% SEGURA) ===
+
+# === TU BASE DE DATOS DE CULTIVOS COMPLETA (VERSIÓN BLINDADA CON COMILLAS) ===
 CULTIVOS_DB = {
     "Caqui (Kaki)": { "n": 4.00, "p": 1.00, "k": 3.50, "mg": 0.60, "ca": 1.50, "s": 0.80, "limite_salino": 1.3 },
     "Pimiento": { "n": 4.40, "p": 1.60, "k": 5.50, "mg": 0.80, "ca": 2.50, "s": 1.80, "limite_salino": 1.8 },
