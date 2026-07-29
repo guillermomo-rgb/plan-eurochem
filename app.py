@@ -530,48 +530,42 @@ balance_data = {
         solub_annual_sum_s - target_s_val
     ]
 }
-
-# Se crea y muestra el DataFrame alineado con el margen izquierdo
+# Se crea el DataFrame (Sin espacios al principio de la línea)
 df_bal = pd.DataFrame(balance_data)
 st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
-    # =====================================================================
-    # 📊 6. GRÁFICO DINÁMICO COMPARATIVO: OBJETIVO VS APLICADO
-    # =====================================================================
-    st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
-    
-    fig, ax = plt.subplots(figsize=(10, 4))
-    nutrientes = ["N", "P₂O₅", "K₂O", "MgO", "CaO", "SO₃"]
-    
-    # Valores objetivo recalculados dinámicamente
-    targets = [target_n_val, target_p_val, target_k_val, target_mg_val, target_ca_val, target_s_val]
-    
-    # Valores reales aplicados con tus abonos comerciales Eurochem
-    applied = [
-        solub_annual_sum_n, 
-        solub_annual_sum_p, 
-        solub_annual_sum_k, 
-        solub_annual_sum_mg, 
-        solub_annual_sum_ca, 
-        solub_annual_sum_s
-    ]
 
-    x = np.arange(len(nutrientes))
-    width = 0.35
+# === 📊 GRÁFICO DINÁMICO COMPARATIVO ===
+st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
+fig, ax = plt.subplots(figsize=(10, 4))
+nutrientes = ["N", "P₂O₅", "K₂O", "MgO", "CaO", "SO₃"]
 
-    # Dibujamos las barras (Azul oscuro para el Objetivo y Verde Eurochem para el Aplicado)
-    ax.bar(x - width/2, targets, width, label="Objetivo (Target)", color="#1E3D59")
-    ax.bar(x + width/2, applied, width, label="Aplicado (Solubles)", color="#17B890")
+# Valores objetivo y aplicados de Eurochem
+targets = [target_n_val, target_p_val, target_k_val, target_mg_val, target_ca_val, target_s_val]
+applied = [
+    solub_annual_sum_n, 
+    solub_annual_sum_p, 
+    solub_annual_sum_k, 
+    solub_annual_sum_mg, 
+    solub_annual_sum_ca, 
+    solub_annual_sum_s
+]
 
-    # Configuración de etiquetas y diseño del gráfico
-    ax.set_ylabel("kg/ha")
-    ax.set_title("Comparativa de Nutrientes (Objetivo vs Aplicado)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(nutrientes)
-    ax.legend()
-    ax.grid(True, linestyle="--", alpha=0.5)
+x = np.arange(len(nutrientes))
+width = 0.35
 
-    # Renderizamos el gráfico dinámico en la pantalla de Streamlit
-    st.pyplot(fig)
+# Dibujamos las barras (Azul oscuro para Target y Verde para Solubles)
+ax.bar(x - width/2, targets, width, label="Objetivo (Target)", color="#1E3D59")
+ax.bar(x + width/2, applied, width, label="Aplicado (Solubles)", color="#17B890")
+
+ax.set_ylabel("kg/ha")
+ax.set_title("Comparativa de Nutrientes (Objetivo vs Aplicado)")
+ax.set_xticks(x)
+ax.set_xticklabels(nutrientes)
+ax.legend()
+ax.grid(True, linestyle="--", alpha=0.5)
+
+st.pyplot(fig)
+
 
 # ================= TAB 2: ANALÍTICA DE AGUA =================
 with tab_water:
