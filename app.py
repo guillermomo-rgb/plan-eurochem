@@ -83,17 +83,22 @@ SOLUBLES_DB = {
 }
 
 # --- INICIALIZACIÓN DE VARIABLES EN SESSION_STATE ---
-if "init" not in st.session_state:
-    st.session_state.init = True
+if "crop" not in st.session_state:
     st.session_state.crop = "Caqui (Kaki)"
-    st.session_state.yield_val = 40.0
-    
-    st.session_state.coeff_n = 2.2
-    st.session_state.coeff_p = 0.8
-    st.session_state.coeff_k = 3.5
-    st.session_state.coeff_mg = 0.6
-    st.session_state.coeff_ca = 1.5
-    st.session_state.coeff_s = 0.8
+
+if "yield_val" not in st.session_state:
+    st.session_state.yield_val = 10.0  # Rendimiento inicial por defecto
+
+# Inicializar los coeficientes de extracción automáticos según el cultivo activo
+datos_iniciales = CULTIVOS_DB[st.session_state.crop]
+for coef_clave, letra in [("coeff_n", "n"), ("coeff_p", "p"), ("coeff_k", "k"), ("coeff_mg", "mg"), ("coeff_ca", "ca"), ("coeff_s", "s")]:
+    if coef_clave not in st.session_state:
+        st.session_state[coef_clave] = float(datos_iniciales[letra])
+
+# Inicializar las unidades fertilizantes totales recomendadas si no existen
+for nutriente_clave, letra in [("u_n", "n"), ("u_p", "p"), ("u_k", "k"), ("u_mg", "mg"), ("u_ca", "ca"), ("u_s", "s")]:
+    if nutriente_clave not in st.session_state:
+        st.session_state[nutriente_clave] = float(datos_iniciales[letra] * st.session_state.yield_val)
     
     st.session_state.extra_n = 0.0
     st.session_state.extra_p = 0.0
