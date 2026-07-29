@@ -342,13 +342,13 @@ for m in range(1, 13):
             solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
             solub_annual_sum_s += sol["dosis"] * p["s"] / 100
 
-# Base extracted goals (A)
-base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
-base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
-base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
-base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
-base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
-base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
+# === CONEXIÓN DE CABLES CON EL DETECTOR INTELIGENTE ===
+base_n_ha = float(st.session_state.u_n)
+base_p_ha = float(st.session_state.u_p)
+base_k_ha = float(st.session_state.u_k)
+base_mg_ha = float(st.session_state.u_mg)
+base_ca_ha = float(st.session_state.u_ca)
+base_s_ha = float(st.session_state.u_s)
 
 # Target in Gotero = A - C - D1 - D2 + E
 target_n_val = base_n_ha - fondo_sum_n - water_annual_sum_n - acid_annual_sum_n + st.session_state.extra_n
