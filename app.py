@@ -241,15 +241,6 @@ if hubo_cambio:
     st.rerun()
 
 
-
-# Entrada para el rendimiento esperado
-st.session_state.yield_val = st.number_input(
-    "Rendimiento Esperado (t/ha):", 
-    value=st.session_state.yield_val, 
-    min_value=0.1, 
-    step=1.0
-)
-
 # --- CABECERA PRINCIPAL ---
 st.markdown(f"""
 <div class="main-header">
