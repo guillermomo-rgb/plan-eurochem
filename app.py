@@ -469,8 +469,8 @@ balance_data = {
         "TOTAL APLICADO SOLUBLES",
         "BALANCE / DIFERENCIA"
     ], 
-   # =====================================================================
-    # 1️⃣ PRIMERO: Los cálculos matemáticos (FUERA de las llaves, con "=")
+  # =====================================================================
+    # 1️⃣ PRIMERO: Los cálculos matemáticos (FUERA del diccionario, con "=")
     # =====================================================================
     base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
     base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
@@ -480,7 +480,7 @@ balance_data = {
     base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
     # =====================================================================
-    # 2️⃣ SEGUNDO: El diccionario de balance (AQUÍ sí abrimos las llaves "{")
+    # 2️⃣ SEGUNDO: El diccionario de balance (AQUÍ sí se abren las llaves "{")
     # =====================================================================
     balance_data = {
         "Concepto Nutriente (kg/ha)": [
@@ -496,7 +496,7 @@ balance_data = {
 
         "Nitrógeno (N)": [
             base_n_ha, 
-            st.session_state.fondo_sum_n, 
+            st.session_state.fondo_sum_n,  # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_n, 
             acid_annual_sum_n, 
             st.session_state.extra_n, 
@@ -507,7 +507,7 @@ balance_data = {
 
         "Fósforo (P₂O₅)": [
             base_p_ha, 
-            st.session_state.fondo_sum_p, 
+            st.session_state.fondo_sum_p,  # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_p, 
             acid_annual_sum_p, 
             st.session_state.extra_p, 
@@ -518,7 +518,7 @@ balance_data = {
 
         "Potasio (K₂O)": [
             base_k_ha, 
-            st.session_state.fondo_sum_k, 
+            st.session_state.fondo_sum_k,  # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_k, 
             0.0, 
             st.session_state.extra_k, 
@@ -529,7 +529,7 @@ balance_data = {
 
         "Magnesio (MgO)": [
             base_mg_ha, 
-            st.session_state.fondo_sum_mg, 
+            st.session_state.fondo_sum_mg, # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_mg, 
             0.0, 
             st.session_state.extra_mg, 
@@ -540,7 +540,7 @@ balance_data = {
 
         "Calcio (CaO)": [
             base_ca_ha, 
-            st.session_state.fondo_sum_ca, 
+            st.session_state.fondo_sum_ca, # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_ca, 
             0.0, 
             st.session_state.extra_ca, 
@@ -551,7 +551,7 @@ balance_data = {
 
         "Azufre (SO₃)": [
             base_s_ha, 
-            st.session_state.fondo_sum_s, 
+            st.session_state.fondo_sum_s,  # 👈 Sincronizado con la memoria del Punto 4
             water_annual_sum_s, 
             acid_annual_sum_s, 
             st.session_state.extra_s, 
@@ -559,15 +559,13 @@ balance_data = {
             solub_annual_sum_s, 
             solub_annual_sum_s - target_s_val
         ]
-    }
+    } # 👈 Aquí cerramos el diccionario limpiamente
 
-    # Se crea el DataFrame y se visualiza
+    # Se crea y muestra el DataFrame en la aplicación
     df_bal = pd.DataFrame(balance_data)
     st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
 
-    } # 👈 Aquí es donde se cierra el diccionario con la llave "}"
-
-# === 📊 GRÁFICO DINÁMICO COMPARATIVO ===
+    === 📊 GRÁFICO DINÁMICO COMPARATIVO ===
 st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
 fig, ax = plt.subplots(figsize=(10, 4))
 nutrientes = ["N", "P₂O₅", "K₂O", "MgO", "CaO", "SO₃"]
