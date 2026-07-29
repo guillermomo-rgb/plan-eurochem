@@ -452,7 +452,7 @@ base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
 base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
 base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
-# === TABLA DE BALANCE (¡Pegada completamente a la izquierda, alineada con el cálculo de arriba!) ===
+# === TABLA DE BALANCE (Alineada perfectamente con el cálculo de necesidades de arriba) ===
 balance_data = {
     "Concepto Nutriente (kg/ha)": [
         "A) Necesidad Base Cultivo (A)",
@@ -530,8 +530,9 @@ balance_data = {
         solub_annual_sum_s, 
         solub_annual_sum_s - target_s_val
     ]
-} # 👈 El diccionario queda perfectamente cerrado y alineado
-       "Nitrógeno (N)": [base_n_ha, fondo_sum_n, water_annual_sum_n, acid_annual_sum_n, st.session_state.extra_n, target_n_val, solub_annual_sum_n, solub_annual_sum_n - target_n_val],
+}
+
+        "Nitrógeno (N)": [base_n_ha, fondo_sum_n, water_annual_sum_n, acid_annual_sum_n, st.session_state.extra_n, target_n_val, solub_annual_sum_n, solub_annual_sum_n - target_n_val],
         "Fósforo (P₂O₅)": [base_p_ha, fondo_sum_p, water_annual_sum_p, acid_annual_sum_p, st.session_state.extra_p, target_p_val, solub_annual_sum_p, solub_annual_sum_p - target_p_val],
         "Potasio (K₂O)": [base_k_ha, fondo_sum_k, water_annual_sum_k, 0.0, st.session_state.extra_k, target_k_val, solub_annual_sum_k, solub_annual_sum_k - target_k_val],
         "Magnesio (MgO)": [base_mg_ha, fondo_sum_mg, water_annual_sum_mg, 0.0, st.session_state.extra_mg, target_mg_val, solub_annual_sum_mg, solub_annual_sum_mg - target_mg_val],
