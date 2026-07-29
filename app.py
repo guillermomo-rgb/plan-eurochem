@@ -392,7 +392,16 @@ for m in range(1, 13):
             solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
             solub_annual_sum_s += sol["dosis"] * p["s"] / 100
 
-
+# =====================================================================
+# ✅ CÁLCULO DE NECESIDADES BÁSICAS (A) - COLOCADO ANTES DE LOS OBJETIVOS
+# =====================================================================
+# Multiplica el rendimiento por el coeficiente reactivo de la memoria (session_state)
+base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
+base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
+base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
+base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
+base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
+base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
 # Target in Gotero = A - C - D1 - D2 + E
 target_n_val = base_n_ha - fondo_sum_n - water_annual_sum_n - acid_annual_sum_n + st.session_state.extra_n
@@ -439,17 +448,6 @@ with st.expander("✏️ Editar Coeficientes de Extracción del Cultivo (kg/t):"
     col_c4.number_input("Coeficiente MgO:", key="coeff_mg", step=0.1)
     col_c5.number_input("Coeficiente CaO:", key="coeff_ca", step=0.1)
     col_c6.number_input("Coeficiente SO₃:", key="coeff_s", step=0.1)
-
-# =====================================================================
-# ✅ CÁLCULO REACTIVO DE NECESIDADES BÁSICAS (A)
-# =====================================================================
-# Multiplica el rendimiento esperado por el coeficiente editable en tiempo real.
-# (Calculamos los 6 nutrientes obligatoriamente para que la tabla de balance funcione)
-base_n_ha = st.session_state.yield_val * st.session_state.coeff_n
-base_p_ha = st.session_state.yield_val * st.session_state.coeff_p
-base_k_ha = st.session_state.yield_val * st.session_state.coeff_k
-base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
-base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
 
 # === TABLA DE BALANCE (Caso sin sangría extra) ===
 balance_data = {
