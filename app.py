@@ -6,12 +6,12 @@ import numpy as np
 import base64  # 👈 Esta línea es vital para que cargue el logotipo de Eurochem
 
 # =====================================================================
-    if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
-    if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
-    if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
-    if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
-    if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
-    if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
+if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
+if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
+if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
+if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
+if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
+if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
 # =====================================================================
 # === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES DE SEGURIDAD) ===
 n = "n"
