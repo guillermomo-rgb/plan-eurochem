@@ -457,18 +457,7 @@ with st.expander("✏️ Editar Coeficientes de Extracción del Cultivo (kg/t):"
     col_c4.number_input("Coeficiente MgO:", key="coeff_mg", step=0.1)
     col_c5.number_input("Coeficiente CaO:", key="coeff_ca", step=0.1)
     col_c6.number_input("Coeficiente SO₃:", key="coeff_s", step=0.1)
-# === TABLA DE BALANCE (Caso sin sangría extra) ===
-balance_data = {
-    "Concepto Nutriente (kg/ha)": [
-        "A) Necesidad Base Cultivo (A)",
-        "C) Abonado de Fondo (C)",
-        "D1) Crédito Agua de Riego (D1)",
-        "D2) Crédito Ácido Regulador (D2)",
-        "E) Compensación Extra (E)",
-        "OBJETIVO EN GOTERO (Target = A-C-D1-D2+E)",
-        "TOTAL APLICADO SOLUBLES",
-        "BALANCE / DIFERENCIA"
-    ], 
+
   # =====================================================================
     # 1️⃣ PRIMERO: Los cálculos matemáticos (FUERA del diccionario, con "=")
     # =====================================================================
