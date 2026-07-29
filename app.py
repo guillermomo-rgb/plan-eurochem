@@ -393,12 +393,12 @@ for m in range(1, 13):
     for sol in m_data["solubles"]:
         p = SOLUBLES_DB.get(sol["name"])
         if p:
-    solub_annual_sum_n += sol["dosis"] * p["n"] / 100
-    solub_annual_sum_p += sol["dosis"] * p["p"] / 100
-    solub_annual_sum_k += sol["dosis"] * p["k"] / 100
-    solub_annual_sum_mg += sol["dosis"] * p["mg"] / 100
-    solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
-    solub_annual_sum_s += sol["dosis"] * p["s"] / 100
+            solub_annual_sum_n += sol["dosis"] * p["n"] / 100
+            solub_annual_sum_p += sol["dosis"] * p["p"] / 100
+            solub_annual_sum_k += sol["dosis"] * p["k"] / 100
+            solub_annual_sum_mg += sol["dosis"] * p["mg"] / 100
+            solub_annual_sum_ca += sol["dosis"] * p["ca"] / 100
+            solub_annual_sum_s += sol["dosis"] * p["s"] / 100
 
 # =====================================================================
 # ✅ CÁLCULO DE NECESIDADES BÁSICAS (A) - COLOCADO ANTES DE LOS OBJETIVOS
