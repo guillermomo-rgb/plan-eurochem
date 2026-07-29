@@ -452,7 +452,7 @@ base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
 base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
 base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
-# === TABLA DE BALANCE (Alineada perfectamente con el cálculo de necesidades de arriba) ===
+# === TABLA DE BALANCE (Caso sin sangría extra) ===
 balance_data = {
     "Concepto Nutriente (kg/ha)": [
         "A) Necesidad Base Cultivo (A)",
