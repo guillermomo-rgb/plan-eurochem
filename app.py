@@ -240,14 +240,7 @@ if hubo_cambio:
     # Forzar recarga limpia de la página para aplicar los nuevos números de inmediato
     st.rerun()
 
-# Usamos 'crop_select' como llave para que Streamlit se encargue de la memoria
-st.selectbox(
-    "Seleccione Cultivo:", 
-    crop_list, 
-    index=index_actual, 
-    key="crop_select", 
-    on_change=al_cambiar_cultivo
-)
+
 
 # Entrada para el rendimiento esperado
 st.session_state.yield_val = st.number_input(
