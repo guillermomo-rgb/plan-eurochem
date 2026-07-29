@@ -6,12 +6,12 @@ import numpy as np
 import base64  # 👈 Esta línea es vital para que cargue el logotipo de Eurochem
 
 # =====================================================================
-if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
-if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
-if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
-if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
-if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
-if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
+    if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
+    if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
+    if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
+    if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
+    if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
+    if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
 # =====================================================================
 # === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES DE SEGURIDAD) ===
 n = "n"
@@ -345,12 +345,12 @@ fondo_sum_n, fondo_sum_p, fondo_sum_k, fondo_sum_mg, fondo_sum_ca, fondo_sum_s =
 for item in st.session_state.fondo_items:
     p = GRANULADOS_DB.get(item["name"])
     if p:
-st.session_state.fondo_sum_n = dosis_fondo * (riqueza_n / 100.0)
-st.session_state.fondo_sum_p = dosis_fondo * (riqueza_p / 100.0)
-st.session_state.fondo_sum_k = dosis_fondo * (riqueza_k / 100.0)
-st.session_state.fondo_sum_mg = dosis_fondo * (riqueza_mg / 100.0)
-st.session_state.fondo_sum_ca = dosis_fondo * (riqueza_ca / 100.0)
-st.session_state.fondo_sum_s = dosis_fondo * (riqueza_s / 100.0) 
+    st.session_state.fondo_sum_n = dosis_fondo * (riqueza_n / 100.0)
+    st.session_state.fondo_sum_p = dosis_fondo * (riqueza_p / 100.0)
+    st.session_state.fondo_sum_k = dosis_fondo * (riqueza_k / 100.0)
+    st.session_state.fondo_sum_mg = dosis_fondo * (riqueza_mg / 100.0)
+    st.session_state.fondo_sum_ca = dosis_fondo * (riqueza_ca / 100.0)
+    st.session_state.fondo_sum_s = dosis_fondo * (riqueza_s / 100.0) 
 
 # Bucle mensual para acumular agua, ácidos y solubles
 water_annual_sum_n, water_annual_sum_p, water_annual_sum_k, water_annual_sum_mg, water_annual_sum_ca, water_annual_sum_s = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
