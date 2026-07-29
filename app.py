@@ -452,7 +452,9 @@ base_mg_ha = st.session_state.yield_val * st.session_state.coeff_mg
 base_ca_ha = st.session_state.yield_val * st.session_state.coeff_ca
 base_s_ha = st.session_state.yield_val * st.session_state.coeff_s
 
-# === TABLA DE BALANCE (Caso sin sangría extra) ===
+# =====================================================================
+# ✅ TABLA DE BALANCE REESTRUCTURADA Y SIN ERRORES (Pega esto completo)
+# =====================================================================
 balance_data = {
     "Concepto Nutriente (kg/ha)": [
         "A) Necesidad Base Cultivo (A)",
@@ -519,46 +521,59 @@ balance_data = {
         solub_annual_sum_ca, 
         solub_annual_sum_ca - target_ca_val
     ],
-
-    "Azufre (SO₃)": [
-        base_s_ha, 
-        fondo_sum_s, 
-        water_annual_sum_s, 
-        acid_annual_sum_s, 
-        st.session_state.extra_s, 
-        target_s_val, 
-        solub_annual_sum_s, 
-        solub_annual_sum_s - target_s_val
-    ]
-}
-
-        "Nitrógeno (N)": [base_n_ha, fondo_sum_n, water_annual_sum_n, acid_annual_sum_n, st.session_state.extra_n, target_n_val, solub_annual_sum_n, solub_annual_sum_n - target_n_val],
-        "Fósforo (P₂O₅)": [base_p_ha, fondo_sum_p, water_annual_sum_p, acid_annual_sum_p, st.session_state.extra_p, target_p_val, solub_annual_sum_p, solub_annual_sum_p - target_p_val],
-        "Potasio (K₂O)": [base_k_ha, fondo_sum_k, water_annual_sum_k, 0.0, st.session_state.extra_k, target_k_val, solub_annual_sum_k, solub_annual_sum_k - target_k_val],
-        "Magnesio (MgO)": [base_mg_ha, fondo_sum_mg, water_annual_sum_mg, 0.0, st.session_state.extra_mg, target_mg_val, solub_annual_sum_mg, solub_annual_sum_mg - target_mg_val],
-        "Calcio (CaO)": [base_ca_ha, fondo_sum_ca, water_annual_sum_ca, 0.0, st.session_state.extra_ca, target_ca_val, solub_annual_sum_ca, solub_annual_sum_ca - target_ca_val],
-        "Azufre (SO₃)": [base_s_ha, fondo_sum_s, water_annual_sum_s, acid_annual_sum_s, st.session_state.extra_s, target_s_val, solub_annual_sum_s, solub_annual_sum_s - target_s_val]
+"Azufre (SO₃)": [
+            base_s_ha, 
+            fondo_sum_s, 
+            water_annual_sum_s, 
+            acid_annual_sum_s, 
+            st.session_state.extra_s, 
+            target_s_val, 
+            solub_annual_sum_s, 
+            solub_annual_sum_s - target_s_val
+        ]
     }
+
+    # Se crea el DataFrame a partir del diccionario balance_data
     df_bal = pd.DataFrame(balance_data)
     st.dataframe(df_bal.style.format(precision=1), use_container_width=True)
 
-    # Dynamic graph
+    # =====================================================================
+    # 📊 6. GRÁFICO DINÁMICO COMPARATIVO: OBJETIVO VS APLICADO
+    # =====================================================================
     st.markdown("### 📊 Gráfico Comparativo: Objetivo vs Aplicado")
+    
     fig, ax = plt.subplots(figsize=(10, 4))
     nutrientes = ["N", "P₂O₅", "K₂O", "MgO", "CaO", "SO₃"]
-    targets = [target_n_val, target_p_val, target_k_val, target_mg_val, target_ca_val, target_s_val]
-    applied = [solub_annual_sum_n, solub_annual_sum_p, solub_annual_sum_k, solub_annual_sum_mg, solub_annual_sum_ca, solub_annual_sum_s]
     
+    # Valores objetivo recalculados dinámicamente
+    targets = [target_n_val, target_p_val, target_k_val, target_mg_val, target_ca_val, target_s_val]
+    
+    # Valores reales aplicados con tus abonos comerciales Eurochem
+    applied = [
+        solub_annual_sum_n, 
+        solub_annual_sum_p, 
+        solub_annual_sum_k, 
+        solub_annual_sum_mg, 
+        solub_annual_sum_ca, 
+        solub_annual_sum_s
+    ]
+
     x = np.arange(len(nutrientes))
     width = 0.35
-    
-    ax.bar(x - width/2, targets, width, label="Objetivo Requerido", color="#1565c0")
-    ax.bar(x + width/2, applied, width, label="Total Aplicado Soluble", color="#2e7d32")
-    ax.set_ylabel("Unidades Fertilizantes (kg/ha-año)")
-    ax.set_title("Equilibrio Nutricional de Fertirrigación")
+
+    # Dibujamos las barras (Azul oscuro para el Objetivo y Verde Eurochem para el Aplicado)
+    ax.bar(x - width/2, targets, width, label="Objetivo (Target)", color="#1E3D59")
+    ax.bar(x + width/2, applied, width, label="Aplicado (Solubles)", color="#17B890")
+
+    # Configuración de etiquetas y diseño del gráfico
+    ax.set_ylabel("kg/ha")
+    ax.set_title("Comparativa de Nutrientes (Objetivo vs Aplicado)")
     ax.set_xticks(x)
     ax.set_xticklabels(nutrientes)
     ax.legend()
+    ax.grid(True, linestyle="--", alpha=0.5)
+
+    # Renderizamos el gráfico dinámico en la pantalla de Streamlit
     st.pyplot(fig)
 
 # ================= TAB 2: ANALÍTICA DE AGUA =================
