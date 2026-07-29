@@ -345,12 +345,12 @@ fondo_sum_n, fondo_sum_p, fondo_sum_k, fondo_sum_mg, fondo_sum_ca, fondo_sum_s =
 for item in st.session_state.fondo_items:
     p = GRANULADOS_DB.get(item["name"])
     if p:
-    st.session_state.fondo_sum_n = dosis_fondo * (riqueza_n / 100.0)
-    st.session_state.fondo_sum_p = dosis_fondo * (riqueza_p / 100.0)
-    st.session_state.fondo_sum_k = dosis_fondo * (riqueza_k / 100.0)
-    st.session_state.fondo_sum_mg = dosis_fondo * (riqueza_mg / 100.0)
-    st.session_state.fondo_sum_ca = dosis_fondo * (riqueza_ca / 100.0)
-    st.session_state.fondo_sum_s = dosis_fondo * (riqueza_s / 100.0) 
+        st.session_state.fondo_sum_n = dosis_fondo * (riqueza_n / 100.0)
+        st.session_state.fondo_sum_p = dosis_fondo * (riqueza_p / 100.0)
+        st.session_state.fondo_sum_k = dosis_fondo * (riqueza_k / 100.0)
+        st.session_state.fondo_sum_mg = dosis_fondo * (riqueza_mg / 100.0)
+        st.session_state.fondo_sum_ca = dosis_fondo * (riqueza_ca / 100.0)
+        st.session_state.fondo_sum_s = dosis_fondo * (riqueza_s / 100.0) 
 
 # Bucle mensual para acumular agua, ácidos y solubles
 water_annual_sum_n, water_annual_sum_p, water_annual_sum_k, water_annual_sum_mg, water_annual_sum_ca, water_annual_sum_s = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
