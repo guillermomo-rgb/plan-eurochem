@@ -4,8 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import base64  # 👈 Esta línea es vital para que cargue el logotipo de Eurochem
-
 # =====================================================================
+# 🌟 INICIALIZACIÓN DE VARIABLES GLOBALES (Al inicio de tu app.py)
+# =====================================================================
+if "fondo_items" not in st.session_state: st.session_state.fondo_items = []
 if "fondo_sum_n" not in st.session_state: st.session_state.fondo_sum_n = 0.0
 if "fondo_sum_p" not in st.session_state: st.session_state.fondo_sum_p = 0.0
 if "fondo_sum_k" not in st.session_state: st.session_state.fondo_sum_k = 0.0
@@ -13,6 +15,7 @@ if "fondo_sum_mg" not in st.session_state: st.session_state.fondo_sum_mg = 0.0
 if "fondo_sum_ca" not in st.session_state: st.session_state.fondo_sum_ca = 0.0
 if "fondo_sum_s" not in st.session_state: st.session_state.fondo_sum_s = 0.0
 # =====================================================================
+
 # === LAS 9 LÍNEAS MÁGICAS (DEFINICIÓN DE CLAVES DE SEGURIDAD) ===
 n = "n"
 p = "p"
@@ -664,7 +667,7 @@ with tab_fondo:
     st.markdown("### 📦 Plan de Abonado de Fondo (Complexes Sólidos)")
     
     st.subheader("Añadir Fertilizante de Fondo")
-    col_f1, col_f2 = st.columns([2, 1])
+    col_f1, col_f2 = st.columns([1, 2])
     sel_fondo = col_f1.selectbox("Complejo Granulado Eurochem:", list(GRANULADOS_DB.keys()))
     dosis_fondo = col_f2.number_input("Dosis (kg/ha):", value=150.0, step=25.0)
     
@@ -677,7 +680,7 @@ with tab_fondo:
     
     if len(st.session_state.fondo_items) > 0:
         for idx, item in enumerate(st.session_state.fondo_items):
-            col_col1, col_col2, col_col3 = st.columns([3, 2, 1])
+            col_col1, col_col2, col_col3 = st.columns([1-3])
             col_col1.markdown(f"**{item['name']}**")
             new_d = col_col2.number_input(f"Editar Dosis (kg/ha) - Ítem {idx+1}:", value=item["dosis"], key=f"f_dosis_{idx}")
             st.session_state.fondo_items[idx]["dosis"] = new_d
@@ -687,16 +690,48 @@ with tab_fondo:
     else:
         st.info("No se han agregado abonos de fondo.")
 
-    st.markdown("---")
-    st.subheader("📋 Aportaciones Netas de Fondo (UF/ha):")
-    col_u_f1, col_u_f2, col_u_f3, col_u_f4, col_u_f5, col_u_f6 = st.columns(6)
-    col_u_f1.metric("N Fondo", f"{fondo_sum_n:.1f}")
-    col_u_f2.metric("P₂O₅ Fondo", f"{fondo_sum_p:.1f}")
-    col_u_f3.metric("K₂O Fondo", f"{fondo_sum_k:.1f}")
-    col_u_f4.metric("MgO Fondo", f"{fondo_sum_mg:.1f}")
-    col_u_f5.metric("CaO Fondo", f"{fondo_sum_ca:.1f}")
-    col_u_f6.metric("SO₃ Fondo", f"{fondo_sum_s:.1f}")
-
+    # =====================================================================
+    # 🧮 MOTOR DE RE-CÁLCULO DE NUTRIENTES DE FONDO PARA EL BALANCE (PUNTO 5)
+    # =====================================================================
+    # 1. Inicializamos los acumuladores en 0
+    total_f_n = 0.0
+    total_f_p = 0.0
+    total_f_k = 0.0
+    total_f_mg = 0.0
+    total_f_ca = 0.0
+    total_f_s = 0.0
+    
+    # 2. Recorremos cada producto agregado por el usuario en la lista
+    for item in st.session_state.fondo_items:
+        nombre_abono = item["name"]
+        dosis = item["dosis"]
+        
+        # Obtenemos las riquezas del producto desde tu base de datos GRANULADOS_DB
+        abono_info = GRANULADOS_DB.get(nombre_abono, {})
+        
+        # Extraemos las riquezas de forma segura (soportando mayúsculas, minúsculas o fórmulas)
+        r_n = abono_info.get("n", abono_info.get("N", 0.0))
+        r_p = abono_info.get("p", abono_info.get("p2o5", abono_info.get("P2O5", 0.0)))
+        r_k = abono_info.get("k", abono_info.get("k2o", abono_info.get("K2O", 0.0)))
+        r_mg = abono_info.get("mg", abono_info.get("mgo", abono_info.get("MgO", 0.0)))
+        r_ca = abono_info.get("ca", abono_info.get("cao", abono_info.get("CaO", 0.0)))
+        r_s = abono_info.get("s", abono_info.get("so3", abono_info.get("SO3", 0.0)))
+        
+        # 3. Sumamos el aporte real de nutrientes: dosis * (riqueza % / 100)
+        total_f_n += dosis * (r_n / 100.0)
+        total_f_p += dosis * (r_p / 100.0)
+        total_f_k += dosis * (r_k / 100.0)
+        total_f_mg += dosis * (r_mg / 100.0)
+        total_f_ca += dosis * (r_ca / 100.0)
+        total_f_s += dosis * (r_s / 100.0)
+        
+    # 4. Guardamos las sumas finales en la memoria global de Streamlit
+    st.session_state.fondo_sum_n = total_f_n
+    st.session_state.fondo_sum_p = total_f_p
+    st.session_state.fondo_sum_k = total_f_k
+    st.session_state.fondo_sum_mg = total_f_mg
+    st.session_state.fondo_sum_ca = total_f_ca
+    st.session_state.fondo_sum_s = total_f_s
 # ================= TAB 5: PLAN MENSUAL (FASES) =================
 with tab_monthly:
     st.markdown("### 📅 Planificación Mensual y Fases Fenológicas")
