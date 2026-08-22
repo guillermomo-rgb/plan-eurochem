@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Motor de Diagnóstico de Suelos y Balance NPK - Eurochem</title>
+    <style>
+        :root {
+            --eurochem-blue: #003366;
+            --eurochem-light-blue: #e6f0fa;
+            --border: #cbd5e1;
+            --alert-orange: #f57c00;
+            --success-green: #2e7d32;
+            --info-blue: #0284c7;
+            --dark: #1e293b;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* DISEÑO CABECERA BASADO EN CABECERA.PDF */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .title-area {
+            text-align: right;
+        }
+
+        .main-title {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--eurochem-blue);
+            margin-bottom: 4px;
+        }
+
+        .sub-title {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.95rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .header-divider {
+            height: 3px;
+            background-color: var(--eurochem-blue);
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .byline {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .save-btn {
+            background-color: var(--eurochem-blue);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background-color: #002244;
+        }
+
+        .print-btn {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .print-btn:hover {
+            background-color: #1b5e20;
+        }
+
+        .finca-header {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .finca-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .finca-group label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .finca-group input, .finca-group select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h2 {
+            color: var(--eurochem-blue);
+            border-bottom: 3px solid var(--eurochem-blue);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .section-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .highlight-box {
+            border-left: 6px solid var(--eurochem-blue);
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--eurochem-blue);
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .table-row, .table-row-conv {
+            display: grid;
+            grid-template-columns: 1.5fr 1.3fr 1.5fr;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-row-conv {
+            grid-template-columns: 1.2fr 1fr 1fr 1.3fr;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .input-container input, .input-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .comment-cell {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .calc-value {
+            display: inline-block;
+            background: var(--dark);
+            color: #64ffda;
+            padding: 6px 10px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .full-width-layout {
+            margin-top: 25px;
+        }
+
+        .footer-credits {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        /* CLASES EXCLUSIVAS DE IMPRESIÓN Y OCULTACIÓN */
+        .print-value {
+            display: none;
+        }
+
+        .print-only-block {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: #000;
+                font-size: 10pt;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .actions-bar {
+                display: none !important;
+            }
+
+            /* Convertimos columnas a bloque vertical secuencial para evitar desbordamiento */
+            .main-layout {
+                display: block !important;
+            }
+
+            .section-box {
+                page-break-inside: avoid;
+                border: 1px solid #475569 !important;
+                margin-bottom: 15px;
+                box-shadow: none !important;
+            }
+
+            input, select, button {
+                display: none !important;
+            }
+
+            .print-value {
+                display: inline-block !important;
+                font-weight: bold;
+                color: #000;
+                border-bottom: 1px dashed #475569;
+                padding: 2px 5px;
+                min-width: 50px;
+                text-align: center;
+            }
+
+            /* Los selectores de cobertera o texto largo en print */
+            span.print-value-text {
+                border-bottom: none !important;
+                text-align: left;
+                font-style: italic;
+            }
+
+            .calc-value {
+                background: #f1f5f9 !important;
+                color: #000 !important;
+                border: 1px solid #94a3b8 !important;
+            }
+
+            h2, h3 {
+                color: var(--eurochem-blue) !important;
+                border-color: var(--eurochem-blue) !important;
+            }
+
+            .print-only-block {
+                display: block !important;
+            }
+        }
+
+        /* ===== MÓDULO: COMPARADOR DE PLANES DE ABONADO (Eurochem vs. alternativas) ===== */
+        .pf-target { display:flex; flex-wrap:wrap; gap:16px; background: var(--eurochem-light-blue); border-radius:8px; padding:14px 16px; margin-bottom:18px; }
+        .pf-target .pf-t-item { font-size: 0.95rem; color: var(--eurochem-blue); }
+        .pf-target .pf-t-item strong { font-size:1.15rem; }
+        .pf-subhead { font-size:1.05rem; font-weight:bold; color: var(--eurochem-blue); margin: 22px 0 10px; border-bottom:1px dashed var(--border); padding-bottom:6px; }
+        .pf-scroll { overflow-x:auto; border-radius:6px; }
+        .pf-table { width:100%; border-collapse:collapse; font-size:0.82rem; min-width:760px; }
+        .pf-table th { text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.3px; color: var(--eurochem-blue); border-bottom:2px solid var(--eurochem-blue); padding:6px 5px; white-space:nowrap; }
+        .pf-table td { padding:5px; border-bottom:1px solid #eef2f6; vertical-align:middle; }
+        .pf-table input[type="number"], .pf-table input[type="text"], .pf-table select { width:100%; min-width:56px; padding:5px 6px; font-size:0.8rem; border:1px solid var(--border); border-radius:4px; }
+        .pf-num { font-variant-numeric: tabular-nums; white-space:nowrap; }
+        .pf-right { text-align:right; }
+        .pf-center { text-align:center; }
+        .pf-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.72rem; font-weight:700; }
+        .pf-badge.ok { background:#dcfce7; color:#166534; }
+        .pf-badge.warn { background:#fee2e2; color:#991b1b; }
+        .pf-badge.na { background:#e2e8f0; color:#475569; }
+        .pf-plan-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+        .pf-plan-tab { font-size:0.78rem; padding:6px 12px; border-radius:14px; background:#e2e8f0; color:#334155; cursor:pointer; border:1px solid var(--border); }
+        .pf-plan-tab.active { background: var(--eurochem-blue); color:#fff; border-color: var(--eurochem-blue); }
+        .pf-plan-tab .pf-ref-star { color:#f59e0b; margin-left:4px; }
+        .pf-btn { font-size:0.78rem; padding:7px 12px; border-radius:6px; border:1px solid var(--eurochem-blue); background:#fff; color: var(--eurochem-blue); cursor:pointer; font-weight:600; }
+        .pf-btn:hover { background: var(--eurochem-light-blue); }
+        .pf-btn.danger { border-color:#dc2626; color:#dc2626; }
+        .pf-btn.danger:hover { background:#fee2e2; }
+        .pf-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .pf-totals { display:flex; flex-wrap:wrap; gap:18px; background:#f8fafc; border-radius:8px; padding:12px 14px; margin-top:14px; }
+        .pf-totals .pf-stat .pf-label { font-size:0.68rem; text-transform:uppercase; color:#64748b; font-weight:700; display:block; }
+        .pf-totals .pf-stat .pf-value { font-size:0.95rem; font-weight:700; color: var(--eurochem-blue); }
+        .pf-note { font-size:0.8rem; color:#475569; background:#f8fafc; border-left:3px solid var(--eurochem-blue); padding:8px 10px; border-radius:4px; margin:8px 0; }
+        .pf-compare-ref td:first-child { border-left:3px solid var(--success-green); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- CABECERA DE ALTO RENDIMIENTO ESTILO CABECERA.PDF -->
+    <div class="header-container">
+        <div class="logo-area">
+            <svg width="220" height="45" viewBox="0 0 220 45" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 5 L25 20 L20 18 L15 20 Z" fill="#003366"/>
+                    <path d="M35 20 L20 25 L22 20 L20 15 Z" fill="#003366"/>
+                    <path d="M20 35 L15 20 L20 22 L25 20 Z" fill="#003366"/>
+                    <path d="M5 20 L20 15 L18 20 L20 25 Z" fill="#003366"/>
+                    <circle cx="20" cy="20" r="3" fill="#ffffff"/>
+                </g>
+                <text x="48" y="29" font-family="'Segoe UI', Arial, sans-serif" font-weight="900" font-size="22" fill="#003366" letter-spacing="1.5">EUROCHEM</text>
+            </svg>
+        </div>
+        <div class="title-area">
+            <div class="main-title">Herramienta de Diagnóstico Agronómico</div>
+            <div class="sub-title">Integración de Suelos, Agua y Balance de Nitrógeno (RD 1051/2022)</div>
+        </div>
+    </div>
+    <div class="header-divider"></div>
+    <div class="byline">Creado por G. Morales ©</div>
+
+    <div class="actions-bar">
+        <button class="btn save-btn" onclick="saveToLocalStorage()">
+            💾 Actualizar y Guardar Datos
+        </button>
+        <button class="btn print-btn" onclick="window.print()">
+            🖨️ Imprimir Informe Integrado / PDF
+        </button>
+    </div>
+
+    <div class="finca-header">
+        <div class="finca-group">
+            <label>Nombre de la Finca / Parcela</label>
+            <input type="text" id="finca_name" value="Marismas de Lebrija - Bajo Guadalquivir">
+            <span class="print-value" id="p_val_finca_name"></span>
+        </div>
+        <div class="finca-group">
+            <label>Fecha de Análisis</label>
+            <input type="text" id="analisis_date" style="text-align: center; font-weight: bold; font-family: Arial; color: #003366;" placeholder="dd/mm/aa">
+            <span class="print-value" id="p_val_analisis_date"></span>
+        </div>
+        <div class="finca-group">
+            <label>Cultivo Objetivo (Extracción NPK)</label>
+            <select id="cultivo_objetivo" style="min-width: 280px;">
+                <option value="trigo">Trigo (Ext: 28-10-25 kg/t)</option>
+                <option value="cebada">Cebada (Ext: 22-9-20 kg/t)</option>
+                <option value="avena">Avena (Ext: 22-9-20 kg/t)</option>
+                <option value="triticale">Triticale (Ext: 25-10-22 kg/t)</option>
+                <option value="maiz">Maíz (Ext: 24-10-25 kg/t)</option>
+                <option value="girasol">Girasol (Ext: 35-12-30 kg/t)</option>
+                <option value="colza">Colza (Ext: 45-18-40 kg/t)</option>
+                <option value="algodon">Algodón (Ext: 55-20-50 kg/t)</option>
+                <option value="garbanzo">Garbanzo (Ext: 60-15-35 kg/t)</option>
+                <option value="guisante">Guisante (Ext: 50-12-30 kg/t)</option>
+                <option value="olivar_si">Olivar SI (Ext: 8-3-10 kg/t)</option>
+                <option value="olivar">Olivar (Ext: 15-4-20 kg/t)</option>
+                <option value="almendro">Almendro pepita (Ext: 65-20-70 kg/t)</option>
+                <option value="naranjo">Naranjo (Ext: 4-1.5-6 kg/t)</option>
+                <option value="mandarino">Mandarino (Ext: 5-1.8-7 kg/t)</option>
+                <option value="limonero">Limonero (Ext: 5-1.8-7 kg/t)</option>
+                <option value="vinedo">Viñedo (Ext: 5-2-8 kg/t)</option>
+                <option value="patata">Patata (Ext: 4.2-1-5.6 kg/t)</option>
+                <option value="remolacha">Remolacha azucarera (Ext: 3-1.5-4 kg/t)</option>
+                <option value="tabaco">Tabaco (Ext: 35-15-60 kg/t)</option>
+                <option value="tomate_industria">Tomate para industria (Ext: 2.2-0.8-2.6 kg/t)</option>
+                <option value="freson">Fresa y fresón (Ext: 6-2.5-8 kg/t)</option>
+                <option value="aguacate">Aguacate (Ext: 12-7-20 kg/t)</option>
+            </select>
+            <span class="print-value print-value-text" id="p_val_cultivo_objetivo"></span>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        
+        <!-- COLUMNA IZQUIERDA: MOTOR DE SUELOS -->
+        <div class="column-left">
+            <h2>🧪 1. Datos del Análisis de Suelo</h2>
+            
+            <div class="section-box">
+                <h3>Parámetros Físicos y de Control</h3>
+                
+                <div class="table-row">
+                    <label>Arcilla (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="arcilla" value="50.3" step="0.1">
+                        <span class="print-value" id="p_val_arcilla"></span>
+                    </div>
+                    <div id="c_arcilla" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>Limo (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="limo" value="0" step="0.1">
+                        <span class="print-value" id="p_val_limo"></span>
+                    </div>
+                    <div class="comment-cell" style="font-style: italic; color: #64748b;">Opcional: activa la clasificación textural USDA</div>
+                </div>
+
+                <div class="table-row">
+                    <label>Arena (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="arena" value="0" step="0.1">
+                        <span class="print-value" id="p_val_arena"></span>
+                    </div>
+                    <div id="c_textura_usda" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>pH</label>
+                    <div class="input-container">
+                        <input type="number" id="ph" value="8.47" step="0.01">
+                        <span class="print-value" id="p_val_ph"></span>
+                    </div>
+                    <div id="c_ph" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>CE tipo extracto</label>
+                    <div class="input-container">
+                        <select id="tipo_ce">
+                            <option value="1:5" selected>1:5</option>
+                            <option value="Saturado">Saturado</option>
+                        </select>
+                        <span class="print-value" id="p_val_tipo_ce"></span>
+                    </div>
+                    <div id="c_tipoce" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>CE (dS/m)</label>
+                    <div class="input-container">
+                        <input type="number" id="ce" value="0.26" step="0.01">
+                        <span class="print-value" id="p_val_ce"></span>
+                    </div>
+                    <div id="c_ce" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>Carbonatos Totales (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="carbonatos" value="30.23" step="0.01">
+                        <span class="print-value" id="p_val_carbonatos"></span>
+                    </div>
+                    <div id="c_carbonatos" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>Caliza Activa (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="caliza_activa" value="8.1" step="0.01">
+                        <span class="print-value" id="p_val_caliza_activa"></span>
+                    </div>
+                    <div id="c_caliza_activa" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>Relación C/N</label>
+                    <div class="input-container">
+                        <input type="number" id="cn" value="11.5" step="0.1">
+                        <span class="print-value" id="p_val_cn"></span>
+                    </div>
+                    <div id="c_cn" class="comment-cell"></div>
+                </div>
+
+                <div class="table-row">
+                    <label>Materia Orgánica (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="mo" value="1.85" step="0.01">
+                        <span class="print-value" id="p_val_mo"></span>
+                    </div>
+                    <div id="c_mo" class="comment-cell"></div>
+                </div>
+                
+                <div class="table-row">
+                    <label>Densidad Aparente (g/cm³)</label>
+                    <div class="input-container">
+                        <input type="number" id="da" value="1.25" readonly style="background-color: #e2e8f0; color: #475569;">
+                        <span class="print-value" id="p_val_da"></span>
+                    </div>
+                    <div class="comment-cell" style="font-style: italic; color: #64748b;">Calculado automáticamente según textura</div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3>Perfil Nitrogenado Completo y Fósforo</h3>
+                <div class="table-row">
+                    <label>Nitratos (NO3-) 1:5 (ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="nitratos_lab" value="240.82" step="0.01">
+                        <span class="print-value" id="p_val_nitratos_lab"></span>
+                    </div>
+                    <div id="c_nitratos" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Nitrógeno Kjeldahl (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="n_kjeldahl" value="0.132" step="0.001">
+                        <span class="print-value" id="p_val_n_kjeldahl"></span>
+                    </div>
+                    <div id="c_kjeldahl" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Fósforo Olsen (ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="p_olsen" value="20.2" step="0.1">
+                        <span class="print-value" id="p_val_p_olsen"></span>
+                    </div>
+                    <div id="c_polsen" class="comment-cell"></div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3>Fracción de Micronutrientes Asimilables</h3>
+                <div class="table-row">
+                    <label>Hierro (Fe - ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="fe_ppm" value="5.09" step="0.01">
+                        <span class="print-value" id="p_val_fe_ppm"></span>
+                    </div>
+                    <div id="c_fe" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Manganeso (Mn - ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="mn_ppm" value="4.88" step="0.01">
+                        <span class="print-value" id="p_val_mn_ppm"></span>
+                    </div>
+                    <div id="c_mn" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Cobre (Cu - ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="cu_ppm" value="0.92" step="0.01">
+                        <span class="print-value" id="p_val_cu_ppm"></span>
+                    </div>
+                    <div id="c_cu" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Zinc (Zn - ppm)</label>
+                    <div class="input-container">
+                        <input type="number" id="zn_ppm" value="0.58" step="0.01">
+                        <span class="print-value" id="p_val_zn_ppm"></span>
+                    </div>
+                    <div id="c_zn" class="comment-cell"></div>
+                </div>
+            </div>
+
+            <div class="section-box highlight-box">
+                <h3>Módulo de Conversión e Intercambio de Bases</h3>
+                <div class="table-row-conv" style="font-weight: bold; background: var(--eurochem-light-blue); padding: 6px; border-radius: 4px;">
+                    <div>Elemento</div>
+                    <div>Bases (meq)</div>
+                    <div>Bases (ppm)</div>
+                    <div style="padding-left:15px;">Calificación</div>
+                </div>
+                <div class="table-row-conv">
+                    <label>Calcio (CaO)</label>
+                    <div class="input-container">
+                        <input type="number" id="ca_meq" value="26.06" step="0.01">
+                        <span class="print-value" id="p_val_ca_meq"></span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" id="ca_ppm" value="5222">
+                        <span class="print-value" id="p_val_ca_ppm"></span>
+                    </div>
+                    <div id="c_ca_conv" class="comment-cell"></div>
+                </div>
+                <div class="table-row-conv">
+                    <label>Magnesio (MgO)</label>
+                    <div class="input-container">
+                        <input type="number" id="mg_meq" value="3.26" step="0.01">
+                        <span class="print-value" id="p_val_mg_meq"></span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" id="mg_ppm" value="396.4">
+                        <span class="print-value" id="p_val_mg_ppm"></span>
+                    </div>
+                    <div id="c_mg_conv" class="comment-cell"></div>
+                </div>
+                <div class="table-row-conv">
+                    <label>Potasio (K2O)</label>
+                    <div class="input-container">
+                        <input type="number" id="k_meq" value="0.88" step="0.01">
+                        <span class="print-value" id="p_val_k_meq"></span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" id="k_ppm" value="344">
+                        <span class="print-value" id="p_val_k_ppm"></span>
+                    </div>
+                    <div id="c_k_conv" class="comment-cell"></div>
+                </div>
+                <div class="table-row-conv">
+                    <label>Sodio (Na)</label>
+                    <div class="input-container">
+                        <input type="number" id="na_meq" value="0.73" step="0.01">
+                        <span class="print-value" id="p_val_na_meq"></span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" id="na_ppm" value="167.9" step="0.1">
+                        <span class="print-value" id="p_val_na_ppm"></span>
+                    </div>
+                    <div id="c_na_conv" class="comment-cell"></div>
+                </div>
+            </div>
+            <div class="section-box highlight-box">
+                <h3>Capacidad de Intercambio (CIC) y Equilibrios Catiónicos</h3>
+                <div class="table-row">
+                    <label>CIC Medida en Laboratorio (meq/100g)</label>
+                    <div class="input-container">
+                        <input type="number" id="cic_medida" value="0" step="0.1">
+                        <span class="print-value" id="p_val_cic_medida"></span>
+                    </div>
+                    <div class="comment-cell" style="font-style: italic; color: #64748b;">Opcional: si el laboratorio la mide (p.ej. acetato amónico pH 7, o Na pH 8.2 en calizos), tiene prioridad sobre la suma de bases</div>
+                </div>
+                <div class="table-row">
+                    <label><strong>CIC Usada en el Cálculo</strong> (meq/100g)</label>
+                    <div><span id="out_cic" class="calc-value" style="font-weight: bold; color: var(--eurochem-blue);">-</span></div>
+                    <div id="c_cic" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Saturación de Calcio (%Ca)</label>
+                    <div><span id="out_sat_ca" class="calc-value">-</span></div>
+                    <div id="c_sat_ca" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Saturación de Magnesio (%Mg)</label>
+                    <div><span id="out_sat_mg" class="calc-value">-</span></div>
+                    <div id="c_sat_mg" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Saturación de Potasio (%K)</label>
+                    <div><span id="out_sat_k" class="calc-value">-</span></div>
+                    <div id="c_sat_k" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Saturación de Sodio / PSI (%)</label>
+                    <div><span id="out_psi" class="calc-value">-</span></div>
+                    <div id="c_psicalc" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Relación Ca / Mg</label>
+                    <div><span id="out_camg" class="calc-value">-</span></div>
+                    <div id="c_rel_camg" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Relación Mg / K</label>
+                    <div><span id="out_mgk" class="calc-value">-</span></div>
+                    <div id="c_rel_mgk" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Relación Ca / K</label>
+                    <div><span id="out_cak" class="calc-value">-</span></div>
+                    <div id="c_rel_cak" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Relación (Ca+Mg) / K</label>
+                    <div><span id="out_camgk" class="calc-value">-</span></div>
+                    <div id="c_rel_camgk" class="comment-cell"></div>
+                </div>
+                <div class="table-row">
+                    <label>Ratio de Woodruff (K / &radic;(Ca+Mg))</label>
+                    <div><span id="out_woodruff" class="calc-value">-</span></div>
+                    <div id="c_woodruff" class="comment-cell"></div>
+                </div>
+                
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--eurochem-blue); font-size: 0.95rem;">🔬 Diagnóstico de Antagonismos de Mulder</h4>
+                    <div id="diag_antagonismo_k" style="font-size: 0.85rem; padding: 8px 10px; background: #f8fafc; border-radius: 4px; border-left: 3px solid #64748b; margin-bottom: 8px; line-height: 1.4;"></div>
+                    <div id="diag_antagonismo_mg" style="font-size: 0.85rem; padding: 6px 10px; background: #f8fafc; border-radius: 4px; border-left: 3px solid #64748b; line-height: 1.4;"></div>
+                </div>
+            </div>
+        </div> <!-- FIN COLUMNA IZQUIERDA -->
+
+        <!-- COLUMNA DERECHA: MOTOR DE BALANCES NPK -->
+        <div class="column-right">
+            <h2>🌱 2. Balance de Macronutrientes (N-P-K)</h2>
+            
+            <div class="section-box highlight-box">
+                <h3>Extracciones del Cultivo</h3>
+                <div class="table-row">
+                    <label>Producción Esperada</label>
+                    <div class="input-container">
+                        <input type="number" id="rendimiento" value="10" step="0.1" style="width: 80px;">
+                        <span class="print-value" id="p_val_rendimiento"></span>
+                        <span style="font-size:0.9rem; font-weight:bold; color:#555; padding-left: 5px;">t/ha</span>
+                    </div>
+                    <div class="comment-cell">Meta de cosecha de la campaña</div>
+                </div>
+
+                <div class="table-row">
+                    <label>Precio de Venta de la Cosecha</label>
+                    <div class="input-container">
+                        <input type="number" id="precio_venta" value="0" step="0.001" style="width: 80px;">
+                        <span class="print-value" id="p_val_precio_venta"></span>
+                        <select id="precio_venta_unit" style="width:80px;">
+                            <option value="kg">€/kg</option>
+                            <option value="t">€/t</option>
+                        </select>
+                        <span class="print-value print-value-text" id="p_val_precio_venta_unit"></span>
+                    </div>
+                    <div class="comment-cell">Para el comparador económico de abonado</div>
+                </div>
+
+                <div class="table-row">
+                    <label>Zona Vulnerable a Nitratos (Andalucía)</label>
+                    <div class="input-container">
+                        <input type="checkbox" id="zona_vulnerable_pf" style="width:20px; height:20px;">
+                        <span class="print-value print-value-text" id="p_val_zona_vulnerable_pf"></span>
+                    </div>
+                    <div class="comment-cell">Activa el tope del 30% de N en fondo (BOJA nº214/2020)</div>
+                </div>
+
+                <div class="table-row">
+                    <label>Explotación en Producción Integrada</label>
+                    <div class="input-container">
+                        <input type="checkbox" id="produccion_integrada_pf" style="width:20px; height:20px;">
+                        <span class="print-value print-value-text" id="p_val_produccion_integrada_pf"></span>
+                    </div>
+                    <div class="comment-cell">Añade las restricciones de PI (Trigo, Algodón, Olivar, Cítricos) además de las de ZVN</div>
+                </div>
+
+                <div class="table-row" id="row_regimen_olivar">
+                    <label>Régimen del Olivar (si aplica)</label>
+                    <div class="input-container">
+                        <select id="regimen_olivar_pf" style="width:100%;">
+                            <option value="secano_tradicional">Secano tradicional (70 kg N/ha)</option>
+                            <option value="secano_intensivo">Secano intensivo (100 kg N/ha)</option>
+                            <option value="riego_tradicional">Riego tradicional (120 kg N/ha)</option>
+                            <option value="riego_intensivo">Riego intensivo (150 kg N/ha)</option>
+                        </select>
+                        <span class="print-value print-value-text" id="p_val_regimen_olivar_pf"></span>
+                    </div>
+                    <div class="comment-cell">Solo relevante si el cultivo objetivo es olivar y hay PI activada</div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 8px;">Margen de Pérdidas de N (Eficiencia)</label>
+                    <select id="margen_perdidas" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px;">
+                        <option value="1.0">0% (Sin pérdidas)</option>
+                        <option value="1.15" selected>15% (Pérdidas Lixiv./Volat.)</option>
+                        <option value="1.20">20% (Alta Lixiviación)</option>
+                    </select>
+                    <span class="print-value print-value-text" id="p_val_margen_perdidas"></span>
+                </div>
+
+                <div class="table-row" style="background-color: var(--eurochem-light-blue); padding: 10px; border-radius: 5px; margin-top: 15px;">
+                    <label style="color: var(--eurochem-blue); font-weight: bold;">Necesidad Bruta N</label>
+                    <div><span id="out_necesidad_n" class="calc-value" style="background: var(--dark); font-size: 1.1rem;">0</span></div>
+                    <div class="comment-cell" style="font-weight: bold;">kg N/ha (Ajustado)</div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3>Aportes del Sistema Natural (Suelo, Agua, Atmósfera)</h3>
+                
+                <div class="table-row" style="margin-bottom: 15px; background-color: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <label style="font-weight: bold; color: #0f172a;">Profundidad de Raíces (cm)</label>
+                    <input type="number" id="profundidad" value="30" step="5" style="width: 80px; text-align: center; font-weight: bold; border: 1px solid #94a3b8; border-radius: 4px;">
+                    <span class="print-value" id="p_val_profundidad"></span>
+                    <div class="comment-cell">Suelo explotable</div>
+                </div>
+
+                <div class="table-row" style="margin-bottom: 10px;">
+                    <label style="color: var(--info-blue);">1. Stock Nitratos en Suelo</label>
+                    <span id="out_n_stock" class="calc-value" style="background: var(--info-blue); width: 60px;">0.0</span>
+                    <div class="comment-cell">kg N/ha iniciales</div>
+                </div>
+                <div class="table-row" style="margin-bottom: 10px;">
+                    <label style="color: var(--info-blue);">2. Min. M.O. Suelo</label>
+                    <span id="out_n_mo_resumen" class="calc-value" style="background: var(--info-blue); width: 60px;">0.0</span>
+                    <div class="comment-cell">kg N/ha liberados</div>
+                </div>
+                <div class="table-row" style="margin-bottom: 10px;">
+                    <label style="color: var(--info-blue);">3. Deposición Atmosférica</label>
+                    <input type="number" id="dep_atmosferica" value="8" step="1" style="width: 60px; text-align: center; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;">
+                    <span class="print-value" id="p_val_dep_atmosferica"></span>
+                    <div class="comment-cell">kg N/ha/año</div>
+                </div>
+                <div class="table-row" style="border-top: 1px dashed var(--border); padding-top: 10px;">
+                    <label>Volumen de Riego (m³/ha)</label>
+                    <input type="number" id="vol_riego" value="4500" step="100">
+                    <span class="print-value" id="p_val_vol_riego"></span>
+                    <div class="comment-cell">Suma total anual</div>
+                </div>
+                <div class="table-row">
+                    <label>Nitratos en Agua (ppm)</label>
+                    <input type="number" id="nitratos_agua" value="25" step="0.1">
+                    <span class="print-value" id="p_val_nitratos_agua"></span>
+                    <div id="out_n_agua" class="comment-cell info-text">Aporta: 0 kg N/ha</div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3>Gestión de Restos y Cubiertas</h3>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border);">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Restos Cultivo Anterior</label>
+                    <select id="restos_cosecha" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px;">
+                        <option value="0">Sin incorporar</option>
+                        <option value="-10">Trigo / Triticale / Arroz (-10 kg N)</option>
+                        <option value="-8">Cebada / Avena (-8 kg N)</option>
+                        <option value="10">Maíz / Algodón (+10 kg N)</option>
+                        <option value="5">Girasol / Almendro (+5 kg N)</option>
+                        <option value="20">Colza / Soja (+20 kg N)</option>
+                        <option value="15">Garbanzo (+15 kg N)</option>
+                        <option value="25">Guisante (+25 kg N)</option>
+                        <option value="30">Haba / Veza (+30 kg N)</option>
+                        <option value="35">Altramuz (+35 kg N)</option>
+                        <option value="50">Alfalfa (+50 kg N)</option>
+                        <option value="5">Olivar Tradicional (+5 kg N)</option>
+                        <option value="8">Olivar Int. / Cítricos (+8 kg N)</option>
+                        <option value="10">Olivar Super. / Limón (+10 kg N)</option>
+                        <option value="3">Viñedo (+3 kg N)</option>
+                    </select>
+                    <span class="print-value print-value-text" id="p_val_restos_cosecha"></span>
+                    <div style="margin-top: 5px;">
+                        <span id="c_restos" style="display: inline-block; background: #e0f2fe; color: #0284c7; font-weight: bold; padding: 6px 15px; border-radius: 6px; font-size: 0.95rem; border: 1px solid #bae6fd;">Aporta: 0 kg N/ha</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Cubierta Vegetal</label>
+                    <select id="cubierta_veg" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px;">
+                        <option value="0">Sin cubierta</option>
+                        <option value="5">Espontánea no legum. (+5 kg N)</option>
+                        <option value="20">Mezcla Cereal/Leg. (+20 kg N)</option>
+                        <option value="30">Predominio Legum. (+30 kg N)</option>
+                        <option value="50">Veza en floración (+50 kg N)</option>
+                    </select>
+                    <span class="print-value print-value-text" id="p_val_cubierta_veg"></span>
+                    <div style="margin-top: 5px;">
+                        <span id="c_cubiertas" style="display: inline-block; background: #e0f2fe; color: #0284c7; font-weight: bold; padding: 6px 15px; border-radius: 6px; font-size: 0.95rem; border: 1px solid #bae6fd;">Aporta: 0 kg N/ha</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-box highlight-box" style="border-color: var(--alert-orange); padding: 20px;">
+                <h3 style="margin-bottom: 20px;">Aportes Orgánicos (Estiércoles y Purines)</h3>
+                
+                <div style="background-color: #fff3e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2;">
+                    <label style="color: var(--alert-orange); font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 15px;">1. Estiércol Sólido (t/ha)</label>
+                    <select id="tipo_estiercol" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px;">
+                        <option value="0">Ninguno</option>
+                        <option value="bovino">Estiércol bovino (5,0 kg N/t)</option>
+                        <option value="ovino">Estiércol ovino (9,0 kg N/t)</option>
+                        <option value="caprino">Estiércol caprino (10,0 kg N/t)</option>
+                        <option value="equino">Estiércol equino (6,0 kg N/t)</option>
+                        <option value="gallinaza">Gallinaza sólida (16,0 kg N/t)</option>
+                        <option value="pollinaza">Pollinaza (20,0 kg N/t)</option>
+                        <option value="porcino">Estiércol porcino sólido (7,0 kg N/t)</option>
+                    </select>
+                    <span class="print-value print-value-text" id="p_val_tipo_estiercol"></span>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #ffcc80; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #e65100; font-weight: bold; display: block; margin-bottom: 5px;">Año 1 (Actual)</label>
+                            <input type="number" id="dosis_estiercol_1" value="0" step="0.5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_estiercol_1"></span>
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #ccc; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px;">Año 2 (Anterior)</label>
+                            <input type="number" id="dosis_estiercol_2" value="0" step="0.5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_estiercol_2"></span>
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #ccc; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px;">Año 3 (Hace 2)</label>
+                            <input type="number" id="dosis_estiercol_3" value="0" step="0.5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_estiercol_3"></span>
+                        </div>
+                    </div>
+                    <div id="out_n_estiercol" style="margin-top: 15px; font-size: 1.05rem; font-weight: bold; color: var(--info-blue); text-align: right;">Mineralizado este año: 0.00 kg N/ha</div>
+                </div>
+
+                <div style="background-color: #e8f5e9; padding: 20px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                    <label style="color: var(--success-green); font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 15px;">2. Purines (m³/ha)</label>
+                    <select id="tipo_purin" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px;">
+                        <option value="0">Ninguno</option>
+                        <option value="porcino_cebo">Purín porcino cebo (3,5 kg N/m³)</option>
+                        <option value="porcino_maternidad">Purín porcino maternidad (3,0 kg N/m³)</option>
+                        <option value="vacuno_leche">Purín vacuno leche (2,5 kg N/m³)</option>
+                        <option value="vacuno_carne">Purín vacuno carne (2,0 kg N/m³)</option>
+                        <option value="ovino_caprino">Purín ovino-caprino líquido (3,0 kg N/m³)</option>
+                        <option value="gallinaza_liquida">Gallinaza líquida (6,0 kg N/m³)</option>
+                    </select>
+                    <span class="print-value print-value-text" id="p_val_tipo_purin"></span>
+                   
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #a5d6a7; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #2e7d32; font-weight: bold; display: block; margin-bottom: 5px;">Año 1 (Actual)</label>
+                            <input type="number" id="dosis_purin_1" value="0" step="5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_purin_1"></span>
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #ccc; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px;">Año 2 (Anterior)</label>
+                            <input type="number" id="dosis_purin_2" value="0" step="5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_purin_2"></span>
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #ccc; text-align: center;">
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px;">Año 3 (Hace 2)</label>
+                            <input type="number" id="dosis_purin_3" value="0" step="5" style="width: 80%; padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+                            <span class="print-value" id="p_val_dosis_purin_3"></span>
+                        </div>
+                    </div>
+                    <div id="out_n_purin" style="margin-top: 15px; font-size: 1.05rem; font-weight: bold; color: var(--info-blue); text-align: right;">Aporta al cultivo: 0.00 kg N/ha</div>
+                </div>
+            </div>
+        </div> <!-- FIN COLUMNA DERECHA -->
+    </div> <!-- FIN MAIN LAYOUT -->
+
+    <!-- PANEL FINAL Y ESTRATEGIA EUROCHEM (Ancho Completo) -->
+    <div class="full-width-layout">
+        
+        <!-- RESUMEN DEL BALANCE NPK -->
+        <div class="section-box" style="background: var(--eurochem-blue); color: white; border-radius: 10px; margin-bottom: 30px;">
+            <h3 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom:10px; font-size: 1.3rem;">📋 BALANCE DE NUTRIENTES CONSOLIDADOS (N-P-K)</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; font-size: 1rem; line-height: 1.6; margin-top: 15px;">
+                <!-- Columna Nitrógeno -->
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px;">
+                    <h4 style="color: #ffeb3b; margin-top:0; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;">Nitrógeno (N)</h4>
+                    <div>🎯 Necesidad Bruta: <strong id="res_necesidad">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Stock Suelo: <strong id="res_stock">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Min. MO: <strong id="res_suelo">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Dep. Atmosf: <strong id="res_dep">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Agua Riego: <strong id="res_agua">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Restos/Cub: <strong id="res_restos">0</strong> kg/ha</div>
+                    <div style="color: #a5d6a7;">+ Enmienda Org: <strong id="res_org">0</strong> kg/ha</div>
+                    <hr style="border-color: rgba(255,255,255,0.1);">
+                    <div>🔄 Total Aporte Natural: <strong id="res_total_aportes">0</strong> kg/ha</div>
+                    <div style="font-weight: bold; margin-top: 10px; color: #ffeb3b;">Déficit Nitrógeno: <span id="resultado_balance_n">0</span> UF</div>
+                </div>
+
+                <!-- Columna Fósforo -->
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px;">
+                    <h4 style="color: #ffeb3b; margin-top:0; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;">Fósforo (P₂O₅)</h4>
+                    <div>🎯 Necesidad Extracción: <span id="res_p_extr">0</span> kg/ha</div>
+                    <div style="color: #90caf9;">🔍 Nivel Suelo: <span id="res_p_suelo_lbl" style="font-weight:bold;">-</span></div>
+                    <div style="color: #ffcc80;">⚙️ Factor Corrección: <span id="res_p_factor">1.0</span></div>
+                    <div style="color: #ff5252;">⚠️ Factor Caliza Activa: <span id="res_p_carb_factor">1.0</span></div>
+                    <hr style="border-color: rgba(255,255,255,0.1);">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #64ffda;">Requerimiento Corregido:<br><span id="res_p_necesidad">0</span> kg P₂O₅/ha</div>
+                </div>
+
+                <!-- Columna Potasio -->
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px;">
+                    <h4 style="color: #ffeb3b; margin-top:0; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;">Potasio (K₂O)</h4>
+                    <div>🎯 Necesidad Extracción: <span id="res_k_extr">0</span> kg/ha</div>
+                    <div style="color: #90caf9;">🔍 Nivel Suelo: <span id="res_k_suelo_lbl" style="font-weight:bold;">-</span></div>
+                    <div style="color: #ffcc80;">⚙️ Factor Corrección: <span id="res_k_factor">1.0</span></div>
+                    <hr style="border-color: rgba(255,255,255,0.1);">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #64ffda;">Requerimiento Corregido:<br><span id="res_k_necesidad">0</span> kg K₂O/ha</div>
+                </div>
+            </div>
+
+            <div id="alerta_rd1051" style="margin-top: 20px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; text-align: center;"></div>
+        </div>
+
+        <!-- PLAN DE FERTILIZACIÓN BALANCEADO NPK EUROCHEM (fondo + cobertera 1 + cobertera 2) -->
+        <div class="section-box highlight-box" style="border-color: var(--success-green); padding: 25px;">
+            <h3 style="color: var(--success-green); margin-bottom: 25px; font-size: 1.3rem;">🚜 Plan de Fertilización Balanceado NPK Eurochem</h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                <div>
+                    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border);">
+                        <label style="font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 12px; color: var(--eurochem-blue);">1. Abono de Fondo</label>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <select id="fert_fondo" style="flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px;">
+                                <option value="0">Ninguno</option>
+                                <option value="entec_12_12_17">ENTEC NITROFOSKA ESPECIAL (12-12-17)</option>
+                                <option value="entec_20_10_10">ENTEC 20 10 10</option>
+                                <option value="perfect_15_5_20">NITROFOSKA PERFECT (15-5-20)</option>
+                                <option value="super_20_5_10">NITROFOSKA SUPER (20-5-10)</option>
+                                <option value="entec_20_8_10">ENTEC 20 8 10</option>
+                                <option value="entec_25_15">ENTEC 25 15</option>
+                                <option value="entec_15_13_13">ENTEC 15 13 13</option>
+                                <option value="entec_12_20_12">ENTEC 12 20 12</option>
+                                <option value="entec_13_10_20">ENTEC 13 10 20</option>
+                                <option value="nplus_22_5_5">NITROFOSKA NPLUS (22-5-5)</option>
+                                <option value="entec_evo_27s">ENTEC EVO 27S (27% N)</option>
+                                <option value="entec_evo_24">ENTEC EVO 24 (24% N)</option>
+                            </select>
+                            <span class="print-value print-value-text" id="p_val_fert_fondo"></span>
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                <input type="number" id="dosis_fondo" value="0" step="50" style="width: 80px; padding: 6px; font-size: 1.05rem; text-align: center;">
+                                <span class="print-value" id="p_val_dosis_fondo"></span>
+                                <span style="font-size: 0.95rem; font-weight: bold; color: #475569;">kg/ha</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border);">
+                        <label style="font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 12px; color: var(--eurochem-blue);">2. Abono Cobertera 1</label>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <select id="fert_cobertera" style="flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px;">
+                                <option value="0">Ninguno</option>
+                                <option value="entec_evo_27s">ENTEC EVO 27S (27% N)</option>
+                                <option value="entec_evo_24">ENTEC EVO 24 (24% N)</option>
+                                <option value="nplus_22_5_5">NITROFOSKA NPLUS (22-5-5)</option>
+                                <option value="entec_20_8_10">ENTEC 20 8 10</option>
+                                <option value="entec_20_10_10">ENTEC 20 10 10</option>
+                            </select>
+                            <span class="print-value print-value-text" id="p_val_fert_cobertera"></span>
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                <input type="number" id="dosis_cobertera_1" value="0" step="50" style="width: 80px; padding: 6px; font-size: 1.05rem; text-align: center;">
+                                <span class="print-value" id="p_val_dosis_cobertera_1"></span>
+                                <span style="font-size: 0.95rem; font-weight: bold; color: #475569;">kg/ha</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 12px; color: var(--eurochem-blue);">3. Abono Cobertera 2</label>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <select id="fert_cobertera_2" style="width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; flex: 1;">
+                                <option value="0">Ninguno</option>
+                                <option value="entec_evo_27s">ENTEC EVO 27S (27% N)</option>
+                                <option value="entec_evo_24">ENTEC EVO 24 (24% N)</option>
+                                <option value="nplus_22_5_5">NITROFOSKA NPLUS (22-5-5)</option>
+                            </select>
+                            <span class="print-value print-value-text" id="p_val_fert_cobertera_2"></span>
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                <input type="number" id="dosis_cobertera_2" value="0" step="50" style="width: 80px; padding: 6px; font-size: 1.05rem; text-align: center;">
+                                <span class="print-value" id="p_val_dosis_cobertera_2"></span>
+                                <span style="font-size: 0.95rem; font-weight: bold; color: #475569;">kg/ha</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="color: var(--eurochem-blue); background: var(--eurochem-light-blue); padding: 20px; border-radius: 8px; border-left: 6px solid var(--success-green); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="margin-top: 0; font-size: 1.15rem; border-bottom: 1px solid #b2cbe6; padding-bottom: 8px;">📊 Balance Nutricional de la Estrategia</h4>
+                        <div style="line-height: 2;">
+                            <div>• <strong>Nitrógeno (N)</strong> Pendiente: <span id="n_restante_cob" style="color: var(--alert-orange); font-weight: bold;">0</span> UF | Aportado: <span id="n_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div style="padding-left: 15px; font-size: 0.9rem; color: #475569; line-height: 1.6; border-left: 2px solid #b2cbe6; margin-bottom: 5px;">
+                                <div>- % en Fondo: <span id="pct_n_fondo" style="font-weight: bold;">0%</span></div>
+                                <div>- % en Cobertera 1: <span id="pct_n_cob1" style="font-weight: bold;">0%</span></div>
+                                <div>- % en Cobertera 2: <span id="pct_n_cob2" style="font-weight: bold;">0%</span></div>
+                            </div>
+                            <div>• <strong>Fósforo (P₂O₅)</strong> Balance: <span id="p_balance_plan" style="font-weight: bold;">0</span> UF | Aportado: <span id="p_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div>• <strong>Potasio (K₂O)</strong> Balance: <span id="k_balance_plan" style="font-weight: bold;">0</span> UF | Aportado: <span id="k_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #b2cbe6; padding-top: 15px; margin-top: 15px;">
+                        <h5 style="margin: 0 0 10px 0; font-size: 1rem; color: #1e293b;">📋 Recomendaciones Técnicas de Ajuste</h5>
+                        <div id="diagnostico_estrategia_final" style="font-size: 0.95rem; font-weight: bold; line-height: 1.5; color: #475569;">
+                            Configure las formulaciones y dosis para ver el diagnóstico técnico de abonado.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="full-width-layout">
+        <!-- COMPARATIVA CON ALTERNATIVAS DE ABONADO -->
+        <div class="section-box highlight-box" id="pfRoot" style="border-color: var(--success-green); padding: 25px;">
+            <h3 style="color: var(--success-green); margin-bottom: 15px; font-size: 1.3rem;">📊 Comparativa: Plan Eurochem vs. Alternativas</h3>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:-8px; margin-bottom:18px;">El "Plan Eurochem" de arriba se usa automáticamente como referencia. Añade aquí una o dos alternativas (otros abonos, a elegir del catálogo) para comparar coste, cumplimiento ZVN y cuánta cosecha extra haría falta para justificar el sobrecoste de cada una.</p>
+            <div id="pf_target" class="pf-target"></div>
+            <details id="pf_catalog_details" style="margin-top:6px;">
+                <summary style="cursor:pointer; font-weight:bold; color: var(--eurochem-blue); padding:8px 0; font-size:0.95rem;">
+                    🧪 Catálogo de fertilizantes <span id="pf_catalog_count" style="font-weight:normal; color:#64748b;"></span> — clic para ver/añadir
+                </summary>
+                <div id="pf_catalog" style="margin-top:10px;"></div>
+            </details>
+            <div class="pf-subhead">Planes alternativos</div>
+            <div id="pf_plans"></div>
+            <div class="pf-subhead">Comparativa económica</div>
+            <div id="pf_compare"></div>
+        </div>
+    </div>
+    <div class="full-width-layout">
+        <div class="section-box" id="diagSueloBox">
+            <h4 style="margin-top:0; color: var(--eurochem-blue);">📌 Correcciones de Suelo (P y K)</h4>
+            <div id="diagnostico_suelo_final" style="font-size: 0.95rem; line-height: 1.5; color: #475569;">
+                Introduce los datos del análisis para ver las correcciones de suelo.
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer-credits">Motor Integrado de Diagnóstico Agronómico NPK | © 2026 G. Morales & Eurochem</div>
+</div>
+
+<script>
+    const allInputs = document.querySelectorAll('input, select');
+
+    const getV = (id) => { 
+        const e = document.getElementById(id); 
+        return e ? (parseFloat(e.value) || 0) : 0; 
+    };
+    
+    const setT = (id, text) => {
+        const e = document.getElementById(id);
+        if(e) e.innerText = text;
+    };
+
+    // Clasificación textural USDA a partir de %arena, %limo, %arcilla (algoritmo estándar
+    // del diagrama triangular USDA-NRCS). Devuelve null si no hay datos suficientes de
+    // arena/limo (en ese caso el programa usa el reparto aproximado solo por %arcilla).
+    function usdaTextureClass(sand, silt, clay) {
+        if (sand + silt + clay <= 0) return null;
+        if (silt + 1.5 * clay < 15) return "Arenoso";
+        if (silt + 2 * clay < 30) return "Arenoso Franco";
+        if (clay >= 7 && clay < 20 && sand > 52 && (silt + 2 * clay) >= 30) return "Franco Arenoso";
+        if (clay < 7 && silt < 50 && (silt + 2 * clay) >= 30) return "Franco Arenoso";
+        if (clay >= 7 && clay < 27 && silt >= 28 && silt < 50 && sand <= 52) return "Franco";
+        if ((silt >= 50 && clay >= 12 && clay < 27) || (silt >= 50 && silt < 80 && clay < 12)) return "Franco Limoso";
+        if (silt >= 80 && clay < 12) return "Limoso";
+        if (clay >= 20 && clay < 35 && silt < 28 && sand > 45) return "Franco Arcillo Arenoso";
+        if (clay >= 27 && clay < 40 && sand <= 20) return "Franco Arcillo Limoso";
+        if (clay >= 27 && clay < 40 && sand > 20 && sand <= 45) return "Franco Arcilloso";
+        if (clay >= 35 && sand > 45) return "Arcillo Arenoso";
+        if (clay >= 40 && silt >= 40) return "Arcillo Limoso";
+        if (clay >= 40 && sand <= 45 && silt < 40) return "Arcilloso";
+        return "Franco"; // combinación residual no cubierta por las reglas anteriores
+    }
+
+    // Agrupa las 12 clases USDA en los 3 grupos de referencia de CIC típica
+    // (Guía Técnica de Interpretación de Suelos y Cálculo de CIC, sección 5).
+    function usdaTextureGroup(claseUsda) {
+        if (!claseUsda) return null;
+        if (claseUsda === "Arenoso" || claseUsda === "Arenoso Franco" || claseUsda === "Franco Arenoso") {
+            return { grupo: "Arenoso / Francoarenoso", cicMin: 0, cicMax: 5 };
+        }
+        if (claseUsda === "Franco" || claseUsda === "Franco Limoso" || claseUsda === "Limoso") {
+            return { grupo: "Franco / Franco-limoso", cicMin: 5, cicMax: 15 };
+        }
+        return { grupo: "Arcilloso / Francoarcilloso", cicMin: 15, cicMax: 999 };
+    }
+
+    // Diccionario de Cultivos Completo con extracciones de N, P2O5 y K2O por Tonelada (kg/t)
+    const cultivoExtractions = {
+        'trigo': { n: 28, p: 10, k: 25, label: "Trigo" },
+        'cebada': { n: 22, p: 9, k: 20, label: "Cebada" },
+        'avena': { n: 22, p: 9, k: 20, label: "Avena" },
+        'triticale': { n: 25, p: 10, k: 22, label: "Triticale" },
+        'maiz': { n: 24, p: 10, k: 25, label: "Maíz" },
+        'girasol': { n: 35, p: 12, k: 30, label: "Girasol" },
+        'colza': { n: 45, p: 18, k: 40, label: "Colza" },
+        'algodon': { n: 55, p: 20, k: 50, label: "Algodón" },
+        'garbanzo': { n: 60, p: 15, k: 35, label: "Garbanzo" },
+        'guisante': { n: 50, p: 12, k: 30, label: "Guisante" },
+        'olivar_si': { n: 8, p: 3, k: 10, label: "Olivar SI" },
+        'olivar': { n: 15, p: 4, k: 20, label: "Olivar" },
+        'almendro': { n: 65, p: 20, k: 70, label: "Almendro pepita" },
+        'naranjo': { n: 4, p: 1.5, k: 6, label: "Naranjo" },
+        'mandarino': { n: 5, p: 1.8, k: 7, label: "Mandarino" },
+        'limonero': { n: 5, p: 1.8, k: 7, label: "Limonero" },
+        'vinedo': { n: 5, p: 2, k: 8, label: "Viñedo" },
+        // Extracciones verificadas (MAPA/Eurochem/IFAPA-ITACyL) para cubrir el resto de grupos del Cuadro 4
+        'patata': { n: 4.2, p: 1.0, k: 5.6, label: "Patata" },
+        'remolacha': { n: 3.0, p: 1.5, k: 4.0, label: "Remolacha azucarera" },
+        'tabaco': { n: 35, p: 15, k: 60, label: "Tabaco" },
+        'tomate_industria': { n: 2.2, p: 0.8, k: 2.6, label: "Tomate para industria" },
+        'freson': { n: 6.0, p: 2.5, k: 8.0, label: "Fresa y fresón" },
+        'aguacate': { n: 12.0, p: 7.0, k: 20.0, label: "Aguacate" }
+    };
+
+    // Catálogo de Riqueza de Fertilizantes Eurochem (N - P2O5 - K2O)
+    const fertData = {
+        '0': { n: 0, p: 0, k: 0, label: "Ninguno" },
+        'entec_12_12_17': { n: 12, p: 12, k: 17, label: "ENTEC NITROFOSKA ESPECIAL (12-12-17)" },
+        'entec_20_10_10': { n: 20, p: 10, k: 10, label: "ENTEC 20 10 10" },
+        'perfect_15_5_20': { n: 15, p: 5, k: 20, label: "NITROFOSKA PERFECT (15-5-20)" },
+        'super_20_5_10': { n: 20, p: 5, k: 10, label: "NITROFOSKA SUPER (20-5-10)" },
+        'entec_20_8_10': { n: 20, p: 8, k: 10, label: "ENTEC 20 8 10" },
+        'entec_25_15': { n: 25, p: 15, k: 0, label: "ENTEC 25 15" },
+        'entec_15_13_13': { n: 15, p: 13, k: 13, label: "ENTEC 15 13 13" },
+        'entec_12_20_12': { n: 12, p: 20, k: 12, label: "ENTEC 12 20 12" },
+        'entec_13_10_20': { n: 13, p: 10, k: 20, label: "ENTEC 13 10 20" },
+        'nplus_22_5_5': { n: 22, p: 5, k: 5, label: "NITROFOSKA NPLUS (22-5-5)" },
+        'entec_evo_27s': { n: 27, p: 0, k: 0, label: "ENTEC EVO 27S (27% N)" },
+        'entec_evo_24': { n: 24, p: 0, k: 0, label: "ENTEC EVO 24 (24% N)" }
+    };
+
+    // Conversiones bidireccionales de bases cambiables
+    const bidir = ['ca_ppm', 'ca_meq', 'mg_ppm', 'mg_meq', 'k_ppm', 'k_meq', 'na_ppm', 'na_meq'];
+    const bindConv = (id1, id2, factor, op) => {
+        const e1 = document.getElementById(id1);
+        if(e1) e1.addEventListener('input', (e) => { 
+            const e2 = document.getElementById(id2);
+            if(e2) e2.value = op === 'div' ? ((parseFloat(e.target.value)||0)/factor).toFixed(2) : ((parseFloat(e.target.value)||0)*factor).toFixed(1);
+            runCalculations();
+        });
+    };
+    
+    bindConv('ca_ppm', 'ca_meq', 200, 'div'); bindConv('ca_meq', 'ca_ppm', 200, 'mult');
+    bindConv('mg_ppm', 'mg_meq', 121.5, 'div'); bindConv('mg_meq', 'mg_ppm', 121.5, 'mult');
+    bindConv('k_ppm', 'k_meq', 391, 'div'); bindConv('k_meq', 'k_ppm', 391, 'mult');
+    bindConv('na_ppm', 'na_meq', 230, 'div'); bindConv('na_meq', 'na_ppm', 230, 'mult');
+
+    // Escuchadores globales para actualizar cálculos
+    allInputs.forEach(input => {
+        if (!bidir.includes(input.id)) {
+            input.addEventListener('input', runCalculations);
+            input.addEventListener('change', runCalculations);
+        }
+    });
+
+    // Función de sincronización para visualización de impresión
+    function updatePrintValues() {
+        allInputs.forEach(input => {
+            const pSpan = document.getElementById('p_val_' + input.id);
+            if (pSpan) {
+                if (input.tagName === 'SELECT') {
+                    pSpan.innerText = input.options[input.selectedIndex].text;
+                } else {
+                    pSpan.innerText = input.value;
+                }
+            }
+        });
+    }
+
+    function runCalculations() {
+        // --- 1. DATOS DE SUELO ---
+        const arcilla = getV('arcilla'); 
+        const ph = getV('ph'); 
+        const ce = getV('ce');
+        const carbonatos = getV('carbonatos');
+        const calizaActiva = getV('caliza_activa');
+        const cn = getV('cn');
+        const mo = getV('mo');
+        const nitratosLab = getV('nitratos_lab'); 
+        const nKjeldahl = getV('n_kjeldahl'); 
+        const pOlsen = getV('p_olsen');
+        const fe = getV('fe_ppm'); 
+        const mn = getV('mn_ppm'); 
+        const cu = getV('cu_ppm'); 
+        const zn = getV('zn_ppm');
+        const caMeq = getV('ca_meq'); 
+        const caPpm = getV('ca_ppm');
+        const mgMeq = getV('mg_meq'); 
+        const mgPpm = getV('mg_ppm');
+        const kMeq = getV('k_meq'); 
+        const kPpm = getV('k_ppm');
+        const naMeq = getV('na_meq');
+        const profundidad = getV('profundidad') || 30;
+        const arena = getV('arena');
+        const limo = getV('limo');
+
+        // Clasificación textural USDA (si hay datos de arena/limo); si no, se usa el
+        // reparto aproximado solo por %arcilla como hasta ahora.
+        const claseUsda = usdaTextureClass(arena, limo, arcilla);
+
+        // Densidad Aparente Dinámica
+        let daCalculada;
+        if (claseUsda === "Arenoso" || claseUsda === "Arenoso Franco") {
+            daCalculada = 1.55;
+        } else if (claseUsda === "Franco Arenoso") {
+            daCalculada = 1.45;
+        } else if (claseUsda === "Arcilloso" || claseUsda === "Arcillo Arenoso" || claseUsda === "Arcillo Limoso") {
+            daCalculada = 1.20;
+        } else if (claseUsda) {
+            daCalculada = 1.35; // Franco, Franco Limoso, Limoso, Franco Arcillo Arenoso/Limoso, Franco Arcilloso
+        } else {
+            daCalculada = (arcilla >= 40) ? 1.25 : (arcilla < 10 ? 1.45 : 1.35);
+        }
+        const elDa = document.getElementById('da');
+        if(elDa) elDa.value = daCalculada;
+
+        // Corrección de N por textura
+        let ajusteNTextura = 1.0;
+        if(arcilla < 10) {
+            setT('c_arcilla', "Arenoso: Subir N un 15%");
+            ajusteNTextura = 1.15;
+        } else if (arcilla > 40) {
+            setT('c_arcilla', "Arcilloso: Bajar N un 15%");
+            ajusteNTextura = 0.85;
+        } else {
+            setT('c_arcilla', "Franco: Condiciones óptimas");
+        }
+
+        // Comentario de clase textural USDA y contraste CIC-vs-textura (Guía Técnica CIC, sección 5)
+        if (claseUsda) {
+            const grupoUsda = usdaTextureGroup(claseUsda);
+            setT('c_textura_usda', "Clase USDA: " + claseUsda + " (CIC típica " + grupoUsda.cicMin + "-" + (grupoUsda.cicMax === 999 ? "25+" : grupoUsda.cicMax) + " meq/100g)");
+        } else {
+            setT('c_textura_usda', "Introduce Limo y Arena para clasificar por USDA");
+        }
+
+        // Calificaciones de laboratorio
+        setT('c_ph', (ph < 6.6) ? "Suelo Ácido." : (ph > 8.0 ? "Básico / Alcalino." : "Neutro."));
+        setT('c_ce', (ce > 0.8) ? "Suelo Sódico / Salino" : "No salino");
+        setT('c_cn', (cn < 10) ? "Liberación rápida (Min. activa)" : (cn <= 12 ? "Óptima / Estable" : "Acumula M.O. / Lenta"));
+        
+        const nRealPpm = nitratosLab / 4.42; 
+        setT('c_nitratos', "N real: " + nRealPpm.toFixed(1) + " ppm.");
+        setT('c_kjeldahl', (nKjeldahl < 0.05) ? "Muy bajo" : (nKjeldahl < 0.10 ? "Bajo" : "Normal/Alto"));
+        
+        // Calificación de Fósforo Olsen y definición del factor de corrección de Fósforo (Olsen)
+        let pFactor = 1.0;
+        let pSueloLbl = "Normal";
+        let pRecomendacionDetalle = "";
+        if (pOlsen < 7) {
+            pSueloLbl = "Muy Bajo";
+            pFactor = 1.25; // +25%
+            pRecomendacionDetalle = "Suelo muy bajo en P. Sobredosis del +25% para enriquecer.";
+            setT('c_polsen', "Muy bajo: Reforzar P₂O₅ (+25%)");
+        } else if (pOlsen < 12) {
+            pSueloLbl = "Bajo";
+            pFactor = 1.15; // +15%
+            pRecomendacionDetalle = "Suelo bajo en P. Elevar dosis un +15% para enriquecimiento progresivo.";
+            setT('c_polsen', "Bajo: Elevar P₂O₅ (+15%)");
+        } else if (pOlsen < 18) {
+            pSueloLbl = "Normal";
+            pFactor = 1.0;
+            pRecomendacionDetalle = "Nivel de P adecuado. Se aplica dosis de mantenimiento sin corrección.";
+            setT('c_polsen', "Medio/Óptimo: Restitución");
+        } else if (pOlsen <= 25) {
+            pSueloLbl = "Alto";
+            pFactor = 0.70; // -30%
+            pRecomendacionDetalle = "Suelo rico en P. Reducción a la baja de -30% para evitar exceso.";
+            setT('c_polsen', "Alto: Reducir P₂O₅ (-30%)");
+        } else {
+            pSueloLbl = "Muy Alto";
+            pFactor = 0.50; // -50%
+            pRecomendacionDetalle = "Suelo excesivamente alto en P. Reducción severa del -50% en abonado de fondo.";
+            setT('c_polsen', "Muy alto: Reducir P₂O₅ (-50%)");
+        }
+
+        // Calificación de Potasio y factor de corrección de Potasio asimilable
+        let kFactor = 1.0;
+        let kSueloLbl = "Normal";
+        let kRecomendacionDetalle = "";
+        if (kPpm < 80) {
+            kSueloLbl = "Muy Bajo";
+            kFactor = 1.25; // +25%
+            kRecomendacionDetalle = "Suelo muy pobre en K. Incrementar dosis un +25% para recarga del complejo.";
+            setT('c_k_conv', "Muy bajo: Reforzar K₂O (+25%)");
+        } else if (kPpm <= 160) {
+            kSueloLbl = "Bajo";
+            kFactor = 1.15; // +15%
+            kRecomendacionDetalle = "Suelo bajo en K. Se sobreabona un +15% para reposición.";
+            setT('c_k_conv', "Bajo: Elevar K₂O (+15%)");
+        } else if (kPpm <= 235) {
+            kSueloLbl = "Medio";
+            kFactor = 1.0;
+            kRecomendacionDetalle = "Nivel de K óptimo. Fertilización equilibrada de mantenimiento.";
+            setT('c_k_conv', "Adecuado: Restitución");
+        } else if (kPpm <= 390) {
+            kSueloLbl = "Alto";
+            kFactor = 0.70; // -30%
+            kRecomendacionDetalle = "Suelo rico en K. Se reduce la cobertera un -30% para evitar bloqueos de Mg.";
+            setT('c_k_conv', "Alto: Reducir K₂O (-30%)");
+        } else {
+            kSueloLbl = "Muy Alto";
+            kFactor = 0.50; // -50%
+            kRecomendacionDetalle = "Suelo saturado en K. Reducción extrema del -50% para mitigar antagonismo Mg.";
+            setT('c_k_conv', "Muy alto: Reducir K₂O (-50%)");
+        }
+
+        // Calificaciones de Micronutrientes y bases
+        setT('c_fe', (fe < 1) ? "Carencia grave Hierro" : (fe <= 3 ? "Bajo" : (fe <= 6 ? "Medio / Normal" : "Alto")));
+        setT('c_mn', (mn < 0.5) ? "Muy bajo" : (mn <= 1.5 ? "Bajo" : (mn <= 3 ? "Medio" : "Alto")));
+        setT('c_cu', (cu < 0.2) ? "Muy bajo" : (cu <= 0.4 ? "Bajo" : (cu <= 0.8 ? "Medio" : "Alto")));
+        setT('c_zn', (zn < 0.5) ? "Muy bajo" : (zn <= 1 ? "Bajo" : (zn <= 2 ? "Medio" : "Alto")));
+
+        // Carbonatos totales: informativo (no dispara por sí solo el bloqueo de P; ver Caliza Activa)
+        setT('c_carbonatos', carbonatos > 25 ? "Suelo calizo: ver Caliza Activa para el riesgo real de bloqueo de P/Fe" : "Carbonatos bajo control");
+
+        // Factor de corrección de Fósforo por retrogradación: driven por CALIZA ACTIVA, no por
+        // carbonatos totales. La caliza activa (fracción fina y reactiva del CaCO3) es el indicador
+        // agronómico estándar de riesgo de bloqueo de P y clorosis férrica, no el total de carbonatos
+        // (que incluye fracciones groseras poco reactivas). Umbrales: convención agronómica española
+        // habitual (bajo <6%, moderado 6-10%, alto 10-15%, muy alto >15%) — pendiente de contrastar
+        // con una fuente específica de bloqueo de P; ajustar si se dispone de una referencia mejor.
+        let carbPFactor = 1.0;
+        if (calizaActiva > 15) {
+            carbPFactor = 1.30; // +30% por bloqueo severo de cal activa
+            pRecomendacionDetalle += " ¡Alerta de Caliza Activa muy alta! Incremento de un +30% de fósforo para contrarrestar precipitación insolubilizada.";
+            setT('c_caliza_activa', "Muy alta: ¡Bloqueo severo! Sobreabonar P₂O₅ +30%. Riesgo de clorosis férrica.");
+        } else if (calizaActiva > 10) {
+            carbPFactor = 1.15;
+            setT('c_caliza_activa', "Alta: Elevar P₂O₅ +15%. Vigilar riesgo de clorosis férrica.");
+        } else if (calizaActiva > 6) {
+            setT('c_caliza_activa', "Moderada: Vigilar bloqueo de P");
+        } else {
+            setT('c_caliza_activa', "Baja: sin riesgo relevante de bloqueo");
+        }
+
+        setT('c_na_conv', (naMeq <= 0.3) ? "Muy Bajo" : (naMeq <= 0.6 ? "Bajo" : (naMeq <= 1 ? "Normal" : "Alto")));
+        setT('c_mg_conv', (mgPpm < 60) ? "Bajo: Posible clorosis" : (mgPpm <= 180 ? "Adecuado" : "Alto"));
+        setT('c_ca_conv', (caPpm < 1000) ? "Bajo: Mala estructura" : (caPpm <= 2000 ? "Equilibrado" : "Alto: Bloqueos"));
+
+        // --- CÁLCULO DE MASA DE SUELO DINÁMICO ---
+        const masaSueloKg = 10000 * (profundidad / 100) * daCalculada * 1000; 
+
+        // 1. Mineralización M.O: (Masa suelo) * (% M.O) * (1% de mineralización) * (%N en M.O, según C/N real)
+        // %N en M.O. = %C en M.O. / (C/N) ; %C en M.O. ≈ 58% (factor de Van Bemmelen, M.O. = C × 1.724)
+        const cnEfectivo = cn > 0 ? cn : 11.5; // valor típico de referencia si no se ha introducido C/N
+        const pctNEnMO = 0.58 / cnEfectivo;
+        let kg_n_mo = masaSueloKg * (mo / 100) * 0.01 * pctNEnMO;
+        setT('c_mo', "Mineralización a " + profundidad + "cm (C/N " + cnEfectivo.toFixed(1) + "): " + kg_n_mo.toFixed(1) + " kg N.");
+        setT('out_n_mo_resumen', kg_n_mo.toFixed(1));
+
+        // 2. Stock Nitratos: (ppm Nitrógeno Real) * (Masa suelo en Millones de kg)
+        const stockNitratos = nRealPpm * (masaSueloKg / 1000000);
+        setT('out_n_stock', stockNitratos.toFixed(1));
+        // --- COMPLEJO DE CAMBIO, CIC Y ANTAGONISMOS (CORREGIDO SEGÚN FUENTES OFICIALES) ---
+        // Metodología: la CIC medida en laboratorio (acetato amónico pH 7, o Na pH 8.2 en calizos)
+        // es preferible a la suma de bases (S = Ca+Mg+K+Na), que en suelos calizos/alcalinos puede
+        // sobreestimar el Ca por disolución de carbonatos, y en suelos ácidos infravalora la CIC al
+        // omitir la acidez de cambio (H+ + Al3+). Ver Interpretación y Cálculo de CIC.
+        const sumaBases = caMeq + mgMeq + kMeq + naMeq;
+        const cicMedida = getV('cic_medida');
+        const usaCicMedida = cicMedida > 0;
+        const cic = usaCicMedida ? cicMedida : sumaBases;
+        setT('out_cic', cic.toFixed(2));
+
+        // Alertas y validaciones de la CIC según pH y Carbonatos (Guía Técnica de Interpretación
+        // de Suelos y Cálculo de CIC / Guía Avanzada de Equilibrios Catiónicos)
+        let cicMsg = "";
+        const cicEstimada = (0.5 * arcilla) + (2.0 * mo);
+        if (usaCicMedida) {
+            cicMsg = "✅ CIC medida en laboratorio (prioritaria sobre la suma de bases, S=" + sumaBases.toFixed(1) + " meq/100g).";
+        } else if (ph > 7.5 || carbonatos > 2) {
+            cicMsg = "⚠️ Alerta Calizo: Disolución de CaCO₃ en lab sobreestima Ca²⁺. CIC por suma está sobredimensionada. Si el boletín trae una CIC medida, introdúcela arriba.";
+        } else if (ph < 6.0) {
+            cicMsg = "⚠️ Suelo Ácido: Suma subestima CIC al omitir acidez de cambio (H⁺+Al³⁺).";
+        } else if (cic > 0) {
+            cicMsg = "Aproximación neutra estable. CIC Est. (Arcilla + MO): " + cicEstimada.toFixed(1) + " meq/100g.";
+        } else {
+            cicMsg = "-";
+        }
+        // Contraste cruzado con la clase textural USDA (si hay datos de arena/limo)
+        if (claseUsda && cic > 0) {
+            const grupoUsda = usdaTextureGroup(claseUsda);
+            const dentroDeRango = cic >= grupoUsda.cicMin && cic <= grupoUsda.cicMax;
+            cicMsg += " " + (dentroDeRango ? "✅" : "⚠️") + " CIC " + cic.toFixed(1) + " meq/100g " +
+                (dentroDeRango ? "coherente con" : "fuera del rango típico de") +
+                " la clase " + claseUsda + " (" + grupoUsda.cicMin + "-" + (grupoUsda.cicMax === 999 ? "25+" : grupoUsda.cicMax) + ").";
+        }
+        setT('c_cic', cicMsg);
+
+        // Porcentajes de Saturación y comparativa MAPA
+        const satCa = cic > 0 ? (caMeq / cic) * 100 : 0;
+        const satMg = cic > 0 ? (mgMeq / cic) * 100 : 0;
+        const satK = cic > 0 ? (kMeq / cic) * 100 : 0;
+        const satNa = cic > 0 ? (naMeq / cic) * 100 : 0;
+
+        setT('out_sat_ca', satCa.toFixed(1) + "%");
+        setT('out_sat_mg', satMg.toFixed(1) + "%");
+        setT('out_sat_k', satK.toFixed(1) + "%");
+        setT('out_psi', satNa.toFixed(1) + "%"); // Sincronizado con Na+/PSI
+
+        // Comentarios de Saturación según Rangos MAPA
+        // Calcio: 60 - 80%
+        let caSatComment = "";
+        if (satCa < 60) {
+            caSatComment = "⚠️ Bajo: Pérdida de estructura, acidez, desfloculación.";
+        } else if (satCa > 80) {
+            caSatComment = "⚠️ Alto: Bloqueo inducido de Mg, K y microelementos.";
+        } else {
+            caSatComment = "Óptimo (Rango MAPA: 60-80%)";
+        }
+        setT('c_sat_ca', caSatComment);
+
+        // Magnesio: 10 - 20%
+        let mgSatComment = "";
+        if (satMg < 10) {
+            mgSatComment = "⚠️ Bajo: Clorosis en hojas viejas, baja fotosíntesis.";
+        } else if (satMg > 20) {
+            mgSatComment = "⚠️ Alto: Dispersión si Ca/Mg<2, endurecimiento del suelo.";
+        } else {
+            mgSatComment = "Óptimo (Rango MAPA: 10-20%)";
+        }
+        setT('c_sat_mg', mgSatComment);
+
+        // Potasio: 2 - 6%
+        let kSatComment = "";
+        if (satK < 2) {
+            kSatComment = "⚠️ Bajo: Baja resistencia al estrés hídrico, merma calibre.";
+        } else if (satK > 6) {
+            kSatComment = "⚠️ Alto: Consumo de lujo, bloqueo de absorción de Mg y Ca.";
+        } else {
+            kSatComment = "Óptimo (Rango MAPA: 2-6%)";
+        }
+        setT('c_sat_k', kSatComment);
+
+        // Sodio / PSI: 0 - 3%
+        let naSatComment = "";
+        if (satNa > 15) {
+            naSatComment = "🚨 Peligro: Degradación estructural severa (Sódico).";
+        } else if (satNa > 5) {
+            naSatComment = "🚨 Riesgo: Suelo salino-sódico en transición.";
+        } else {
+            naSatComment = "Estable (Sin riesgo de sodicidad)";
+        }
+        setT('c_psicalc', naSatComment);
+
+        // Relaciones Catiónicas e Índices de Bloqueo (Metodología de equilibrios_cationicos_suelo.pdf)
+        const relCaMg = mgMeq > 0 ? (caMeq / mgMeq) : 0;
+        setT('out_camg', relCaMg.toFixed(2));
+        let caMgMsg = "";
+        if (relCaMg > 6.0) {
+            caMgMsg = relCaMg > 8.0 ? "🚨 Bloqueo Severo de Mg: Ca en exceso inhibe absorción de Mg." : "⚠️ Bloqueo: Riesgo de clorosis intervenal en hojas viejas.";
+        } else if (relCaMg < 3.0) {
+            caMgMsg = "⚠️ Pérdida Estructura: Suelo pesado, encostramiento, asfixia radicular.";
+        } else {
+            caMgMsg = "Floculación vs Estructura Equilibrada.";
+        }
+        setT('c_rel_camg', caMgMsg);
+
+        const relMgK = kMeq > 0 ? (mgMeq / kMeq) : 0;
+        setT('out_mgk', relMgK.toFixed(2));
+        let mgKMsg = "";
+        if (relMgK > 6.0) {
+            mgKMsg = "🚨 Bloqueo K: Carencia inducida de K. Sufre estrés hídrico y calibre pequeño.";
+        } else if (relMgK < 2.0) {
+            mgKMsg = "🚨 Bloqueo Mg: Carencia inducida de Mg por sobrefertilización potásica.";
+        } else {
+            mgKMsg = "Equilibrio Divalente/Monovalente Óptimo.";
+        }
+        setT('c_rel_mgk', mgKMsg);
+
+        const relCaK = kMeq > 0 ? (caMeq / kMeq) : 0;
+        setT('out_cak', relCaK.toFixed(2));
+        let caKMsg = "";
+        if (relCaK > 30.0) {
+            caKMsg = "🚨 Antagonismo Ca → K: El K es insuficiente frente al Ca. Aportar vía foliar.";
+        } else if (relCaK < 10.0) {
+            caKMsg = "⚠️ Antagonismo K → Ca: Puede inducir desórdenes (peseta en tomate o bitter pit).";
+        } else {
+            caKMsg = "Óptimo.";
+        }
+        setT('c_rel_cak', caKMsg);
+
+        const relCaMgK = kMeq > 0 ? ((caMeq + mgMeq) / kMeq) : 0;
+        setT('out_camgk', relCaMgK.toFixed(2));
+        let caMgKMsg = "";
+        if (relCaMgK > 30.0) {
+            caMgKMsg = "🚨 Deficiencia Inducida K: Divalentes bloquean K (requiere refuerzo potásico).";
+        } else if (relCaMgK < 10.0) {
+            caMgKMsg = "⚠️ Consumo de lujo o toxicidad de K con inhibición general de divalentes.";
+        } else {
+            caMgKMsg = "Equilibrio Óptimo.";
+        }
+        setT('c_rel_camgk', caMgKMsg);
+
+        const woodruff = (caMeq + mgMeq) > 0 ? (kMeq / Math.sqrt(caMeq + mgMeq)) : 0;
+        setT('out_woodruff', woodruff.toFixed(4));
+        let woodruffMsg = "";
+        if (woodruff > 0.15) {
+            woodruffMsg = "⚠️ Exceso de actividad de K respecto a divalentes.";
+        } else if (woodruff < 0.04) {
+            woodruffMsg = "⚠️ Baja energía de cambio de K. Respuesta inmediata a aportes de potasio.";
+        } else {
+            woodruffMsg = "Energía de reemplazamiento de K equilibrada.";
+        }
+        setT('c_woodruff', woodruffMsg);
+
+        // --- ÁRBOL DE DECISIÓN ALGORÍTMICO (MULDER) ---
+        // Lógica Potasio (K)
+        let diagK = "";
+        if (kPpm < 80) { // K < 0.2 meq/100g aprox.
+            diagK = "<strong>Diagnóstico K:</strong> 🔴 CARENCIA REAL POR DÉFICIT ABSOLUTO. Se recomienda aporte edáﬁco directo de fondo/fertirriego.";
+        } else if (kPpm >= 150) { // K >= 0.4 meq/100g aprox.
+            if (relMgK > 6 || relCaK > 30 || relCaMgK > 35) {
+                diagK = "<strong>Diagnóstico K:</strong> 🚨 BLOQUEO INDUCIDO (Carencia condicionada). El abono edáﬁco puede quedar retenido. Priorice aportes foliares en máxima demanda o reduzca aportes de Ca/Mg.";
+            } else {
+                diagK = "<strong>Diagnóstico K:</strong> 🟢 NIVEL ÓPTIMO Y ASIMILABLE. Las relaciones de equilibrio catiónico son correctas.";
+            }
+        } else {
+            diagK = "<strong>Diagnóstico K:</strong> 🟡 Zona de transición. Las relaciones de cambio son normales pero con reservas moderadas.";
+        }
+        const diagKEl = document.getElementById('diag_antagonismo_k');
+        if (diagKEl) diagKEl.innerHTML = diagK;
+
+        // Lógica Magnesio (Mg)
+        let diagMg = "";
+        if (mgPpm < 100) { // Mg < 0.8 meq/100g
+            diagMg = "<strong>Diagnóstico Mg:</strong> 🔴 CARENCIA REAL. Aporte sulfato de magnesio o dolomita (si pH < 6.5).";
+        } else if (mgPpm >= 180) { // Mg >= 1.5 meq/100g
+            if (relCaMg > 8) {
+                diagMg = "<strong>Diagnóstico Mg:</strong> 🚨 BLOQUEO INDUCIDO POR CALCIO. El Ca libre impide la asimilación de Mg. Aplique magnesio quelatado o vía foliar.";
+            } else if (kMeq > 0 && (mgMeq / kMeq) < 2) { // K/Mg > 0.5 es igual a Mg/K < 2.0
+                diagMg = "<strong>Diagnóstico Mg:</strong> 🚨 BLOQUEO INDUCIDO POR POTASIO. El exceso de K desplaza al Mg. Suspenda fertilización potásica temporalmente.";
+            } else {
+                diagMg = "<strong>Diagnóstico Mg:</strong> 🟢 NIVEL ÓPTIMO Y ASIMILABLE. Relaciones con antagonistas equilibradas.";
+            }
+        } else {
+            diagMg = "<strong>Diagnóstico Mg:</strong> 🟡 Zona de transición. Niveles moderados pero estables.";
+        }
+        const diagMgEl = document.getElementById('diag_antagonismo_mg');
+        if (diagMgEl) diagMgEl.innerHTML = diagMg;
+
+
+        // --- 2. BALANCE DE NITRÓGENO Y MACRONUTRIENTES ---
+        const rendimiento = getV('rendimiento');
+        const cultivoKey = document.getElementById('cultivo_objetivo').value;
+        const cultivoData = cultivoExtractions[cultivoKey] || { n: 0, p: 0, k: 0, label: "Desconocido" };
+
+        // La fila de "Régimen del Olivar" (PI) solo es relevante para Olivar/Olivar SI
+        const rowRegimenOlivar = document.getElementById('row_regimen_olivar');
+        if (rowRegimenOlivar) {
+            rowRegimenOlivar.style.display = (cultivoKey === 'olivar' || cultivoKey === 'olivar_si') ? '' : 'none';
+        }
+
+        // Ajustes y necesidades brutas
+        const elMargen = document.getElementById('margen_perdidas');
+        const margenPerdidas = elMargen ? parseFloat(elMargen.value) : 1.15;
+        const necesidadBrutaN = Math.round(rendimiento * cultivoData.n * ajusteNTextura * margenPerdidas);
+        setT('out_necesidad_n', necesidadBrutaN);
+
+        // Aporte de agua
+        const volRiego = getV('vol_riego');
+        const nitratosAgua = getV('nitratos_agua');
+        // kg N/ha = m3/ha * 1000 L/m3 * mg NO3/L * (14/62 g N/g NO3) / 1e6 mg/kg = vol*ppm / (62000/14)
+        const nAgua = Math.round((volRiego * nitratosAgua) / (62000 / 14));
+        setT('out_n_agua', "Aporta: " + nAgua + " kg N/ha");
+
+        // Restos de cosecha y cubiertas
+        const restos = getV('restos_cosecha');
+        setT('c_restos', "Aporta: " + restos + " kg N/ha");
+        const cubiertas = getV('cubierta_veg');
+        setT('c_cubiertas', "Aporta: " + cubiertas + " kg N/ha");
+        const nVerde = restos + cubiertas; 
+
+        // Mineralización Estiércol Sólido a 3 años
+        const selectEstiercol = document.getElementById('tipo_estiercol');
+        const valEstiercol = selectEstiercol ? selectEstiercol.value : '0';
+        const estiercolData = {
+            '0': { n: 0, y1: 0, y2: 0, y3: 0 },
+            'bovino': { n: 5.0, y1: 0.50, y2: 0.35, y3: 0.15 },
+            'ovino': { n: 9.0, y1: 0.50, y2: 0.35, y3: 0.15 },
+            'caprino': { n: 10.0, y1: 0.50, y2: 0.35, y3: 0.15 },
+            'equino': { n: 6.0, y1: 0.50, y2: 0.35, y3: 0.15 },
+            'gallinaza': { n: 16.0, y1: 0.60, y2: 0.25, y3: 0.15 },
+            'pollinaza': { n: 20.0, y1: 0.60, y2: 0.25, y3: 0.15 },
+            'porcino': { n: 7.0, y1: 0.50, y2: 0.35, y3: 0.15 }
+        };
+        const dEstiercol = estiercolData[valEstiercol] || estiercolData['0'];
+
+        const dosisEst1 = getV('dosis_estiercol_1'); 
+        const dosisEst2 = getV('dosis_estiercol_2'); 
+        const dosisEst3 = getV('dosis_estiercol_3'); 
+        
+        const nEstiercolY1 = dEstiercol.n * dosisEst1 * dEstiercol.y1;
+        const nEstiercolY2 = dEstiercol.n * dosisEst2 * dEstiercol.y2;
+        const nEstiercolY3 = dEstiercol.n * dosisEst3 * dEstiercol.y3;
+        
+        const nEstiercolMineralizado = nEstiercolY1 + nEstiercolY2 + nEstiercolY3; 
+        setT('out_n_estiercol', "Mineralizado este año: " + nEstiercolMineralizado.toFixed(2) + " kg N/ha");
+
+        // Mineralización Purines a 3 años
+        const selectPurin = document.getElementById('tipo_purin');
+        const valPurin = selectPurin ? selectPurin.value : '0';
+        const purinesData = {
+            '0': { n: 0, y1: 0, y2: 0, y3: 0 },
+            'porcino_cebo': { n: 3.5, y1: 0.70, y2: 0.20, y3: 0.10 },
+            'porcino_maternidad': { n: 3.0, y1: 0.70, y2: 0.20, y3: 0.10 },
+            'vacuno_leche': { n: 2.5, y1: 0.70, y2: 0.20, y3: 0.10 },
+            'vacuno_carne': { n: 2.0, y1: 0.70, y2: 0.20, y3: 0.10 },
+            'ovino_caprino': { n: 3.0, y1: 0.70, y2: 0.20, y3: 0.10 },
+            'gallinaza_liquida': { n: 6.0, y1: 0.70, y2: 0.15, y3: 0.15 } 
+        };
+        const dPurin = purinesData[valPurin] || purinesData['0'];
+
+        const dosisPurin1 = getV('dosis_purin_1'); 
+        const dosisPurin2 = getV('dosis_purin_2'); 
+        const dosisPurin3 = getV('dosis_purin_3'); 
+        
+        const nPurinY1 = dPurin.n * dosisPurin1 * dPurin.y1; 
+        const nPurinY2 = dPurin.n * dosisPurin2 * dPurin.y2; 
+        const nPurinY3 = dPurin.n * dosisPurin3 * dPurin.y3; 
+        
+        const nPurinMineralizado = nPurinY1 + nPurinY2 + nPurinY3; 
+        setT('out_n_purin', "Mineralizado este año: " + nPurinMineralizado.toFixed(2) + " kg N/ha");
+
+        // Alerta Regulatoria de purines en Olivar
+        if ((cultivoKey === 'olivar' || cultivoKey === 'olivar_si') && (dosisPurin1 > 0 || dosisPurin2 > 0 || dosisPurin3 > 0)) {
+            alert("⚠️ ALERTA LEGAL: El Reglamento de Producción Integrada de Olivar prohíbe estrictamente el uso de purines o deyecciones líquidas.");
+        }
+
+        const nOrganicoTotal = nEstiercolMineralizado + nPurinMineralizado;
+
+        // --- CÁLCULOS FÓSFORO Y POTASIO CON RECOMENDACIONES ---
+        const pExtraccionTeorica = rendimiento * cultivoData.p;
+        const pNecesidadCorregida = Math.round(pExtraccionTeorica * pFactor * carbPFactor);
+
+        const kExtraccionTeorica = rendimiento * cultivoData.k;
+        const kNecesidadCorregida = Math.round(kExtraccionTeorica * kFactor);
+
+        // Desglose del panel azul de balance consolidado
+        setT('res_necesidad', necesidadBrutaN);
+        setT('res_stock', stockNitratos.toFixed(1));
+        setT('res_suelo', kg_n_mo.toFixed(1));
+        setT('res_dep', getV('dep_atmosferica'));
+        setT('res_agua', nAgua);
+        setT('res_restos', nVerde);
+        setT('res_org', nOrganicoTotal.toFixed(1));
+
+        let totalAportesN = stockNitratos + kg_n_mo + getV('dep_atmosferica') + nAgua + nVerde + nOrganicoTotal;
+        setT('res_total_aportes', totalAportesN.toFixed(1));
+
+        let balanceFinalN = necesidadBrutaN - totalAportesN;
+        if (balanceFinalN < 0) balanceFinalN = 0; 
+        setT('resultado_balance_n', balanceFinalN.toFixed(1));
+
+        // Rellenar Fósforo y Potasio en panel azul
+        setT('res_p_extr', pExtraccionTeorica.toFixed(1));
+        setT('res_p_suelo_lbl', pSueloLbl);
+        setT('res_p_factor', pFactor.toFixed(2));
+        setT('res_p_carb_factor', carbPFactor.toFixed(2));
+        setT('res_p_necesidad', pNecesidadCorregida);
+
+        setT('res_k_extr', kExtraccionTeorica.toFixed(1));
+        setT('res_k_suelo_lbl', kSueloLbl);
+        setT('res_k_factor', kFactor.toFixed(2));
+        setT('res_k_necesidad', kNecesidadCorregida);
+        
+        // Alerta legal RD 1051/2022 (Máximo 170 kg N/ha orgánico en el año actual)
+        const nOrganicoFisicoActual = (dEstiercol.n * dosisEst1) + (dPurin.n * dosisPurin1);
+        const alertaBox = document.getElementById('alerta_rd1051');
+        if(alertaBox){
+            if (nOrganicoFisicoActual > 170) {
+                alertaBox.innerText = "⚠️ EXCESO LEGAL: Aporte orgánico actual de " + nOrganicoFisicoActual.toFixed(1) + " kg N/ha supera el límite de 170 kg N/ha (RD 1051/2022).";
+                alertaBox.style.color = "#ff5252";
+            } else {
+                alertaBox.innerText = "✅ Cumplimiento de Límites del RD 1051/2022 (" + nOrganicoFisicoActual.toFixed(1) + " kg N/ha orgánico).";
+                alertaBox.style.color = "#64ffda";
+            }
+        }
+
+        // --- PLAN DE FERTILIZACIÓN BALANCEADO NPK EUROCHEM (FONDO + COBERTERA 1 + COBERTERA 2) ---
+        const keyFondo = document.getElementById('fert_fondo').value;
+        const dosisFondo = getV('dosis_fondo');
+        const dataFondo = fertData[keyFondo] || fertData['0'];
+
+        const keyCob1 = document.getElementById('fert_cobertera').value;
+        const dosisCob1 = getV('dosis_cobertera_1');
+        const dataCob1 = fertData[keyCob1] || fertData['0'];
+
+        const keyCob2 = document.getElementById('fert_cobertera_2').value;
+        const dosisCob2 = getV('dosis_cobertera_2');
+        const dataCob2 = fertData[keyCob2] || fertData['0'];
+
+        const nAportadoFondo = (dataFondo.n * dosisFondo) / 100;
+        const pAportadoFondo = (dataFondo.p * dosisFondo) / 100;
+        const kAportadoFondo = (dataFondo.k * dosisFondo) / 100;
+
+        const nAportadoCob1 = (dataCob1.n * dosisCob1) / 100;
+        const pAportadoCob1 = (dataCob1.p * dosisCob1) / 100;
+        const kAportadoCob1 = (dataCob1.k * dosisCob1) / 100;
+
+        const nAportadoCob2 = (dataCob2.n * dosisCob2) / 100;
+        const pAportadoCob2 = (dataCob2.p * dosisCob2) / 100;
+        const kAportadoCob2 = (dataCob2.k * dosisCob2) / 100;
+
+        const nAportadoTotalPlan = nAportadoFondo + nAportadoCob1 + nAportadoCob2;
+        const pAportadoTotalPlan = pAportadoFondo + pAportadoCob1 + pAportadoCob2;
+        const kAportadoTotalPlan = kAportadoFondo + kAportadoCob1 + kAportadoCob2;
+
+        setT('n_aportado_plan', nAportadoTotalPlan.toFixed(1));
+        setT('p_aportado_plan', pAportadoTotalPlan.toFixed(1));
+        setT('k_aportado_plan', kAportadoTotalPlan.toFixed(1));
+
+        let pctFondo = 0, pctCob1 = 0, pctCob2 = 0;
+        if (nAportadoTotalPlan > 0) {
+            pctFondo = Math.round((nAportadoFondo / nAportadoTotalPlan) * 100);
+            pctCob1 = Math.round((nAportadoCob1 / nAportadoTotalPlan) * 100);
+            pctCob2 = Math.round((nAportadoCob2 / nAportadoTotalPlan) * 100);
+        }
+        setT('pct_n_fondo', pctFondo + "%");
+        setT('pct_n_cob1', pctCob1 + "%");
+        setT('pct_n_cob2', pctCob2 + "%");
+
+        const nRestante = balanceFinalN - nAportadoTotalPlan;
+        setT('n_restante_cob', nRestante > 0 ? nRestante.toFixed(1) : "0.0");
+
+        const pBalance = pAportadoTotalPlan - pNecesidadCorregida;
+        setT('p_balance_plan', pBalance >= 0 ? "+" + pBalance.toFixed(1) : pBalance.toFixed(1));
+
+        const kBalance = kAportadoTotalPlan - kNecesidadCorregida;
+        setT('k_balance_plan', kBalance >= 0 ? "+" + kBalance.toFixed(1) : kBalance.toFixed(1));
+
+        // --- DIAGNÓSTICO TÉCNICO Y RECOMENDACIONES FINALES ---
+        let diagHtml = "";
+        diagHtml += "<strong>🚜 Desempeño de la Estrategia Comercial:</strong><br>";
+        if (nRestante > 10) {
+            diagHtml += "⚠️ <strong>N Insuficiente:</strong> Falta cubrir " + nRestante.toFixed(1) + " UF de Nitrógeno en las coberteras.<br>";
+        } else if (nRestante < -15) {
+            diagHtml += "❌ <strong>Sobredosis de Nitrógeno:</strong> Exceso de " + Math.abs(nRestante).toFixed(1) + " UF. Reduzca dosis para cumplir con el RD 1051.<br>";
+        } else {
+            diagHtml += "✅ <strong>Nitrógeno optimizado:</strong> Satisface con precisión el balance de nutrientes.<br>";
+        }
+        if (pBalance < -15) {
+            diagHtml += "⚠️ <strong>Déficit de Fósforo:</strong> Faltan " + Math.abs(pBalance).toFixed(1) + " kg P₂O₅/ha. Seleccione una fórmula de fondo con más fósforo.<br>";
+        } else if (pBalance > 20) {
+            diagHtml += "ℹ️ <strong>Exceso de Fósforo:</strong> Superávit de " + pBalance.toFixed(1) + " kg P₂O₅/ha. Se sugiere reducir la dosis de fondo.<br>";
+        } else {
+            diagHtml += "✅ <strong>Fósforo equilibrado:</strong> Satisface los objetivos edáficos y de la planta.<br>";
+        }
+        if (kBalance < -20) {
+            diagHtml += "⚠️ <strong>Déficit de Potasio:</strong> Faltan " + Math.abs(kBalance).toFixed(1) + " kg K₂O/ha. Seleccione una fórmula con mayor riqueza en potasa.<br>";
+        } else if (kBalance > 30) {
+            diagHtml += "ℹ️ <strong>Exceso de Potasio:</strong> Superávit de " + kBalance.toFixed(1) + " kg K₂O/ha. Puede interferir en la asimilación del Magnesio.<br>";
+        } else {
+            diagHtml += "✅ <strong>Potasio equilibrado:</strong> Óptimo aporte al complejo arcillo-húmico.<br>";
+        }
+
+        // --- CUMPLIMIENTO ZONA VULNERABLE A NITRATOS (ANDALUCÍA) ---
+        diagHtml += "<br><strong>⚖️ Cumplimiento Zona Vulnerable a Nitratos (Andalucía):</strong><br>";
+        const vulnerablePlanEurochem = pfVulnerable();
+        if(!vulnerablePlanEurochem){
+            diagHtml += "ℹ️ Marca \"Zona Vulnerable a Nitratos\" arriba si esta parcela está en ZVN para activar los avisos de cumplimiento.<br>";
+        } else {
+            // Tope legal UFN/t × producción esperada
+            const legalLimitEurochem = pfLegalNLimit();
+            if(legalLimitEurochem == null){
+                diagHtml += "ℹ️ No tengo el tope legal verificado para este cultivo; introduce/ verifica el límite del programa de actuación vigente.<br>";
+            } else if(nAportadoTotalPlan > legalLimitEurochem + 0.05){
+                diagHtml += "❌ <strong>Supera el tope legal de N:</strong> " + nAportadoTotalPlan.toFixed(1) + " kg N/ha aportados frente a un máximo de " + legalLimitEurochem.toFixed(1) + " kg N/ha (Cuadro 4, BOJA nº214/2020).<br>";
+            } else {
+                diagHtml += "✅ <strong>Dentro del tope legal de N:</strong> " + nAportadoTotalPlan.toFixed(1) + " / " + legalLimitEurochem.toFixed(1) + " kg N/ha.<br>";
+            }
+            // Tope del 30% en fondo (según si el fondo lleva o no inhibidor/liberación lenta)
+            const fondoEsInhibidor = ENTEC_INHIBIDOR_KEYS.has(keyFondo);
+            const zvnEurochem = CULTIVO_ZVN_NOTES[document.getElementById('cultivo_objetivo').value];
+            const capAplicaEurochem = zvnEurochem ? zvnEurochem.cap30 : true;
+            if(!capAplicaEurochem){
+                diagHtml += "ℹ️ Este cultivo no tiene el tope genérico del 30% en fondo (revisa su regla específica más abajo).<br>";
+            } else if(fondoEsInhibidor){
+                diagHtml += "✅ El abono de fondo lleva inhibidor de la nitrificación/liberación lenta: exento del tope del 30% en fondo.<br>";
+            } else if(pctFondo > 30){
+                diagHtml += "❌ <strong>Supera el 30% de N en fondo:</strong> " + pctFondo + "% del N total va en fondo con un producto sin inhibidor. Usa un ENTEC (inhibidor) o reduce la dosis de fondo.<br>";
+            } else {
+                diagHtml += "✅ <strong>Dentro del 30% en fondo:</strong> " + pctFondo + "% del N total.<br>";
+            }
+            if(zvnEurochem){
+                diagHtml += "<span style='font-weight:normal;'><strong>Fondo:</strong> " + zvnEurochem.fondoNote + "<br><strong>Cobertera:</strong> " + zvnEurochem.coberteraNote + "</span><br>";
+            } else {
+                diagHtml += "<span style='font-weight:normal;'>Selecciona un \"Cultivo Objetivo\" con notas ZVN verificadas para ver las restricciones específicas de fondo y cobertera.</span><br>";
+            }
+        }
+
+        // --- PRODUCCIÓN INTEGRADA (adicional a ZVN, no sustituye sus restricciones) ---
+        const piActivaEurochem = pfPIActive();
+        if(piActivaEurochem){
+            diagHtml += "<br><strong>🌱 Producción Integrada (adicional a ZVN):</strong><br>";
+            const piEurochem = pfPINotes();
+            if(!piEurochem){
+                diagHtml += "ℹ️ No tengo el reglamento de Producción Integrada verificado para este cultivo (solo Trigo, Algodón, Olivar y Cítricos). Aplica igualmente tu reglamento específico de PI.<br>";
+            } else {
+                const piLimitEurochem = pfPINLimit(piEurochem);
+                if(piLimitEurochem != null){
+                    if(nAportadoTotalPlan > piLimitEurochem + 0.05){
+                        diagHtml += "❌ <strong>Supera el límite de N de Producción Integrada:</strong> " + nAportadoTotalPlan.toFixed(1) + " kg N/ha aportados frente a un máximo de " + piLimitEurochem.toFixed(1) + " kg N/ha.<br>";
+                    } else {
+                        diagHtml += "✅ <strong>Dentro del límite de N de Producción Integrada:</strong> " + nAportadoTotalPlan.toFixed(1) + " / " + piLimitEurochem.toFixed(1) + " kg N/ha.<br>";
+                    }
+                }
+                if(piEurochem.nAbsLimitAgroambiental != null){
+                    diagHtml += (nAportadoTotalPlan > piEurochem.nAbsLimitAgroambiental ? "⚠️ " : "✅ ") + "Límite de ayuda agroambiental: " + nAportadoTotalPlan.toFixed(1) + " / " + piEurochem.nAbsLimitAgroambiental + " kg N/ha (solo si te acoges a esa ayuda).<br>";
+                }
+                if(piEurochem.pkAbsLimit != null){
+                    const pOk = pAportadoTotalPlan <= piEurochem.pkAbsLimit, kOk = kAportadoTotalPlan <= piEurochem.pkAbsLimit;
+                    diagHtml += (pOk?"✅ ":"❌ ") + "P₂O₅ aportado: " + pAportadoTotalPlan.toFixed(1) + " / " + piEurochem.pkAbsLimit + " UF/ha máx. &nbsp;&nbsp;" + (kOk?"✅ ":"❌ ") + "K₂O aportado: " + kAportadoTotalPlan.toFixed(1) + " / " + piEurochem.pkAbsLimit + " UF/ha máx.<br>";
+                }
+                if(piEurochem.goteoLimits){
+                    const gl = piEurochem.goteoLimits;
+                    const pOkG = pAportadoTotalPlan <= gl.p, kOkG = kAportadoTotalPlan <= gl.k;
+                    diagHtml += "Límites PI en riego por goteo: N " + gl.n + ", P₂O₅ " + gl.p + ", K₂O " + gl.k + ", MgO " + gl.mg + " kg/ha. &nbsp;" + (pOkG?"✅ P dentro":"❌ P excedido") + " · " + (kOkG?"✅ K dentro":"❌ K excedido") + "<br>";
+                }
+                diagHtml += "<span style='font-weight:normal;'><strong>Fondo (PI):</strong> " + piEurochem.fondoNote + "<br><strong>Cobertera (PI):</strong> " + piEurochem.coberteraNote + "</span><br>";
+            }
+        }
+
+        const diagBox = document.getElementById('diagnostico_estrategia_final');
+        if (diagBox) diagBox.innerHTML = diagHtml;
+
+        // Sincronizar el Plan Eurochem con el módulo de comparativa (referencia para las alternativas)
+        if (typeof pfSyncEurochemPlan === 'function') pfSyncEurochemPlan();
+
+        // --- DIAGNÓSTICO DE CORRECCIONES DE SUELO (P y K) ---
+        let diagSueloHtml = "- " + pRecomendacionDetalle + "<br>- " + kRecomendacionDetalle;
+        const diagSueloBox = document.getElementById('diagnostico_suelo_final');
+        if (diagSueloBox) diagSueloBox.innerHTML = diagSueloHtml;
+
+        // Ejecutar sincronización de campos impresos
+        updatePrintValues();
+
+        // Refrescar el comparador de planes de abonado con el nuevo objetivo N-P-K
+        if (typeof pfRender === 'function') pfRender();
+    }
+
+    // Guardado persistente
+    function saveToLocalStorage() {
+        allInputs.forEach(input => {
+            localStorage.setItem('eurochem_master_' + input.id, input.value);
+        });
+        alert("💾 ¡Datos de la finca, análisis de suelo y plan de abonado guardados correctamente en este navegador!");
+    }
+
+    function loadFromLocalStorage() {
+        allInputs.forEach(input => {
+            if (input.id !== 'analisis_date') {
+                const storedValue = localStorage.getItem('eurochem_master_' + input.id);
+                if (storedValue !== null) input.value = storedValue;
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { 
+        loadFromLocalStorage(); 
+        
+        // Inicializar fecha
+        const dateInput = document.getElementById('analisis_date');
+        if (dateInput) {
+            const hoy = new Date();
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const anio = String(hoy.getFullYear()).slice(-2);
+            dateInput.value = dia + '/' + mes + '/' + anio;
+        }
+
+        runCalculations(); 
+    });
+
+    /* =====================================================================
+       MÓDULO: COMPARADOR DE PLANES DE ABONADO — Eurochem vs. Alternativas
+       Toma el objetivo de N-P-K en vivo del balance de nutrientes (arriba)
+       y aplica el marco de zonas vulnerables de Andalucía (BOJA nº214/2020):
+       tope del 30% de N en fondo salvo inhibidor/liberación lenta, y
+       clasificación de grupos de N (1/2/3) según forma nítrica/amoniacal/ureica.
+       ===================================================================== */
+    const getT = (id) => { const e = document.getElementById(id); return e ? (parseFloat((e.innerText||'0').replace(',', '.')) || 0) : 0; };
+    const pfEsc = (s) => (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    const PF_KEY = 'pf_eurochem_v1';
+    let pfActivePlanId = null;
+
+    function pfUid(){ return Math.random().toString(36).slice(2,10); }
+
+    // Fichas técnicas oficiales EuroChem Agro Iberia (mismos 13 productos ya usados en el resto del sistema)
+    const PF_EUROCHEM_PRODUCTS = [
+        { name:"ENTEC Nitrofoska Especial 12-12-17 (+2 MgO+20 SO3)", n:12, p:12, k:17, mg:2, s:20, slow:true },
+        { name:"ENTEC 20-10-10 (+7,5 SO3)", n:20, p:10, k:10, mg:0, s:7.5, slow:true },
+        { name:"Nitrofoska Perfect 15-5-20 (+2 MgO+22,5 SO3)", n:15, p:5, k:20, mg:2, s:22.5, slow:false },
+        { name:"Nitrofoska Super 20-5-10 (+3 MgO+12,5 SO3)", n:20, p:5, k:10, mg:3, s:12.5, slow:false },
+        { name:"ENTEC 20-8-10 (+2 MgO+7,5 SO3)", n:20, p:8, k:10, mg:2, s:7.5, slow:true },
+        { name:"ENTEC 25-15", n:25, p:15, k:0, mg:0, s:0, slow:true },
+        { name:"ENTEC 15-13-13 (+12,5 SO3)", n:15, p:13, k:13, mg:0, s:12.5, slow:true },
+        { name:"ENTEC 12-20-12", n:12, p:20, k:12, mg:0, s:0, slow:true },
+        { name:"ENTEC 13-10-20 (+12,5 SO3)", n:13, p:10, k:20, mg:0, s:12.5, slow:true },
+        { name:"Nitrofoska N Plus 22-5-5 (+2 MgO+7,5 SO3)", n:22, p:5, k:5, mg:2, s:7.5, slow:false },
+        { name:"ENTEC EVO 27S (+10 SO3)", n:27, p:0, k:0, mg:0, s:10, slow:true },
+        { name:"ENTEC EVO 24 (+15 SO3)", n:24, p:0, k:0, mg:0, s:15, slow:true },
+        { name:"ENTEC EVO 27", n:27, p:0, k:0, mg:0, s:0, slow:true }
+    ];
+
+    // Claves de fertData (selectores del Plan Eurochem) que llevan inhibidor de la nitrificación/
+    // ureasa o son liberación lenta — todas las gamas ENTEC, salvo las Nitrofoska "normales".
+    const ENTEC_INHIBIDOR_KEYS = new Set([
+        'entec_12_12_17','entec_20_10_10','entec_20_8_10','entec_25_15','entec_15_13_13',
+        'entec_12_20_12','entec_13_10_20','entec_evo_27s','entec_evo_24'
+    ]);
+    // Traduce cada clave de fertData al nombre exacto del catálogo del comparador (PF_EUROCHEM_PRODUCTS),
+    // para poder sincronizar el Plan Eurochem de 3 líneas con el motor de comparativa de alternativas.
+    const FERT_KEY_TO_PF_NAME = {
+        'entec_12_12_17': "ENTEC Nitrofoska Especial 12-12-17 (+2 MgO+20 SO3)",
+        'entec_20_10_10': "ENTEC 20-10-10 (+7,5 SO3)",
+        'perfect_15_5_20': "Nitrofoska Perfect 15-5-20 (+2 MgO+22,5 SO3)",
+        'super_20_5_10': "Nitrofoska Super 20-5-10 (+3 MgO+12,5 SO3)",
+        'entec_20_8_10': "ENTEC 20-8-10 (+2 MgO+7,5 SO3)",
+        'entec_25_15': "ENTEC 25-15",
+        'entec_15_13_13': "ENTEC 15-13-13 (+12,5 SO3)",
+        'entec_12_20_12': "ENTEC 12-20-12",
+        'entec_13_10_20': "ENTEC 13-10-20 (+12,5 SO3)",
+        'nplus_22_5_5': "Nitrofoska N Plus 22-5-5 (+2 MgO+7,5 SO3)",
+        'entec_evo_27s': "ENTEC EVO 27S (+10 SO3)",
+        'entec_evo_24': "ENTEC EVO 24 (+15 SO3)"
+    };
+
+    // Notas de manejo de fondo/cobertera del Cuadro 4 (Anexo I, BOJA nº214/2020), mapeadas a las
+    // claves de "Cultivo Objetivo" que ya usa este documento (cultivoExtractions más arriba).
+    const CULTIVO_ZVN_NOTES = {
+        trigo:{ufnT:35, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en al menos 2 veces: ahijado y encañado."},
+        cebada:{ufnT:35, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en al menos 2 veces: ahijado y encañado."},
+        avena:{ufnT:35, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en al menos 2 veces: ahijado y encañado."},
+        triticale:{ufnT:35, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en al menos 2 veces: ahijado y encañado."},
+        maiz:{ufnT:25, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta). 25 UFN/t si el destino es grano; 35 UFN/t si es ensilado.", coberteraNote:"Fraccionar en 2 veces: 30 cm de altura y al inicio de la floración. Prohibido N tras los primeros penachos."},
+        girasol:{ufnT:40, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en 2 veces: 20 cm de altura e inicio de formación del capítulo."},
+        colza:{ufnT:47, cap30:false, fondoNote:"Se recomienda aplicar entre el 30-50% del N en fondo para favorecer la implantación otoñal (no aplica el tope genérico del 30%).", coberteraNote:"El resto en cobertera a la salida de la parada invernal."},
+        algodon:{ufnT:55, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar en 2 aportaciones: 10 cm de altura e inicio de floración. Prohibida urea en 2ª cobertera y N tras maduración."},
+        garbanzo:{ufnT:45, cap30:true, fondoNote:"Abonado de fondo hasta que se produzca la simbiosis con Rhizobium sp.; formados los nódulos, no se recomiendan más aportes.", coberteraNote:"Si la nodulación funciona correctamente, no son necesarios más aportes nitrogenados."},
+        guisante:{ufnT:45, cap30:true, fondoNote:"Abonado de fondo hasta que se produzca la simbiosis con Rhizobium sp.; formados los nódulos, no se recomiendan más aportes.", coberteraNote:"Si la nodulación funciona correctamente, no son necesarios más aportes nitrogenados."},
+        olivar_si:{ufnT:20, cap30:false, fondoNote:"Prohibido en meses fríos (diciembre y enero) sobre suelo desnudo. No aplica el tope genérico del 30%.", coberteraNote:"En secano: un único aporte primaveral amoniacal u orgánico. En fertirrigación, ajustar según necesidades."},
+        olivar:{ufnT:20, cap30:false, fondoNote:"Prohibido en meses fríos (diciembre y enero) sobre suelo desnudo. No aplica el tope genérico del 30%.", coberteraNote:"En secano: un único aporte primaveral amoniacal u orgánico. En fertirrigación, ajustar según necesidades."},
+        almendro:{ufnT:25, cap30:false, fondoNote:"Aplicar la fracción de fondo antes de la floración y antes de la aparición de hojas. No aplica el tope genérico del 30%.", coberteraNote:"Fraccionar según demanda. Análisis foliares bianuales y analítica de suelo cada 4 años."},
+        naranjo:{ufnT:6, cap30:false, fondoNote:"Prohibido en fondo durante la parada invernal o próximo a la maduración del fruto. No aplica el tope genérico del 30%.", coberteraNote:"50% antes de floración y 50% tras el cuajado. En riego localizado, descontar el N del agua de riego."},
+        mandarino:{ufnT:6, cap30:false, fondoNote:"Prohibido en fondo durante la parada invernal o próximo a la maduración del fruto. No aplica el tope genérico del 30%.", coberteraNote:"50% antes de floración y 50% tras el cuajado. En riego localizado, descontar el N del agua de riego."},
+        limonero:{ufnT:6, cap30:false, fondoNote:"Prohibido en fondo durante la parada invernal o próximo a la maduración del fruto. No aplica el tope genérico del 30%.", coberteraNote:"50% antes de floración y 50% tras el cuajado. En riego localizado, descontar el N del agua de riego."},
+        vinedo:{ufnT:7.8, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Fraccionar los aportes a lo largo del desarrollo vegetativo según demanda de la vid."},
+        patata:{ufnT:8, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta). Prohibido purín/lixiviado líquido. 8 UFN/t si es variedad nacional; 6 UFN/t si es importada; 4 UFN/t para el resto de tubérculos.", coberteraNote:"Fraccionar en 2 aportes. Prohibido aplicar N transcurridos 60 días desde la siembra."},
+        remolacha:{ufnT:4.2, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta).", coberteraNote:"Abonar cobertera en 2 veces: una en el aclareo y otra un mes después. Prohibido N cuando la raíz alcance 400 g."},
+        tabaco:{ufnT:60, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta). Prohibidos los abonos de alta solubilidad antes del trasplante.", coberteraNote:"Fraccionar en dos o más veces según las necesidades fisiológicas del cultivo."},
+        tomate_industria:{ufnT:4, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta). Prohibido purín/lixiviado líquido.", coberteraNote:"Diseñar el plan nutricional según analíticas de suelo y agua de riego; ajustar en fertirrigación."},
+        freson:{ufnT:4, cap30:true, fondoNote:"Máx. 30% del N total en fondo (exento con inhibidor o liberación lenta). Prohibido purín/lixiviado líquido.", coberteraNote:"Fertirrigación obligatoria. Analizar anualmente el agua de riego y los niveles foliares."},
+        aguacate:{ufnT:25, cap30:false, fondoNote:"Se recomienda integrar directamente en fertirrigación. No aplica el tope genérico del 30%.", coberteraNote:"Aportaciones semanales de marzo a octubre."}
+    };
+
+    // Restricciones de Producción Integrada (PI), independientes y ADICIONALES a las de ZVN
+    // (se muestran ambas a la vez cuando la explotación está en PI). Fuente: Reglamentos
+    // Específicos de Producción Integrada de Andalucía (Trigo, Algodón — Orden 17/2/2016 —,
+    // Olivar — Reglamento 2025 — y Cítricos), sistematizados en la guía aportada por el usuario.
+    const PI_NOTES = {
+        trigo:{
+            nAbsLimit: null, // PI no fija un UF/ha único: exige balance neto de N (usa el mismo objetivo que arriba)
+            fondoNote: "100% del P₂O₅ y K₂O en fondo. El N en fondo no debe superar el 30% del total (rango adecuado: 0-25%).",
+            coberteraNote: "El resto del N se fracciona en al menos 2 coberteras: 1ª (50-60% del N total) antes del ahijado; 2ª (0-50%) en el encañado. Se admite un aporte tardío en espigado de 30-35 kg N/ha en forma nítrica para mejorar la proteína, sin riesgo relevante de lixiviación."
+        },
+        algodon:{
+            nAbsLimit: 200, nAbsLimitAgroambiental: 118.3, pkAbsLimit: 96,
+            fondoNote: "1/3 del N total, más la totalidad del P₂O₅ y K₂O (salvo en riego por goteo), en fondo.",
+            coberteraNote: "2º tercio del N: 1ª cobertera en fase de 4-5 hojas verdaderas. 3er tercio: 2ª cobertera al inicio de los primeros botones florales. Prohibida la urea en la 2ª cobertera y cualquier N tras la maduración de las cápsulas."
+        },
+        olivar:{
+            regimenLimits: { secano_tradicional:70, secano_intensivo:100, riego_tradicional:120, riego_intensivo:150 },
+            fondoNote: "Abono de fondo orgánico o mineral amoniacal al inicio de la actividad vegetativa primaveral.",
+            coberteraNote: "En fertirrigación: 70% del N desde la salida del reposo hasta el endurecimiento del hueso de la aceituna; 70% del K desde el endurecimiento hasta el final. Prohibido abonar en las vedas estacionales de ZVN, salvo riego localizado o agricultura de precisión."
+        },
+        olivar_si:{
+            regimenLimits: { secano_tradicional:70, secano_intensivo:100, riego_tradicional:120, riego_intensivo:150 },
+            fondoNote: "Abono de fondo orgánico o mineral amoniacal al inicio de la actividad vegetativa primaveral.",
+            coberteraNote: "En fertirrigación: 70% del N desde la salida del reposo hasta el endurecimiento del hueso de la aceituna; 70% del K desde el endurecimiento hasta el final. Prohibido abonar en las vedas estacionales de ZVN, salvo riego localizado o agricultura de precisión."
+        },
+        naranjo:{ goteoLimits:{n:240,p:80,k:140,mg:180}, fondoNote:"Suministro continuo controlado vía fertirrigación o aporte basal primaveral.", coberteraNote:"Variedades tempranas: fertilizar de febrero a agosto; tardías: de marzo a septiembre. Fraccionamiento máximo, mínimo semanal en fertirrigación. Prohibido aplicar N durante el cuajado del fruto. Descontar obligatoriamente el N nítrico aportado por el agua de riego." },
+        mandarino:{ goteoLimits:{n:240,p:80,k:140,mg:180}, fondoNote:"Suministro continuo controlado vía fertirrigación o aporte basal primaveral.", coberteraNote:"Variedades tempranas: fertilizar de febrero a agosto; tardías: de marzo a septiembre. Fraccionamiento máximo, mínimo semanal en fertirrigación. Prohibido aplicar N durante el cuajado del fruto. Descontar obligatoriamente el N nítrico aportado por el agua de riego." },
+        limonero:{ goteoLimits:{n:240,p:80,k:140,mg:180}, fondoNote:"Suministro continuo controlado vía fertirrigación o aporte basal primaveral.", coberteraNote:"Limón Fino: fertilizar de febrero a diciembre. Limón Verna: de febrero a noviembre. Fraccionamiento máximo, mínimo semanal en fertirrigación. Prohibido aplicar N durante el cuajado del fruto. Descontar obligatoriamente el N nítrico aportado por el agua de riego." }
+    };
+
+    function pfDefaultFertilizers(){
+        return PF_EUROCHEM_PRODUCTS.map(p => ({
+            id: pfUid(), name: p.name, unit:'kg', price:'', priceBasis:'mil',
+            n:p.n, p:p.p, k:p.k, mg:p.mg||'', ca:'', s:p.s||'',
+            nNitrico:'', nAmoniacal:'', nUreico:'', zvMax:'', slowRelease: !!p.slow
+        }));
+    }
+    function pfDefaultState(){
+        const idA = pfUid(), idB = pfUid();
+        return {
+            fertilizers: pfDefaultFertilizers(),
+            plans: [
+                { id: idA, name: 'Plan Eurochem', items: [] },
+                { id: idB, name: 'Alternativa', items: [] }
+            ],
+            referencePlanId: idA
+        };
+    }
+    function pfLoad(){
+        try{
+            const raw = localStorage.getItem(PF_KEY);
+            if(raw){
+                const parsed = JSON.parse(raw);
+                if(parsed.fertilizers && parsed.plans && parsed.plans.length) return parsed;
+            }
+        }catch(e){}
+        return pfDefaultState();
+    }
+    function pfSave(){ localStorage.setItem(PF_KEY, JSON.stringify(pfState)); }
+    let pfState = pfLoad();
+
+    // Reescribe el "Plan Eurochem" (pfState.plans[0]) a partir de los 3 selectores de fondo/
+    // cobertera 1/cobertera 2, para que participe en la comparativa económica como referencia.
+    function pfSyncEurochemPlan(){
+        if(!pfState.plans[0]) return;
+        const plan = pfState.plans[0];
+        plan.name = 'Plan Eurochem';
+        const mkItem = (key, qty, phase) => {
+            if(!key || key==='0' || !qty) return null;
+            const pfName = FERT_KEY_TO_PF_NAME[key];
+            if(!pfName) return null;
+            let fert = pfState.fertilizers.find(f=>f.name===pfName);
+            if(!fert) return null; // el usuario pudo borrar el producto del catálogo
+            return { fertId: fert.id, qty: qty, phase: phase, slowRelease: false };
+        };
+        const kf = document.getElementById('fert_fondo') ? document.getElementById('fert_fondo').value : '0';
+        const df = getV('dosis_fondo');
+        const kc1 = document.getElementById('fert_cobertera') ? document.getElementById('fert_cobertera').value : '0';
+        const dc1 = getV('dosis_cobertera_1');
+        const kc2 = document.getElementById('fert_cobertera_2') ? document.getElementById('fert_cobertera_2').value : '0';
+        const dc2 = getV('dosis_cobertera_2');
+        const items = [mkItem(kf, df, 'fondo'), mkItem(kc1, dc1, 'cobertera'), mkItem(kc2, dc2, 'cobertera')].filter(Boolean);
+        plan.items = items;
+        pfState.referencePlanId = plan.id;
+        pfSave();
+    }
+
+    function pfFertById(id){ return pfState.fertilizers.find(f=>f.id===id); }
+    function pfPricePerUnit(f){
+        const raw = parseFloat(f.price)||0;
+        return (f.priceBasis||'unidad')==='mil' ? raw/1000 : raw;
+    }
+    function pfNCostPerKg(f){ const n=parseFloat(f.n); if(!n) return null; return pfPricePerUnit(f)/(n/100); }
+    function pfGroup(f){
+        if(f.slowRelease) return 2;
+        const nit=parseFloat(f.nNitrico)||0, amo=parseFloat(f.nAmoniacal)||0, ure=parseFloat(f.nUreico)||0;
+        if(!nit && !amo && !ure) return null;
+        if(nit>0) return 3;
+        return 2;
+    }
+    function pfCalcLine(it){
+        const f = pfFertById(it.fertId);
+        const qty = parseFloat(it.qty)||0;
+        if(!f) return {f:null,qty,cost:0,n:0,p:0,k:0,mg:0,ca:0,s:0,zvExceed:false,exempt:false,group:null};
+        const cost = qty*pfPricePerUnit(f);
+        const n=qty*((parseFloat(f.n)||0)/100), p=qty*((parseFloat(f.p)||0)/100), k=qty*((parseFloat(f.k)||0)/100);
+        const mg=qty*((parseFloat(f.mg)||0)/100), ca=qty*((parseFloat(f.ca)||0)/100), s=qty*((parseFloat(f.s)||0)/100);
+        const zvMax=parseFloat(f.zvMax); const zvExceed = !isNaN(zvMax)&&zvMax>0&&qty>zvMax;
+        const exempt = !!(it.slowRelease || f.slowRelease);
+        const group = it.slowRelease ? 2 : pfGroup(f);
+        return {f,qty,cost,n,p,k,mg,ca,s,zvExceed,exempt,group};
+    }
+    function pfVulnerable(){ const e=document.getElementById('zona_vulnerable_pf'); return e ? e.checked : false; }
+    function pfCalcPlan(plan){
+        const lines = plan.items.map(pfCalcLine);
+        const sum = k => lines.reduce((a,l)=>a+l[k],0);
+        const costHa=sum('cost'), nHa=sum('n'), pHa=sum('p'), kHa=sum('k'), mgHa=sum('mg'), caHa=sum('ca'), sHa=sum('s');
+        const fondoCappedN = lines.reduce((a,l,i)=> a+((plan.items[i].phase||'fondo')==='fondo' && !l.exempt ? l.n:0),0);
+        const fondoCapPct = nHa>0 ? (fondoCappedN/nHa)*100 : 0;
+        const cultivoKey = document.getElementById('cultivo_objetivo') ? document.getElementById('cultivo_objetivo').value : '';
+        const zvn = CULTIVO_ZVN_NOTES[cultivoKey] || null;
+        const capApplies = zvn ? zvn.cap30 : true;
+        const vulnerable = pfVulnerable();
+        const exceedsFondoCap = vulnerable && capApplies && fondoCapPct > 30.0001;
+        const ppk = pfPricePerKgCosecha();
+        const paybackKgHa = (costHa>0 && ppk) ? costHa/ppk : null;
+        const legalLimit = pfLegalNLimit();
+        const exceedsLegalLimit = vulnerable && legalLimit!=null && nHa > legalLimit + 0.05;
+        const piActive = pfPIActive();
+        const pi = piActive ? pfPINotes() : null;
+        const piLimit = pi ? pfPINLimit(pi) : null;
+        const exceedsPI = piActive && piLimit!=null && nHa > piLimit + 0.05;
+        return { lines, costHa, nHa, pHa, kHa, mgHa, caHa, sHa, fondoCapPct, exceedsFondoCap, capApplies,
+                  zvLineWarn: lines.some(l=>l.zvExceed), group3InFondo: lines.some((l,i)=> (plan.items[i].phase||'fondo')==='fondo' && l.group===3),
+                  vulnerable, zvn, paybackKgHa, legalLimit, exceedsLegalLimit, piActive, pi, piLimit, exceedsPI };
+    }
+    function pfPricePerKgCosecha(){
+        const p = getV('precio_venta');
+        const unitEl = document.getElementById('precio_venta_unit');
+        if(!p) return null;
+        return (unitEl && unitEl.value==='t') ? p/1000 : p;
+    }
+    function pfTargets(){
+        return { n: getT('resultado_balance_n'), p: getT('res_p_necesidad'), k: getT('res_k_necesidad') };
+    }
+    // Tope legal de N = UFN/tonelada del Cuadro 4 (BOJA nº214/2020) × producción esperada (t/ha).
+    // Es un límite distinto del objetivo agronómico (déficit del balance): el balance dice cuánto
+    // conviene aportar, el tope legal dice cuánto como máximo se puede aportar en zona vulnerable.
+    function pfLegalNLimit(){
+        const cultivoKey = document.getElementById('cultivo_objetivo') ? document.getElementById('cultivo_objetivo').value : '';
+        const zvn = CULTIVO_ZVN_NOTES[cultivoKey];
+        const rendimiento = getV('rendimiento');
+        if(!zvn || !zvn.ufnT || !rendimiento) return null;
+        return zvn.ufnT * rendimiento;
+    }
+    function pfPIActive(){ const e=document.getElementById('produccion_integrada_pf'); return e ? e.checked : false; }
+    function pfPINotes(){
+        const cultivoKey = document.getElementById('cultivo_objetivo') ? document.getElementById('cultivo_objetivo').value : '';
+        return PI_NOTES[cultivoKey] || null;
+    }
+    // Límite absoluto de N de Producción Integrada (distinto del UFN/t de ZVN): para olivar depende
+    // del régimen de cultivo seleccionado; para el resto es un valor fijo si el reglamento lo define.
+    function pfPINLimit(pi){
+        if(!pi) return null;
+        if(pi.regimenLimits){
+            const regimenEl = document.getElementById('regimen_olivar_pf');
+            const regimen = regimenEl ? regimenEl.value : 'secano_tradicional';
+            return pi.regimenLimits[regimen] != null ? pi.regimenLimits[regimen] : null;
+        }
+        if(pi.goteoLimits) return pi.goteoLimits.n;
+        if(pi.nAbsLimit != null) return pi.nAbsLimit;
+        return null; // p.ej. trigo: PI exige balance neto, no fija UF/ha único
+    }
+
+    /* ---------- RENDER ---------- */
+    function pfRender(){
+        if(!document.getElementById('pfRoot')) return; // el módulo aún no está en el DOM
+        const alternativas = pfState.plans.slice(1);
+        if(alternativas.length===0){ pfState.plans.push({ id: pfUid(), name:'Alternativa', items:[] }); pfSave(); }
+        if(!pfActivePlanId || pfActivePlanId===pfState.plans[0].id || !pfState.plans.find(p=>p.id===pfActivePlanId)) pfActivePlanId = pfState.plans[1].id;
+        pfRenderTarget();
+        pfRenderCatalog();
+        pfRenderPlans();
+        pfRenderCompare();
+        const zvEl = document.getElementById('zona_vulnerable_pf');
+        const pZv = document.getElementById('p_val_zona_vulnerable_pf');
+        if(zvEl && pZv) pZv.innerText = zvEl.checked ? 'Sí' : 'No';
+        const piEl = document.getElementById('produccion_integrada_pf');
+        const pPi = document.getElementById('p_val_produccion_integrada_pf');
+        if(piEl && pPi) pPi.innerText = piEl.checked ? 'Sí' : 'No';
+    }
+
+    function pfRenderTarget(){
+        const t = pfTargets();
+        const legal = pfLegalNLimit();
+        const cultivoKey = document.getElementById('cultivo_objetivo') ? document.getElementById('cultivo_objetivo').value : '';
+        const zvn = CULTIVO_ZVN_NOTES[cultivoKey];
+        document.getElementById('pf_target').innerHTML = `
+            <div class="pf-t-item">🎯 Objetivo agronómico N (déficit tras balance): <strong>${t.n.toFixed(1)} UF/ha</strong></div>
+            <div class="pf-t-item">🎯 Objetivo P₂O₅: <strong>${t.p.toFixed(1)} kg/ha</strong></div>
+            <div class="pf-t-item">🎯 Objetivo K₂O: <strong>${t.k.toFixed(1)} kg/ha</strong></div>
+            <div class="pf-t-item">⚖️ Tope legal de N (ZVN Andalucía): <strong>${legal!=null ? legal.toFixed(1)+' kg N/ha' : '—'}</strong>${zvn&&zvn.ufnT ? ` <span style="font-weight:normal;font-size:0.85rem;">(${zvn.ufnT} UFN/t × ${getV('rendimiento')} t/ha)</span>` : (cultivoKey ? ' <span style="font-weight:normal;font-size:0.85rem;">(cultivo sin tope verificado)</span>' : '')}</div>
+        `;
+    }
+
+    function pfRenderCatalog(){
+        const rows = pfState.fertilizers.map((f,i)=>{
+            const nCost = pfNCostPerKg(f);
+            const group = pfGroup(f);
+            const groupBadge = group===null ? '<span class="pf-badge na" title="Indica N nítrico/amoniacal/ureico o marca Inhibidor">?</span>'
+                : `<span class="pf-badge ${group===3?'warn':'ok'}" title="${group===2?'Grupo 2: válido en fondo o primeras coberteras':'Grupo 3: solo en cobertera'}">${group}</span>`;
+            return `<tr data-i="${i}">
+                <td><input type="text" class="pfc-name" value="${pfEsc(f.name)}" placeholder="Nombre"></td>
+                <td><select class="pfc-unit"><option value="kg" ${f.unit==='kg'?'selected':''}>kg</option><option value="L" ${f.unit==='L'?'selected':''}>L</option></select></td>
+                <td style="display:flex;gap:4px;">
+                    <input type="number" min="0" step="0.001" class="pfc-price" value="${f.price}" style="width:60px;">
+                    <select class="pfc-pricebasis" style="width:78px;">
+                        <option value="unidad" ${(f.priceBasis||'unidad')==='unidad'?'selected':''}>€/${f.unit==='L'?'L':'kg'}</option>
+                        <option value="mil" ${f.priceBasis==='mil'?'selected':''}>€/${f.unit==='L'?'1000L':'t'}</option>
+                    </select>
+                </td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-n" value="${f.n}" placeholder="%N"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-nnit" value="${f.nNitrico||''}" placeholder="—" title="% N nítrico"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-namo" value="${f.nAmoniacal||''}" placeholder="—" title="% N amoniacal"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-nure" value="${f.nUreico||''}" placeholder="—" title="% N ureico"></td>
+                <td class="pf-center">${groupBadge}</td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-p" value="${f.p||''}" placeholder="%P₂O₅"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-k" value="${f.k||''}" placeholder="%K₂O"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-mg" value="${f.mg||''}" placeholder="%MgO"></td>
+                <td><input type="number" min="0" max="100" step="0.1" class="pfc-s" value="${f.s||''}" placeholder="%SO₃"></td>
+                <td class="pf-num pf-right">${nCost!=null?nCost.toFixed(2)+' €':'—'}</td>
+                <td><input type="number" min="0" step="1" class="pfc-zvmax" value="${f.zvMax||''}" placeholder="sin tope"></td>
+                <td class="pf-center"><input type="checkbox" class="pfc-slow" ${f.slowRelease?'checked':''} title="Liberación lenta / inhibidor de la nitrificación-ureasa"></td>
+                <td class="pf-center"><button class="pf-btn danger" style="padding:3px 8px;" data-act="del-fert">✕</button></td>
+            </tr>`;
+        }).join('');
+        document.getElementById('pf_catalog').innerHTML = `
+            <div class="pf-scroll"><table class="pf-table">
+                <thead><tr><th>Nombre</th><th>Unidad</th><th>Precio</th><th>%N</th><th>%N nít.</th><th>%N amon.</th><th>%N ureico</th><th>Grupo</th><th>%P₂O₅</th><th>%K₂O</th><th>%MgO</th><th>%SO₃</th><th>€/kg N</th><th>Tope ZV kg/ha</th><th>Inhibidor</th><th></th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table></div>
+            <div style="margin-top:10px;"><button class="pf-btn" data-act="add-fert">+ Añadir fertilizante</button></div>
+        `;
+        pfWireCatalog();
+        const countEl = document.getElementById('pf_catalog_count');
+        if(countEl) countEl.innerText = '(' + pfState.fertilizers.length + ' productos)';
+    }
+    function pfWireCatalog(){
+        const root = document.getElementById('pf_catalog');
+        root.querySelector('[data-act="add-fert"]').addEventListener('click', ()=>{
+            pfState.fertilizers.push({ id:pfUid(), name:'', unit:'kg', price:'', priceBasis:'unidad', n:'', p:'', k:'', mg:'', ca:'', s:'', nNitrico:'', nAmoniacal:'', nUreico:'', zvMax:'', slowRelease:false });
+            pfSave(); pfRenderCatalog(); pfRenderPlans();
+        });
+        root.querySelectorAll('tbody tr').forEach(tr=>{
+            const i = +tr.dataset.i, f = pfState.fertilizers[i];
+            const bind = (cls, key, full) => {
+                const el = tr.querySelector(cls);
+                el.addEventListener('input', e=>{ f[key]=e.target.value; pfSave(); });
+                if(full) el.addEventListener('change', ()=>{ pfRenderCatalog(); pfRenderPlans(); pfRenderCompare(); });
+            };
+            bind('.pfc-name','name');
+            tr.querySelector('.pfc-unit').addEventListener('change', e=>{ f.unit=e.target.value; pfSave(); pfRenderCatalog(); pfRenderPlans(); });
+            bind('.pfc-price','price',true);
+            tr.querySelector('.pfc-pricebasis').addEventListener('change', e=>{ f.priceBasis=e.target.value; pfSave(); pfRenderCatalog(); pfRenderPlans(); pfRenderCompare(); });
+            bind('.pfc-n','n',true);
+            bind('.pfc-nnit','nNitrico',true);
+            bind('.pfc-namo','nAmoniacal',true);
+            bind('.pfc-nure','nUreico',true);
+            bind('.pfc-p','p'); bind('.pfc-k','k'); bind('.pfc-mg','mg'); bind('.pfc-s','s'); bind('.pfc-zvmax','zvMax');
+            tr.querySelector('.pfc-slow').addEventListener('change', e=>{ f.slowRelease=e.target.checked; pfSave(); pfRenderCatalog(); pfRenderPlans(); pfRenderCompare(); });
+            tr.querySelector('[data-act="del-fert"]').addEventListener('click', ()=>{
+                if(confirm(`¿Eliminar "${f.name||'este fertilizante'}"?`)){ pfState.fertilizers.splice(i,1); pfSave(); pfRenderCatalog(); pfRenderPlans(); pfRenderCompare(); }
+            });
+        });
+    }
+
+    function pfRenderPlans(){
+        const alternativas = pfState.plans.slice(1);
+        const plan = pfState.plans.find(p=>p.id===pfActivePlanId);
+        const tabs = alternativas.map(p=>`<div class="pf-plan-tab ${p.id===pfActivePlanId?'active':''}" data-pid="${p.id}">${pfEsc(p.name)}</div>`).join('');
+        if(!plan){ document.getElementById('pf_plans').innerHTML = `<div class="pf-plan-tabs">${tabs}</div>`; return; }
+        const calc = pfCalcPlan(plan);
+        const rows = plan.items.map((it,i)=>{
+            const line = calc.lines[i], f = line.f, phase = it.phase||'fondo';
+            const group3warn = phase==='fondo' && line.group===3;
+            return `<tr data-i="${i}">
+                <td><select class="pfp-phase"><option value="fondo" ${phase==='fondo'?'selected':''}>Fondo</option><option value="cobertera" ${phase==='cobertera'?'selected':''}>Cobertera</option></select></td>
+                <td><select class="pfp-fert"><option value="">— seleccionar —</option>${pfState.fertilizers.map(fz=>`<option value="${fz.id}" ${it.fertId===fz.id?'selected':''}>${pfEsc(fz.name||'(sin nombre)')}</option>`).join('')}</select></td>
+                <td><input type="number" min="0" step="0.01" class="pfp-qty" value="${it.qty}" placeholder="kg/ha"></td>
+                <td class="pf-num pf-right">${f?line.cost.toFixed(2)+' €':'—'}</td>
+                <td class="pf-num pf-right">${f?`${line.n.toFixed(1)}·${line.p.toFixed(1)}·${line.k.toFixed(1)}`:'—'}</td>
+                <td class="pf-center">${f ? (line.group===null?'<span class="pf-badge na">?</span>':`<span class="pf-badge ${line.group===3?'warn':'ok'}">${line.group}</span>`) : '—'}</td>
+                <td class="pf-center">${phase==='fondo' ? `<label style="display:flex;align-items:center;gap:4px;justify-content:center;white-space:nowrap;"><input type="checkbox" class="pfp-slow" ${it.slowRelease?'checked':''}> Inhib.</label>` : '<span style="color:#94a3b8;">—</span>'}</td>
+                <td class="pf-center">${line.zvExceed?'<span title="Supera el tope de dosis ZV">⚠</span>':''}${group3warn?'<span title="Grupo 3 en fondo: solo permitido en cobertera">⚠</span>':''}</td>
+                <td class="pf-center"><button class="pf-btn danger" style="padding:3px 8px;" data-act="del-item">✕</button></td>
+            </tr>`;
+        }).join('');
+        const zvn = calc.zvn;
+        document.getElementById('pf_plans').innerHTML = `
+            <div class="pf-plan-tabs">${tabs}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="text" id="pfp-name" value="${pfEsc(plan.name)}" style="font-weight:bold;font-size:1rem;padding:6px 8px;border:1px solid var(--border);border-radius:4px;">
+                    <span style="font-size:0.78rem;color:#64748b;">(la referencia siempre es "Plan Eurochem", de arriba)</span>
+                </div>
+                <div><button class="pf-btn" data-act="add-plan">+ Añadir alternativa</button> <button class="pf-btn danger" data-act="del-plan" ${alternativas.length<=1?'disabled':''}>Eliminar</button></div>
+            </div>
+            ${plan.items.length===0 ? '<p class="pf-note">Este plan no tiene líneas. Añade fertilizantes desde el catálogo.</p>' : `
+            <div class="pf-scroll"><table class="pf-table">
+                <thead><tr><th>Fase</th><th style="width:22%">Fertilizante</th><th>Dosis</th><th>Coste/ha</th><th>N·P·K kg/ha</th><th>Grupo</th><th>Nota fondo</th><th>ZV</th><th></th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table></div>`}
+            <div style="margin-top:10px;"><button class="pf-btn" data-act="add-item" ${pfState.fertilizers.length===0?'disabled':''}>+ Añadir línea</button></div>
+            <div class="pf-totals">
+                <div class="pf-stat"><span class="pf-label">Coste</span><span class="pf-value">${calc.costHa.toFixed(2)} €/ha</span></div>
+                <div class="pf-stat"><span class="pf-label">N·P·K aportado</span><span class="pf-value">${calc.nHa.toFixed(1)}·${calc.pHa.toFixed(1)}·${calc.kHa.toFixed(1)}</span></div>
+                <div class="pf-stat"><span class="pf-label">Tope legal de N (UFN/t)</span><span class="pf-value">${!calc.vulnerable ? '<span class="pf-badge na">No aplica</span>' : (calc.legalLimit==null ? '<span class="pf-badge na">Sin tope verificado</span>' : (calc.exceedsLegalLimit ? `<span class="pf-badge warn">${calc.nHa.toFixed(0)} &gt; ${calc.legalLimit.toFixed(0)} kg/ha</span>` : `<span class="pf-badge ok">${calc.nHa.toFixed(0)} / ${calc.legalLimit.toFixed(0)} kg/ha</span>`))}</span></div>
+                <div class="pf-stat"><span class="pf-label">N en fondo sin inhibidor</span><span class="pf-value">${!calc.vulnerable ? '<span class="pf-badge na">No aplica</span>' : (!calc.capApplies ? `<span class="pf-badge na">${calc.fondoCapPct.toFixed(0)}% (no verificado)</span>` : (calc.exceedsFondoCap ? `<span class="pf-badge warn">${calc.fondoCapPct.toFixed(0)}% &gt; 30%</span>` : `<span class="pf-badge ok">${calc.fondoCapPct.toFixed(0)}%</span>`))}</span></div>
+                <div class="pf-stat"><span class="pf-label">Producción para cubrir coste</span><span class="pf-value">${calc.paybackKgHa!=null?calc.paybackKgHa.toFixed(1)+' kg/ha':'— falta precio venta'}</span></div>
+                ${calc.piActive ? `<div class="pf-stat"><span class="pf-label">Producción Integrada</span><span class="pf-value">${!calc.pi ? '<span class="pf-badge na">Sin dato PI</span>' : (calc.piLimit==null ? '<span class="pf-badge na">Sin límite N fijo (balance)</span>' : (calc.exceedsPI ? `<span class="pf-badge warn">${calc.nHa.toFixed(0)} &gt; ${calc.piLimit.toFixed(0)} kg/ha</span>` : `<span class="pf-badge ok">${calc.nHa.toFixed(0)} / ${calc.piLimit.toFixed(0)} kg/ha</span>`))}</span></div>` : ''}
+            </div>
+            ${zvn ? `<p class="pf-note"><strong>Fondo (ZVN):</strong> ${pfEsc(zvn.fondoNote)}<br><strong>Cobertera (ZVN):</strong> ${pfEsc(zvn.coberteraNote)}</p>` : '<p class="pf-note">Selecciona un "Cultivo Objetivo" arriba para ver las notas de manejo de fondo/cobertera de Andalucía.</p>'}
+            ${calc.piActive && calc.pi ? `<p class="pf-note" style="border-left-color:#16a34a;"><strong>Fondo (PI):</strong> ${pfEsc(calc.pi.fondoNote)}<br><strong>Cobertera (PI):</strong> ${pfEsc(calc.pi.coberteraNote)}</p>` : ''}
+        `;
+        pfWirePlans();
+    }
+    function pfWirePlans(){
+        const root = document.getElementById('pf_plans');
+        root.querySelectorAll('.pf-plan-tab').forEach(t=> t.addEventListener('click', ()=>{ pfActivePlanId=t.dataset.pid; pfRenderPlans(); pfRenderCompare(); }));
+        const btnAddPlan = root.querySelector('[data-act="add-plan"]');
+        if(btnAddPlan) btnAddPlan.addEventListener('click', ()=>{
+            const np = { id:pfUid(), name:'Alternativa '+pfState.plans.length, items:[] };
+            pfState.plans.push(np); pfActivePlanId = np.id; pfSave(); pfRenderPlans(); pfRenderCompare();
+        });
+        const btnDelPlan = root.querySelector('[data-act="del-plan"]');
+        if(btnDelPlan) btnDelPlan.addEventListener('click', ()=>{
+            if(pfState.plans.length<=2) return; // siempre queda Plan Eurochem + al menos 1 alternativa
+            const plan = pfState.plans.find(p=>p.id===pfActivePlanId);
+            if(confirm(`¿Eliminar "${plan.name}"?`)){
+                pfState.plans = pfState.plans.filter(p=>p.id!==plan.id);
+                pfActivePlanId = pfState.plans[1].id; pfSave(); pfRenderPlans(); pfRenderCompare();
+            }
+        });
+        const nameInput = root.querySelector('#pfp-name');
+        if(nameInput) nameInput.addEventListener('change', e=>{
+            const plan = pfState.plans.find(p=>p.id===pfActivePlanId); plan.name=e.target.value; pfSave(); pfRenderPlans(); pfRenderCompare();
+        });
+        const btnAddItem = root.querySelector('[data-act="add-item"]');
+        if(btnAddItem) btnAddItem.addEventListener('click', ()=>{
+            const plan = pfState.plans.find(p=>p.id===pfActivePlanId);
+            plan.items.push({ fertId:'', qty:'', phase:'fondo', slowRelease:false }); pfSave(); pfRenderPlans(); pfRenderCompare();
+        });
+        root.querySelectorAll('tbody tr').forEach(tr=>{
+            const i = +tr.dataset.i, plan = pfState.plans.find(p=>p.id===pfActivePlanId), it = plan.items[i];
+            tr.querySelector('.pfp-phase').addEventListener('change', e=>{ it.phase=e.target.value; if(it.phase!=='fondo') it.slowRelease=false; pfSave(); pfRenderPlans(); pfRenderCompare(); });
+            tr.querySelector('.pfp-fert').addEventListener('change', e=>{ it.fertId=e.target.value; pfSave(); pfRenderPlans(); pfRenderCompare(); });
+            const qtyEl = tr.querySelector('.pfp-qty');
+            qtyEl.addEventListener('input', e=>{ it.qty=e.target.value; pfSave(); });
+            qtyEl.addEventListener('change', ()=>{ pfRenderPlans(); pfRenderCompare(); });
+            const slowEl = tr.querySelector('.pfp-slow');
+            if(slowEl) slowEl.addEventListener('change', e=>{ it.slowRelease=e.target.checked; pfSave(); pfRenderPlans(); pfRenderCompare(); });
+            tr.querySelector('[data-act="del-item"]').addEventListener('click', ()=>{ plan.items.splice(i,1); pfSave(); pfRenderPlans(); pfRenderCompare(); });
+        });
+    }
+
+    function pfRenderCompare(){
+        if(pfState.plans.length===0){ document.getElementById('pf_compare').innerHTML=''; return; }
+        const ref = pfState.plans.find(p=>p.id===pfState.referencePlanId) || pfState.plans[0];
+        const refCalc = pfCalcPlan(ref);
+        const ppk = pfPricePerKgCosecha();
+        const rows = pfState.plans.map(p=>{
+            const calc = pfCalcPlan(p);
+            const isRef = p.id===ref.id;
+            const diffHa = calc.costHa - refCalc.costHa;
+            let kgExtra = null;
+            if(!isRef && diffHa>0 && ppk) kgExtra = diffHa/ppk;
+            const zvCell = !calc.vulnerable ? '<span class="pf-badge na">—</span>' : (!calc.capApplies ? `<span class="pf-badge na">${calc.fondoCapPct.toFixed(0)}%(no verif.)</span>` : (calc.exceedsFondoCap?`<span class="pf-badge warn">${calc.fondoCapPct.toFixed(0)}%</span>`:`<span class="pf-badge ok">${calc.fondoCapPct.toFixed(0)}%</span>`));
+            const legalCell = !calc.vulnerable ? '<span class="pf-badge na">—</span>' : (calc.legalLimit==null ? '<span class="pf-badge na">s/tope</span>' : (calc.exceedsLegalLimit?`<span class="pf-badge warn">Supera</span>`:`<span class="pf-badge ok">Cumple</span>`));
+            const piCell = !calc.piActive ? '<span class="pf-badge na">—</span>' : (!calc.pi || calc.piLimit==null ? '<span class="pf-badge na">s/tope</span>' : (calc.exceedsPI?`<span class="pf-badge warn">Supera</span>`:`<span class="pf-badge ok">Cumple</span>`));
+            const diffCell = isRef ? 'referencia' : `<span style="color:${diffHa>0?'#991b1b':'#166534'};font-weight:700;">${diffHa>0?'+':''}${diffHa.toFixed(2)} €/ha</span>`;
+            const kgCell = isRef ? '—' : (diffHa<=0 ? 'más barata' : (kgExtra!=null ? kgExtra.toFixed(1)+' kg/ha' : '— falta precio venta'));
+            const paybackCell = calc.paybackKgHa!=null ? calc.paybackKgHa.toFixed(1)+' kg/ha' : '—';
+            return `<tr class="${isRef?'pf-compare-ref':''}"><td>${pfEsc(p.name)}${isRef?' <span class="pf-badge ok">★ ref.</span>':''}</td>
+                <td class="pf-num pf-right">${calc.costHa.toFixed(2)} €</td>
+                <td class="pf-num pf-right">${calc.nHa.toFixed(1)}·${calc.pHa.toFixed(1)}·${calc.kHa.toFixed(1)}</td>
+                <td class="pf-center">${legalCell}</td>
+                <td class="pf-center">${piCell}</td>
+                <td class="pf-center">${zvCell}</td>
+                <td class="pf-right">${diffCell}</td>
+                <td class="pf-num pf-right">${kgCell}</td>
+                <td class="pf-num pf-right">${paybackCell}</td></tr>`;
+        }).join('');
+        const missing = !ppk;
+        document.getElementById('pf_compare').innerHTML = `
+            ${missing ? '<p class="pf-note">Introduce el "Precio de Venta de la Cosecha" arriba para calcular la cosecha extra necesaria para cubrir el sobrecoste de cada alternativa.</p>' : ''}
+            <div class="pf-scroll"><table class="pf-table">
+                <thead><tr><th>Plan</th><th class="pf-right">Coste/ha</th><th class="pf-right">N·P·K aportado</th><th class="pf-center">Tope legal N (ZVN)</th><th class="pf-center">Producción Integrada</th><th class="pf-center">% N fondo</th><th class="pf-right">Diferencia vs. referencia</th><th class="pf-right">Cosecha extra necesaria</th><th class="pf-right">Cosecha para pagar todo el coste</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table></div>
+        `;
+    }
+
+    /* Delegación de eventos de las pestañas de plan (los .pf-plan-tab se regeneran en cada render,
+       pfWirePlans() ya vuelve a enlazarlos tras cada pfRenderPlans()). */
+    pfRender();
+</script>
+
+</body>
+</html>
