@@ -1255,28 +1255,31 @@
         };
 
         // 22 Fertilizantes Solubles de Eurochem (Punto 5 y Sonneveld)
+        // Propiedad 'tanque' (A = cálcicos, B = sulfatos/fosfatos, N = neutro/compatible con ambos):
+        // no mezclar nunca un producto Tanque A con uno Tanque B en la misma cuba, por riesgo de
+        // precipitado de yeso (CaSO4) o fosfato cálcico que obtura goteros.
         const solublesDB = {
-            "ENTEC Solub 21": { n: 21, p: 0, k: 0, mg: 0, ca: 0, s: 60, nh4: 21, no3: 0, ec_coeff: 0.8 },
-            "ENTEC Solub 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 27, nh4: 6, no3: 5, ec_coeff: 0.7 },
-            "ENTEC Solub 11-5-30": { n: 11, p: 5, k: 30, mg: 2, ca: 0, s: 27, nh4: 9, no3: 6, ec_coeff: 0.75 },
-            "ENTEC Solub 16-10-17": { n: 16, p: 10, k: 17, mg: 2, ca: 0, s: 12, nh4: 10, no3: 6, ec_coeff: 0.7 },
-            "Nitrofoska Solub Calcium K": { n: 14, p: 7, k: 17, mg: 0, ca: 13, s: 0, nh4: 2, no3: 12, ec_coeff: 0.75 },
-            "Nitrofoska Solub 7-5-40": { n: 7, p: 5, k: 40, mg: 0, ca: 0, s: 28, nh4: 3, no3: 4, ec_coeff: 0.6 },
-            "Nitrofoska Solub 15-10-15": { n: 15, p: 10, k: 15, mg: 2, ca: 0, s: 30, nh4: 10.7, no3: 4.3, ec_coeff: 0.65 },
-            "Nitrofoska Solub 13-40-13": { n: 13, p: 40, k: 13, mg: 0, ca: 0, s: 1.9, nh4: 8.8, no3: 4.2, ec_coeff: 0.55 },
-            "Nitrofoska Solub 12-5-30": { n: 12, p: 5, k: 30, mg: 1, ca: 0, s: 22, nh4: 1.9, no3: 5.1, ec_coeff: 0.8 },
-            "Nitrofoska Solub 7-12-40": { n: 7, p: 12, k: 40, mg: 0, ca: 0, s: 18.4, nh4: 9, no3: 6, ec_coeff: 0.6 },
-            "Nitrofoska Solub 18-18-18": { n: 18, p: 18, k: 18, mg: 0, ca: 0, s: 11.5, nh4: 10, no3: 8, ec_coeff: 0.6 },
-            "Nitrofoska Solub 20-5-5": { n: 20, p: 5, k: 5, mg: 2, ca: 0, s: 37, nh4: 15.6, no3: 4.4, ec_coeff: 0.85 },
-            "Nitrato Cálcico Soluble": { n: 15.5, p: 0, k: 0, mg: 0, ca: 26.3, s: 0, nh4: 1.1, no3: 14.4, ec_coeff: 0.72 },
-            "Nitrato Magnésico Soluble": { n: 11, p: 0, k: 0, mg: 15.4, ca: 0, s: 0, nh4: 0, no3: 11, ec_coeff: 0.68 },
-            "NOP Solub": { n: 13, p: 0, k: 46, mg: 0, ca: 0, s: 0, nh4: 0, no3: 13, ec_coeff: 0.8 },
-            "MAP Solub": { n: 12, p: 61, k: 0, mg: 0, ca: 0, s: 0, nh4: 12, no3: 0, ec_coeff: 0.52 },
-            "UP solub": { n: 18, p: 44, k: 0, mg: 0, ca: 0, s: 0, nh4: 18, no3: 0, ec_coeff: 0.82 },
-            "SOP solub": { n: 0, p: 0, k: 52, mg: 0, ca: 0, s: 45, nh4: 0, no3: 0, ec_coeff: 0.88 },
-            "Sulfato de Magnesio": { n: 0, p: 0, k: 0, mg: 16, ca: 0, s: 32, nh4: 0, no3: 0, ec_coeff: 0.62 },
-            "Ácido Fosfórico": { n: 0, p: 52, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 0, ec_coeff: 0.48 },
-            "Ácido Nítrico": { n: 15, p: 0, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 15, ec_coeff: 0.5 }
+            "ENTEC Solub 21": { n: 21, p: 0, k: 0, mg: 0, ca: 0, s: 60, nh4: 21, no3: 0, ec_coeff: 0.8, tanque: 'B' },
+            "ENTEC Solub 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 27, nh4: 6, no3: 5, ec_coeff: 0.7, tanque: 'B' },
+            "ENTEC Solub 11-5-30": { n: 11, p: 5, k: 30, mg: 2, ca: 0, s: 27, nh4: 9, no3: 6, ec_coeff: 0.75, tanque: 'B' },
+            "ENTEC Solub 16-10-17": { n: 16, p: 10, k: 17, mg: 2, ca: 0, s: 12, nh4: 10, no3: 6, ec_coeff: 0.7, tanque: 'B' },
+            "Nitrofoska Solub Calcium K": { n: 14, p: 7, k: 17, mg: 0, ca: 13, s: 0, nh4: 2, no3: 12, ec_coeff: 0.75, tanque: 'A' },
+            "Nitrofoska Solub 7-5-40": { n: 7, p: 5, k: 40, mg: 0, ca: 0, s: 28, nh4: 3, no3: 4, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 15-10-15": { n: 15, p: 10, k: 15, mg: 2, ca: 0, s: 30, nh4: 10.7, no3: 4.3, ec_coeff: 0.65, tanque: 'B' },
+            "Nitrofoska Solub 13-40-13": { n: 13, p: 40, k: 13, mg: 0, ca: 0, s: 1.9, nh4: 8.8, no3: 4.2, ec_coeff: 0.55, tanque: 'B' },
+            "Nitrofoska Solub 12-5-30": { n: 12, p: 5, k: 30, mg: 1, ca: 0, s: 22, nh4: 1.9, no3: 5.1, ec_coeff: 0.8, tanque: 'B' },
+            "Nitrofoska Solub 7-12-40": { n: 7, p: 12, k: 40, mg: 0, ca: 0, s: 18.4, nh4: 9, no3: 6, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 18-18-18": { n: 18, p: 18, k: 18, mg: 0, ca: 0, s: 11.5, nh4: 10, no3: 8, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 20-5-5": { n: 20, p: 5, k: 5, mg: 2, ca: 0, s: 37, nh4: 15.6, no3: 4.4, ec_coeff: 0.85, tanque: 'B' },
+            "Nitrato Cálcico Soluble": { n: 15.5, p: 0, k: 0, mg: 0, ca: 26.3, s: 0, nh4: 1.1, no3: 14.4, ec_coeff: 0.72, tanque: 'A' },
+            "Nitrato Magnésico Soluble": { n: 11, p: 0, k: 0, mg: 15.4, ca: 0, s: 0, nh4: 0, no3: 11, ec_coeff: 0.68, tanque: 'N' },
+            "NOP Solub": { n: 13, p: 0, k: 46, mg: 0, ca: 0, s: 0, nh4: 0, no3: 13, ec_coeff: 0.8, tanque: 'N' },
+            "MAP Solub": { n: 12, p: 61, k: 0, mg: 0, ca: 0, s: 0, nh4: 12, no3: 0, ec_coeff: 0.52, tanque: 'B' },
+            "UP solub": { n: 18, p: 44, k: 0, mg: 0, ca: 0, s: 0, nh4: 18, no3: 0, ec_coeff: 0.82, tanque: 'B' },
+            "SOP solub": { n: 0, p: 0, k: 52, mg: 0, ca: 0, s: 45, nh4: 0, no3: 0, ec_coeff: 0.88, tanque: 'B' },
+            "Sulfato de Magnesio": { n: 0, p: 0, k: 0, mg: 16, ca: 0, s: 32, nh4: 0, no3: 0, ec_coeff: 0.62, tanque: 'B' },
+            "Ácido Fosfórico": { n: 0, p: 52, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 0, ec_coeff: 0.48, tanque: 'B' },
+            "Ácido Nítrico": { n: 15, p: 0, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 15, ec_coeff: 0.5, tanque: 'N' }
         };
 
         // Estado de Datos Global (Fondo y 12 Meses Fijos de Fertirrigación)
@@ -1287,26 +1290,26 @@
         let selectedMonth = 5; // Inicia en Mayo
 
         let monthlyData = {
-            1: { name: "Enero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            2: { name: "Febrero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            3: { name: "Marzo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            4: { name: "Abril", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            5: { name: "Mayo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [
+            1: { name: "Enero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            2: { name: "Febrero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            3: { name: "Marzo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            4: { name: "Abril", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            5: { name: "Mayo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
                 { name: "Nitrofoska Solub 18-18-18", dosis: 0 },
                 { name: "MAP Solub", dosis: 0 }
             ]},
-            6: { name: "Junio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            7: { name: "Julio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [
+            6: { name: "Junio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            7: { name: "Julio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
                 { name: "ENTEC Solub 11-5-30", dosis: 0 },
                 { name: "Nitrato Cálcico Soluble", dosis: 0 }
             ]},
-            8: { name: "Agosto", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [
+            8: { name: "Agosto", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
                 { name: "SOP solub", dosis: 0 }
             ]},
-            9: { name: "Septiembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            10: { name: "Octubre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            11: { name: "Noviembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] },
-            12: { name: "Diciembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, solubles: [] }
+            9: { name: "Septiembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            10: { name: "Octubre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            11: { name: "Noviembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
+            12: { name: "Diciembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] }
         };
 
         // Inicialización al cargar la página
@@ -1422,8 +1425,12 @@
                                         <td><input type="number" class="form-input" id="mcuba-${m}" value="${monthlyData[m].cuba_vol}" oninput="syncMonthCuba(${m})"></td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align:left; font-weight:bold;">Caudal Emisor Sector (L/h/gotero):</td>
+                                        <td style="text-align:left; font-weight:bold;">Caudal del Emisor (L/h/gotero):</td>
                                         <td><input type="number" class="form-input" id="mflow-${m}" value="${monthlyData[m].flow_rate}" oninput="syncMonthFlow(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Tiempo de Riego por Evento (horas):</td>
+                                        <td><input type="number" class="form-input" id="mtiempo-${m}" step="0.1" value="${monthlyData[m].tiempo_riego}" oninput="syncMonthTiempo(${m})"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1444,16 +1451,19 @@
                                     <span class="lab-val" id="mcalc-cuba-${m}">0.00% (0.0 g/L)</span>
                                 </div>
                                 <div class="lab-item">
-                                    <span>Tiempo Riego por Riego:</span>
-                                    <span class="lab-val" id="mcalc-time-${m}">0 h 0 min</span>
+                                    <span title="Estimado a partir del caudal del emisor y del tiempo de riego introducido: no es un dato que debas medir, es una comprobación de coherencia de tu diseño de riego.">Nº Emisores/ha (estimado):</span>
+                                    <span class="lab-val" id="mcalc-emisores-${m}">0</span>
                                 </div>
                                 <div class="lab-item">
                                     <span>Caudal necesario Bomba Inyectora:</span>
                                     <span class="lab-val" id="mcalc-bomba-${m}">0 L/h</span>
                                 </div>
-                                
+
                                 <!-- Banner de Alerta de Exceso de Conductividad de Gota -->
                                 <div id="mcalc-alert-banner-${m}" class="gota-alert-banner"></div>
+
+                                <!-- Banner de Alerta de Incompatibilidad de Tanque (Ca vs Sulfatos/Fosfatos) -->
+                                <div id="mtanque-alert-${m}" class="gota-alert-banner"></div>
                             </div>
                         </div>
 
@@ -1619,6 +1629,10 @@
         }
         function syncMonthFlow(m) {
             monthlyData[m].flow_rate = parseFloat(document.getElementById(`mflow-${m}`).value) || 1.6;
+            calculateAll();
+        }
+        function syncMonthTiempo(m) {
+            monthlyData[m].tiempo_riego = parseFloat(document.getElementById(`mtiempo-${m}`).value) || 0;
             calculateAll();
         }
 
@@ -1985,9 +1999,10 @@
             const target_s_val = base_s_ha - fondo_sum_s - water_annual_sum_s - acid_annual_sum_s + extra_s;
 
             // 5. CÁLCULO E INTEGRACIÓN FASE POR FASE (PUNTO 5) - COMPLETAMENTE REACTIVO Y ESTABLE
+            const mesesConflictoTanque = [];
             for (let m = 1; m <= 12; m++) {
                 const month = monthlyData[m];
-                
+
                 // Aportes de agua del mes (mg/L * m3 / 1000 = kg/ha)
                 const w_n = month.water * no3_mg_l * 0.226 / 1000;
                 const w_p = month.water * h2po4_mg_l * 0.732 / 1000;
@@ -2019,6 +2034,7 @@
                 const solBody = document.getElementById(`msol-table-body-${m}`);
                 solBody.innerHTML = "";
                 let month_sol_n = 0, month_sol_p = 0, month_sol_k = 0, month_sol_mg = 0, month_sol_ca = 0, month_sol_s = 0;
+                let hasTanqueA = false, hasTanqueB = false;
 
                 month.solubles.forEach((item, idx) => {
                     const p = solublesDB[item.name];
@@ -2037,6 +2053,11 @@
                         month_sol_ca += ca;
                         month_sol_s += s;
 
+                        if (item.dosis > 0) {
+                            if (p.tanque === 'A') hasTanqueA = true;
+                            if (p.tanque === 'B') hasTanqueB = true;
+                        }
+
                         const row = document.createElement("tr");
                         row.className = (item.dosis === 0 ? "zero-dose-row" : "");
                         row.innerHTML = `
@@ -2053,6 +2074,15 @@
                         solBody.appendChild(row);
                     }
                 });
+
+                const tanqueBanner = document.getElementById(`mtanque-alert-${m}`);
+                if (hasTanqueA && hasTanqueB) {
+                    tanqueBanner.style.display = "block";
+                    tanqueBanner.textContent = "💥 RIESGO DE PRECIPITADO: esta fase mezcla productos Tanque A (cálcicos) con productos Tanque B (sulfatos/fosfatos). Inyéctalos desde cubas separadas.";
+                    mesesConflictoTanque.push(month.name || `Mes ${m}`);
+                } else {
+                    tanqueBanner.style.display = "none";
+                }
 
                 // Escribir en la subtabla del mes: 1. Fertilizantes Cristalinos
                 document.getElementById(`muf-fert-n-${m}`).textContent = month_sol_n.toFixed(1);
@@ -2141,15 +2171,17 @@
                     cCard.style.color = "inherit";
                 }
 
-                // Tiempos e Inyectora
+                // Tiempos e Inyectora: el tiempo de riego por evento ahora es un dato de entrada
+                // (mtiempo-${m}) en vez de derivarse de un número de goteros/ha supuesto. A partir
+                // de ese tiempo real se estima el nº de emisores/ha como comprobación de coherencia.
                 const caudal_por_riego_m3 = month.num_riegos > 0 ? (month.water / month.num_riegos) : 0;
-                let tiempo_riego_horas = 0;
-                if (month.flow_rate > 0) {
-                    tiempo_riego_horas = (caudal_por_riego_m3 * 1000) / (month.flow_rate * 250); // Sector de 250 goteros/ha
+                const tiempo_riego_horas = month.tiempo_riego || 0;
+
+                let emisores_ha_estimado = 0;
+                if (month.flow_rate > 0 && tiempo_riego_horas > 0) {
+                    emisores_ha_estimado = (caudal_por_riego_m3 * 1000) / (month.flow_rate * tiempo_riego_horas);
                 }
-                const hrs = Math.floor(tiempo_riego_horas);
-                const mins = Math.round((tiempo_riego_horas - hrs) * 60);
-                document.getElementById(`mcalc-time-${m}`).textContent = `${hrs} h ${mins} min`;
+                document.getElementById(`mcalc-emisores-${m}`).textContent = emisores_ha_estimado.toFixed(0);
 
                 const tiempo_inyectora_h = tiempo_riego_horas * 0.8;
                 let bomba_l_h = 0;
@@ -2453,7 +2485,7 @@
             }
 
             // 8. DICTAMEN AGRONÓMICO DE RIESGOS EN TIEMPO REAL (PUNTO 8)
-            generateExpertDictamen(ec_gota_fase, ras_val, meq_cl);
+            generateExpertDictamen(ec_gota_fase, ras_val, meq_cl, mesesConflictoTanque);
         }
 
         // Diagnósticos de Sonneveld coloreados
@@ -2472,7 +2504,7 @@
         }
 
         // Diagnóstico Experto v70/v71 corregido (analiza el mes seleccionado)
-        function generateExpertDictamen(ec_gota, ras_val, meq_cl) {
+        function generateExpertDictamen(ec_gota, ras_val, meq_cl, mesesConflictoTanque) {
             const container = document.getElementById("dictamen-alerts-container");
             container.innerHTML = "";
 
@@ -2480,11 +2512,15 @@
             const threshold = limitesSalinos[crop] || 1.5;
 
             // Alerta 1: Salinidad de Gota
+            // Nota: el % de pérdida es una estimación orientativa con una pendiente única (10%
+            // por dS/m) para todos los cultivos. La pendiente real (modelo Maas-Hoffman) varía
+            // mucho por cultivo (desde ~3%/dS/m en tolerantes hasta >20%/dS/m en sensibles), así
+            // que esta cifra es solo indicativa, no una previsión calibrada por cultivo.
             let sal_class = "ok", sal_msg = `Conductividad óptima para ${crop}. La conductividad de gota (${ec_gota.toFixed(2)} dS/m) está por debajo del límite de tolerancia del cultivo (${threshold.toFixed(2)} dS/m).`;
             if (ec_gota > threshold) {
                 sal_class = "danger";
                 const loss_pct = (ec_gota - threshold) * 10.0;
-                sal_msg = `⚠️ RIESGO DE SALINIDAD. La conductividad de la gota (${ec_gota.toFixed(2)} dS/m) supera el umbral de tolerancia de ${crop} (${threshold.toFixed(2)} dS/m). Pérdida de rendimiento estimada: ${loss_pct.toFixed(0)}%.`;
+                sal_msg = `⚠️ RIESGO DE SALINIDAD. La conductividad de la gota (${ec_gota.toFixed(2)} dS/m) supera el umbral de tolerancia de ${crop} (${threshold.toFixed(2)} dS/m). Pérdida de rendimiento orientativa (pendiente genérica, no calibrada por cultivo): ~${loss_pct.toFixed(0)}%.`;
             }
             container.appendChild(createAlertBox(sal_class, sal_msg));
 
@@ -2516,6 +2552,14 @@
                 obt_msg = "⚠️ RIESGO DE OBTURACIONES CALIZAS. Se detecta una alta presencia de bicarbonatos en el agua base. Asegure el mantenimiento regular de inyección de ácido.";
             }
             container.appendChild(createAlertBox(obt_class, obt_msg));
+
+            // Alerta 5: Incompatibilidad de Tanque (Ca vs Sulfatos/Fosfatos) en cualquier fase del año
+            let tanque_class = "ok", tanque_msg = "Sin conflictos de tanque detectados en la planificación anual. Los productos cálcicos (Tanque A) y los sulfatados/fosfatados (Tanque B) no coinciden en ninguna fase.";
+            if (mesesConflictoTanque && mesesConflictoTanque.length > 0) {
+                tanque_class = "danger";
+                tanque_msg = `💥 RIESGO DE PRECIPITADO EN: ${mesesConflictoTanque.join(", ")}. Estas fases mezclan productos Tanque A (cálcicos) con productos Tanque B (sulfatos/fosfatos), lo que puede formar yeso o fosfato cálcico insoluble y obturar los goteros. Inyecta cada grupo desde una cuba separada.`;
+            }
+            container.appendChild(createAlertBox(tanque_class, tanque_msg));
         }
 
         function createAlertBox(className, text) {
