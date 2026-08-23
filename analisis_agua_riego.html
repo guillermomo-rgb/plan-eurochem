@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Riego y Nutrición - Eurochem Agro Iberia S.L.</title>
+    <!-- Tailwind CSS para la interfaz interactiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para el Balance Iónico -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Estilos de la marca Eurochem */
+        :root {
+            --color-primary: #0F2042;    /* Azul Oscuro Corporativo */
+            --color-secondary: #004B87;  /* Azul Eurochem */
+            --color-accent: #0088cc;     /* Azul Claro */
+            --color-neutral: #333333;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: var(--color-neutral);
+            background-color: #f3f4f6;
+        }
+
+        .bg-eurochem-dark { background-color: var(--color-primary); }
+        .text-eurochem-dark { color: var(--color-primary); }
+        .border-eurochem-dark { border-color: var(--color-primary); }
+
+        .bg-eurochem-blue { background-color: var(--color-secondary); }
+        .text-eurochem-blue { color: var(--color-secondary); }
+
+        /* Estilo de pestañas inactivas */
+        .tab-inactive {
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-inactive:hover {
+            color: var(--color-secondary);
+            border-bottom: 2px solid #d1d5db;
+        }
+
+        /* Estilos exclusivos para la IMPRESIÓN (Garantizan PDF impecable) */
+        @media print {
+            /* Forzar colores de fondo y gráficos en todos los navegadores */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            /* Ocultar elementos de la interfaz interactiva */
+            .no-print {
+                display: none !important;
+            }
+
+            /* Mostrar y dar formato al reporte imprimible */
+            .print-report-container {
+                display: block !important;
+                background-color: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            body {
+                background: #ffffff !important;
+                font-size: 10pt !important;
+                color: #000000 !important;
+            }
+
+            /* Cada sección se convierte en una página física de impresión */
+            .print-page {
+                display: block !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                clear: both !important;
+                padding: 1.5cm !important;
+                box-sizing: border-box !important;
+                min-height: 27cm !important; /* Aproximadamente tamaño A4/Carta */
+            }
+
+            .print-page:last-child {
+                page-break-after: avoid !important;
+            }
+
+            /* Asegurar que las tablas de datos y alertas tengan alta visibilidad en papel */
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin-top: 10px !important;
+                font-size: 9.5pt !important;
+            }
+
+            th, td {
+                border: 1px solid #000000 !important;
+                padding: 6px 8px !important;
+                text-align: left !important;
+            }
+
+            th {
+                background-color: #0F2042 !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }
+
+            /* Reemplazar canvas de Chart.js por la imagen estática generada en alta definición */
+            #canvasContainer {
+                display: none !important;
+            }
+
+            #printImageContainer {
+                display: block !important;
+                margin: 15px auto !important;
+                max-width: 90% !important;
+                border: 1px solid #dddddd !important;
+            }
+
+            /* Formato de Semáforos de Alerta para impresión física */
+            .alert-pill {
+                border: 2px solid #333333 !important;
+                font-weight: bold !important;
+                padding: 4px 10px !important;
+                border-radius: 4px !important;
+                display: inline-block !important;
+            }
+
+            .alert-green {
+                background-color: #e2f0d9 !important;
+                color: #385723 !important;
+                border-color: #385723 !important;
+            }
+
+            .alert-yellow {
+                background-color: #fff2cc !important;
+                color: #7f6000 !important;
+                border-color: #7f6000 !important;
+            }
+
+            .alert-red {
+                background-color: #fce4d6 !important;
+                color: #c65911 !important;
+                border-color: #c65911 !important;
+            }
+
+            .border-badge-green { border-left: 6px solid #2e7d32 !important; background-color: #f4faf6 !important; }
+            .border-badge-yellow { border-left: 6px solid #f57f17 !important; background-color: #fffde7 !important; }
+            .border-badge-red { border-left: 6px solid #c62828 !important; background-color: #ffebee !important; }
+
+            /* Encabezados de página del reporte */
+            .print-header {
+                border-bottom: 2px solid #0F2042 !important;
+                padding-bottom: 10px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .print-footer-page {
+                border-top: 1px solid #dddddd !important;
+                margin-top: 30px !important;
+                padding-top: 10px !important;
+                font-size: 8pt !important;
+                color: #555555 !important;
+            }
+        }
+
+        /* Ocultar contenedor de impresión estático en pantalla */
+        @media screen {
+            .print-report-container {
+                display: none;
+            }
+            #printImageContainer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- CABECERA DE LA APLICACIÓN (SÓLO PANTALLA) -->
+    <header class="bg-eurochem-dark text-white p-4 shadow-md no-print flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white p-1 rounded">
+                <span class="text-eurochem-dark font-extrabold text-xl tracking-tight px-2">EUROCHEM</span>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold">Interpretación de Análisis de Aguas y Dosificación de Ácidos</h1>
+                <p class="text-xs text-gray-300">Eurochem Agro Iberia S.L. &bull; Área de Soporte Agronómico Avanzado</p>
+            </div>
+        </div>
+        <div class="text-right text-xs">
+            <span class="bg-blue-800 px-3 py-1 rounded-full font-semibold">Versión v8 (Print-Color Fix)</span>
+            <p class="mt-1 text-gray-300">© G. Morales</p>
+        </div>
+    </header>
+
+    <!-- CUERPO PRINCIPAL (CONTENEDOR DE PANTALLA INTERACTIVO) -->
+    <main class="flex-grow flex flex-col lg:flex-row no-print">
+        
+        <!-- BARRA LATERAL IZQUIERDA: ENTRADA DE DATOS -->
+        <aside class="w-full lg:width-80 lg:w-80 bg-slate-800 text-white p-4 overflow-y-auto border-r border-slate-700 flex-shrink-0">
+            <h2 class="text-md font-bold uppercase border-b border-slate-600 pb-2 mb-3 text-sky-400">📝 Datos del Cliente</h2>
+            <div class="space-y-2 mb-4 text-xs">
+                <div>
+                    <label class="block mb-1 text-gray-300">Nombre de la Analítica:</label>
+                    <input type="text" id="metaAnalitica" value="Analítica Marismas Sector B-XII" oninput="sincronizarMeta()" class="w-full bg-slate-700 rounded px-2 py-1 text-white border border-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                </div>
+                <div>
+                    <label class="block mb-1 text-gray-300">Finca / Sector:</label>
+                    <input type="text" id="metaFinca" value="Sector B-XII" oninput="sincronizarMeta()" class="w-full bg-slate-700 rounded px-2 py-1 text-white border border-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                </div>
+                <div>
+                    <label class="block mb-1 text-gray-300">Empresa / Cliente:</label>
+                    <input type="text" id="metaEmpresa" value="Las Marismas de Lebrija, S.C.A." oninput="sincronizarMeta()" class="w-full bg-slate-700 rounded px-2 py-1 text-white border border-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                </div>
+            </div>
+
+            <!-- Botones de Acceso Rápido -->
+            <div class="mb-6 flex gap-2">
+                <button onclick="cargarMarismas()" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 px-3 rounded text-[10px] transition duration-200 shadow uppercase">
+                    🌾 Marismas B-XII
+                </button>
+                <button onclick="cargarEjemploEurochem()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-3 rounded text-[10px] transition duration-200 shadow uppercase">
+                    💎 Ej. Eurochem
+                </button>
+            </div>
+
+            <h2 class="text-md font-bold uppercase border-b border-slate-600 pb-2 mb-3 text-sky-400">🧪 Datos de Laboratorio</h2>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold mb-1 text-gray-300">Volumen de Riego Anual (m³/ha):</label>
+                    <input type="number" id="vol_riego" value="5000" onchange="calcularTodo()" class="w-full bg-slate-700 text-white font-bold rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-slate-600">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-gray-300">CE (µS/cm):</label>
+                        <input type="number" id="ce_us" value="1075" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300">pH:</label>
+                        <input type="number" step="0.01" id="ph" value="7.78" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-700 pt-3">
+                    <span class="block font-bold text-teal-400 uppercase text-[10px] mb-2 tracking-wider">Cationes (mg/L)</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-gray-400">Calcio (Ca):</label>
+                            <input type="number" step="0.1" id="ca_mg" value="65.9" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Magnesio (Mg):</label>
+                            <input type="number" step="0.1" id="mg_mg" value="30.9" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Sodio (Na):</label>
+                            <input type="number" step="0.1" id="na_mg" value="130.0" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Potasio (K):</label>
+                            <input type="number" step="0.1" id="k_mg" value="6.84" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-700 pt-3">
+                    <span class="block font-bold text-orange-400 uppercase text-[10px] mb-2 tracking-wider">Aniones (mg/L)</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-gray-400">Bicarbonatos:</label>
+                            <input type="number" step="0.1" id="hco3_mg" value="130.0" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Cloruros:</label>
+                            <input type="number" step="0.1" id="cl_mg" value="189.0" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Sulfatos:</label>
+                            <input type="number" step="0.1" id="so4_mg" value="197.0" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Nitratos:</label>
+                            <input type="number" step="0.1" id="no3_mg" value="5.0" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-2 py-1 focus:outline-none border border-slate-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-700 pt-3">
+                    <span class="block font-bold text-yellow-500 uppercase text-[10px] mb-2 tracking-wider">Metales y Boro (mg/L)</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-gray-400">Boro (B):</label>
+                            <input type="number" step="0.01" id="b_mg" value="0.10" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-1.5 py-1 focus:outline-none border border-slate-600 text-center">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Hierro (Fe):</label>
+                            <input type="number" step="0.01" id="fe_mg" value="0.03" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-1.5 py-1 focus:outline-none border border-slate-600 text-center">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400">Mang (Mn):</label>
+                            <input type="number" step="0.01" id="mn_mg" value="0.01" onchange="calcularTodo()" class="w-full bg-slate-700 rounded px-1.5 py-1 focus:outline-none border border-slate-600 text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de Exportación -->
+            <button onclick="prepararEImprimir()" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg flex items-center justify-center space-x-2 transition duration-200">
+                <span>🖨️ Exportar PDF / Imprimir</span>
+            </button>
+        </aside>
+
+        <!-- PANEL DERECHO: PESTAÑAS DE VISUALIZACIÓN INTERACTIVA -->
+        <section class="flex-1 flex flex-col overflow-y-auto bg-gray-50">
+            
+            <!-- Barra de Navegación por Pestañas -->
+            <div class="bg-white border-b border-gray-200 flex space-x-6 px-8 shadow-sm">
+                <button onclick="activarTab('tab-alertas')" id="btn-tab-alertas" class="py-4 font-semibold text-sm border-b-2 border-eurochem-blue text-eurochem-blue">
+                    ⚠️ Alertas de Calidad
+                </button>
+                <button onclick="activarTab('tab-nutrientes')" id="btn-tab-nutrientes" class="py-4 font-semibold text-sm tab-inactive">
+                    🎁 Nutrientes Gratuitos
+                </button>
+                <button onclick="activarTab('tab-acidos')" id="btn-tab-acidos" class="py-4 font-semibold text-sm tab-inactive">
+                    🧪 Dosificación de Ácidos
+                </button>
+            </div>
+
+            <!-- CONTENIDO DE LAS PESTAÑAS (EN PANTALLA) -->
+            <div class="p-8 flex-grow">
+                
+                <!-- Pestaña 1: Alertas y Diagnóstico -->
+                <div id="panel-tab-alertas" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Panel de Datos Físicos -->
+                        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                            <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Parámetros Físicos Calculados</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Conductividad Eléctrica (CE):</span>
+                                    <span class="font-bold" id="resCe">1.075 dS/m</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Contenido Total de Sales (STD):</span>
+                                    <span class="font-bold" id="resStd">0.69 g/L</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Presión Osmótica (Po):</span>
+                                    <span class="font-bold text-blue-600" id="resPo">0.39 atm</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Dureza Total (°F - Grados Franceses):</span>
+                                    <span class="font-bold" id="resDurezaVal">29.2 °F</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Relación de Adsorción de Sodio (RAS):</span>
+                                    <span class="font-bold text-orange-600" id="resRasVal">3.31</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel de Alertas Rápidas -->
+                        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                            <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Diagnóstico Agronómico</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <span class="font-semibold block text-gray-500 mb-1">Riesgo de Infiltración de Agua (FAO)</span>
+                                    <span id="badgeInfiltracion" class="inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-300">Estable</span>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-gray-500 mb-1">Clasificación de Dureza</span>
+                                    <span id="badgeDureza" class="inline-block px-3 py-1 rounded font-bold bg-yellow-100 text-yellow-800 border border-yellow-300">Medianamente Dura</span>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-gray-500 mb-1">Riesgo de Obturación Química (Carbonatos)</span>
+                                    <span id="badgeObturacion" class="inline-block px-3 py-1 rounded font-bold bg-red-100 text-red-800 border border-red-300">Riesgo Elevado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Toxicidades de Iones Específicos -->
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Límites de Toxicidad de Iones Específicos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="p-4 rounded-lg bg-gray-50 border-t-4 border-blue-500">
+                                <span class="block font-bold text-gray-700 text-sm">Cloruro (Cl⁻)</span>
+                                <span class="text-xs text-gray-500 block mb-2">Acumulación en hojas</span>
+                                <div class="text-lg font-extrabold text-blue-700" id="resCloruro">5.33 meq/L</div>
+                                <span id="badgeCloruro" class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800">Moderado</span>
+                            </div>
+                            <div class="p-4 rounded-lg bg-gray-50 border-t-4 border-orange-500">
+                                <span class="block font-bold text-gray-700 text-sm">Sodio (Na⁺)</span>
+                                <span class="text-xs text-gray-500 block mb-2">Relación SAR / Suelos</span>
+                                <div class="text-lg font-extrabold text-orange-700" id="resSodio">5.65 meq/L</div>
+                                <span id="badgeSodio" class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800">Moderado</span>
+                            </div>
+                            <div class="p-4 rounded-lg bg-gray-50 border-t-4 border-teal-500">
+                                <span class="block font-bold text-gray-700 text-sm">Boro (B)</span>
+                                <span class="text-xs text-gray-500 block mb-2">Microelemento tóxico</span>
+                                <div class="text-lg font-extrabold text-teal-700" id="resBoro">0.10 mg/L</div>
+                                <span id="badgeBoro" class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-800">Excelente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico interactivo de balance iónico (Solo pantalla) -->
+                    <div id="canvasContainer" class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Balance de Cationes y Aniones (meq/L)</h3>
+                        <div class="h-64">
+                            <canvas id="chartBalance"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 2: Nutrientes Gratuitos -->
+                <div id="panel-tab-nutrientes" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Caja de Ahorros de Nutrientes del Riego</h3>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Al regar, se incorporan de forma natural kilos de fertilizantes que deben ser **restados de su factura de abonado** para mejorar la rentabilidad de su finca.
+                        </p>
+                        
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-eurochem-dark text-white">
+                                    <th class="p-3">Nutriente</th>
+                                    <th class="p-3 text-center">meq/L</th>
+                                    <th class="p-3 text-center">mg/L (ppm)</th>
+                                    <th class="p-3 text-center font-bold text-yellow-300">Aporte de Campaña</th>
+                                    <th class="p-3 text-center">Unidad Agronómica</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="p-3 font-semibold text-gray-700">Nitrógeno (N-NO₃⁻)</td>
+                                    <td class="p-3 text-center" id="nutN_meq">0.08</td>
+                                    <td class="p-3 text-center" id="nutN_mg">5.0</td>
+                                    <td class="p-3 text-center font-bold text-blue-700" id="nutN_kg">5.65 kg/ha</td>
+                                    <td class="p-3 text-center text-gray-500">Nitrógeno puro (N)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-gray-700">Calcio (Ca²⁺)</td>
+                                    <td class="p-3 text-center" id="nutCa_meq">3.29</td>
+                                    <td class="p-3 text-center" id="nutCa_mg">65.9</td>
+                                    <td class="p-3 text-center font-bold text-blue-700" id="nutCa_kg">329.50 kg/ha</td>
+                                    <td class="p-3 text-center text-gray-500">Óxido de Calcio (CaO)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-gray-700">Magnesio (Mg²⁺)</td>
+                                    <td class="p-3 text-center" id="nutMg_meq">2.54</td>
+                                    <td class="p-3 text-center" id="nutMg_mg">30.9</td>
+                                    <td class="p-3 text-center font-bold text-blue-700" id="nutMg_kg">154.50 kg/ha</td>
+                                    <td class="p-3 text-center text-gray-500">Óxido de Magnesio (MgO)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-gray-700">Potasio (K⁺)</td>
+                                    <td class="p-3 text-center" id="nutK_meq">0.17</td>
+                                    <td class="p-3 text-center" id="nutK_mg">6.8</td>
+                                    <td class="p-3 text-center font-bold text-blue-700" id="nutK_kg">34.20 kg/ha</td>
+                                    <td class="p-3 text-center text-gray-500">Óxido de Potasio (K₂O)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-gray-700">Azufre (S-SO₄²⁻)</td>
+                                    <td class="p-3 text-center" id="nutS_meq">4.10</td>
+                                    <td class="p-3 text-center" id="nutS_mg">197.0</td>
+                                    <td class="p-3 text-center font-bold text-blue-700" id="nutS_kg">328.74 kg/ha</td>
+                                    <td class="p-3 text-center text-gray-500">Anhídrido Sulfúrico (SO₃)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: Dosificación de Ácidos -->
+                <div id="panel-tab-acidos" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h3 class="font-bold text-eurochem-dark border-b border-gray-200 pb-2 mb-4 uppercase text-xs tracking-wider">Plan de Neutralización de Bicarbonatos</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <span class="block text-xs text-gray-500">Bicarbonatos Iniciales</span>
+                                <span class="text-xl font-bold text-gray-800" id="acidBicIni">2.13 meq/L</span>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <span class="block text-xs text-gray-500">Filtro Tampón de Seguridad (Dejar)</span>
+                                <span class="text-xl font-bold text-blue-600">1.50 meq/L</span>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-orange-500">
+                                <span class="block text-xs text-gray-500">Bicarbonatos a Neutralizar</span>
+                                <span class="text-xl font-bold text-orange-600" id="acidBicNeto">0.63 meq/L</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Ácido Nítrico -->
+                            <div class="p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center bg-blue-50/20">
+                                <div>
+                                    <h4 class="font-bold text-blue-900 text-sm">Opción A: Ácido Nítrico (65%, d=1.41)</h4>
+                                    <p class="text-xs text-gray-500">Dosis estequiométrica: 68 mL por m³ por meq/L.</p>
+                                </div>
+                                <div class="text-right mt-2 md:mt-0">
+                                    <div class="text-sm font-extrabold text-blue-800" id="valDosisNitrico">42.9 mL/m³</div>
+                                    <div class="text-xs text-gray-600 font-semibold" id="valTotalNitrico">Consumo total: 214.4 Litros</div>
+                                    <div class="text-[10px] text-green-700 font-bold mt-1" id="valN_extra">Aporta gratis: 44.13 kg N/ha</div>
+                                </div>
+                            </div>
+
+                            <!-- Ácido Fosfórico -->
+                            <div class="p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center">
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Opción B: Ácido Fosfórico (85%, d=1.62)</h4>
+                                    <p class="text-xs text-gray-500">Dosis de referencia: 85 mL por m³ por meq/L. *No mezclar con Calcio/Magnesio.</p>
+                                    <p class="text-[10px] text-amber-700 mt-1">⚠️ A diferencia del nítrico y el sulfúrico, este factor no se corresponde con un cálculo estequiométrico limpio para ninguno de los 3 protones del H3PO4 (su 2º pKa cae justo en el rango de pH objetivo, por lo que el cálculo exacto exige una curva de valoración, no un factor fijo). Verificar con prueba de jarras/pH-metro antes de dosificar a gran escala.</p>
+                                </div>
+                                <div class="text-right mt-2 md:mt-0">
+                                    <div class="text-sm font-extrabold text-indigo-800" id="valDosisFosforico">53.6 mL/m³</div>
+                                    <div class="text-xs text-gray-600 font-semibold" id="valTotalFosforico">Consumo total: 267.9 Litros</div>
+                                </div>
+                            </div>
+
+                            <!-- Ácido Sulfúrico -->
+                            <div class="p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center">
+                                <div>
+                                    <h4 class="font-bold text-purple-900 text-sm">Opción C: Ácido Sulfúrico (96%, d=1.84)</h4>
+                                    <p class="text-xs text-gray-500">Dosis estequiométrica: 28 mL por m³ por meq/L.</p>
+                                </div>
+                                <div class="text-right mt-2 md:mt-0">
+                                    <div class="text-sm font-extrabold text-purple-800" id="valDosisSulfurico">17.7 mL/m³</div>
+                                    <div class="text-xs text-gray-600 font-semibold" id="valTotalSulfurico">Consumo total: 88.3 Litros</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- REPORT CONTROLLER (ESTE CONTENEDOR SE RENDERIZA ÚNICAMENTE EN LA SALIDA DE IMPRESIÓN/GUARDADO PDF) -->
+    <div id="printReport" class="print-report-container">
+        
+        <!-- PÁGINA 1: PORTADA & ALERTAS -->
+        <div class="print-page">
+            <div class="print-header flex justify-between items-end">
+                <div>
+                    <h2 class="text-xl font-extrabold text-corporate-dark tracking-tight">EUROCHEM AGRO IBERIA S.L.</h2>
+                    <p class="text-xs text-gray-600">Área de Soporte Técnico Agronómico y Fertirregación Avanzada</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-gray-500">AUDITORÍA DE AGUA DE RIEGO</span>
+                </div>
+            </div>
+
+            <div class="my-6">
+                <h1 class="text-2xl font-bold text-corporate-dark mb-4 text-center">Informe de Diagnóstico Clínico de Aguas</h1>
+                
+                <table class="table-meta">
+                    <tbody>
+                        <tr>
+                            <td class="font-bold bg-gray-100" style="width: 25%;">Analítica:</td>
+                            <td id="printMetaAnalitica" style="width: 25%;">Marismas Sector B-XII</td>
+                            <td class="font-bold bg-gray-100" style="width: 25%;">Fecha de Emisión:</td>
+                            <td id="printMetaFecha" style="width: 25%;">2026-07-03</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold bg-gray-100">Finca / Sector:</td>
+                            <td id="printMetaFinca">Sector B-XII</td>
+                            <td class="font-bold bg-gray-100">Analista Responsable:</td>
+                            <td>G. Morales</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold bg-gray-100">Empresa / Cliente:</td>
+                            <td id="printMetaEmpresa" colspan="3">Las Marismas de Lebrija, S.C.A.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="my-6">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-4 text-sm uppercase">1. Parámetros Físicos y Salinidad</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-800 text-white">
+                            <th>Parámetro Físico</th>
+                            <th>Valor Encontrado</th>
+                            <th>Unidad</th>
+                            <th>Calificación Agronómica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">Conductividad Eléctrica (CE)</td>
+                            <td id="printCeVal" class="font-bold">1.075</td>
+                            <td>dS/m</td>
+                            <td>Límite moderado para cultivos tolerantes.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Sólidos Totales Disueltos (STD)</td>
+                            <td id="printStdVal" class="font-semibold">0.69</td>
+                            <td>g/L</td>
+                            <td>Aporte moderado de sales al suelo.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Presión Osmótica (Po)</td>
+                            <td id="printPoVal" class="text-blue-700 font-bold">0.39</td>
+                            <td>atmósferas</td>
+                            <td>Fuerza osmótica moderada exigida a las raíces.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Dureza Hidrotimétrica total</td>
+                            <td id="printDurezaVal" class="font-bold">29.20</td>
+                            <td>Grados Franceses (°F)</td>
+                            <td id="printDurezaTxt" class="font-semibold">Medianamente Dura</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Relación de Adsorción de Sodio (RAS)</td>
+                            <td id="printRasVal" class="text-orange-700 font-bold">3.31</td>
+                            <td>Índice</td>
+                            <td>Baja concentración relativa de sodio.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="my-6">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-4 text-sm uppercase">2. Semáforo de Calidad y Riesgos Operativos</h3>
+                <div class="space-y-4">
+                    <div id="printAlertInfiltracion" class="p-3 rounded border-badge-green">
+                        <span class="font-bold">Riesgo de Infiltración de Agua (FAO)</span>
+                        <p class="text-xs text-gray-700 mt-1" id="printAlertInfiltracionTxt">Sin problemas de infiltración (Relación RAS/CE equilibrada).</p>
+                    </div>
+                    <div id="printAlertObturacion" class="p-3 rounded border-badge-red">
+                        <span class="font-bold">Peligro de Obturación Química de Emisores (Goteros)</span>
+                        <p class="text-xs text-gray-700 mt-1" id="printAlertObturacionTxt">Se detecta riesgo importante de precipitación calcárea por interacción de carbonatos disueltos y pH alcalino.</p>
+                    </div>
+                    <div id="printAlertCloruro" class="p-3 rounded border-badge-yellow">
+                        <span class="font-bold">Riesgo de Toxicidad por Cloruros (Cl⁻)</span>
+                        <p class="text-xs text-gray-700 mt-1" id="printAlertCloruroTxt">Moderado. Monitorear plantas sensibles como cítricos, aguacates y frutales.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-footer-page flex justify-between items-center mt-auto">
+                <span>© Eurochem Agro Iberia S.L. &bull; G. Morales</span>
+                <span>Página 1 de 3</span>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2: GRÁFICO DE BALANCE IÓNICO & NUTRIENTES GRATUITOS -->
+        <div class="print-page">
+            <div class="print-header flex justify-between items-end">
+                <div>
+                    <h2 class="text-lg font-bold text-corporate-dark">EUROCHEM AGRO IBERIA S.L.</h2>
+                    <p class="text-xs text-gray-500">Reporte de Auditoría Agronómica</p>
+                </div>
+                <div class="text-right">
+                    <span id="printHeaderFinca" class="text-xs font-semibold text-gray-600">Sector B-XII</span>
+                </div>
+            </div>
+
+            <div class="my-4">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-4 text-sm uppercase">3. Balance de Cationes y Aniones (meq/L)</h3>
+                
+                <!-- Contenedor del gráfico estático PNG que se inserta durante la impresión -->
+                <div class="flex justify-center">
+                    <img id="printImageContainer" src="" alt="Balance Iónico">
+                </div>
+
+                <div class="mt-4 p-4 bg-gray-50 rounded border border-gray-200 text-xs">
+                    <span class="font-bold text-gray-700 uppercase block mb-1">Diagnóstico de Electroneutralidad:</span>
+                    <p id="printElectroneutralidad" class="text-gray-600 font-semibold">El error de cargas es de 3.25%, lo que garantiza una analítica de laboratorio altamente confiable.</p>
+                </div>
+            </div>
+
+            <div class="my-6">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-4 text-sm uppercase">4. Caja de Ahorros de Nutrientes Gratuitos</h3>
+                <p class="text-xs text-gray-600 mb-3">Las siguientes cantidades de fertilizante asimilable entran al suelo directamente con el agua y **deben ser descontadas de su factura anual de abonado** para evitar excesos de salinidad y reducir costos.</p>
+                
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-800 text-white">
+                            <th>Macronutriente</th>
+                            <th class="text-center">Concentración mg/L (ppm)</th>
+                            <th class="text-center font-bold text-yellow-300">Aporte Neto (kg/ha)</th>
+                            <th>Unidad Agronómica de Descuento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">Nitrógeno Nítrico (N)</td>
+                            <td id="printN_mg" class="text-center">5.00</td>
+                            <td id="printN_kg" class="text-center font-bold text-blue-800">5.65</td>
+                            <td>Nitrógeno Puro (N)</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Calcio (CaO)</td>
+                            <td id="printCa_mg" class="text-center">65.90</td>
+                            <td id="printCa_kg" class="text-center font-bold text-blue-800">461.30</td>
+                            <td>Óxido de Calcio (CaO) asimilable</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Magnesio (MgO)</td>
+                            <td id="printMg_mg" class="text-center">30.90</td>
+                            <td id="printMg_kg" class="text-center font-bold text-blue-800">256.47</td>
+                            <td>Óxido de Magnesio (MgO) asimilable</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Potasio (K₂O)</td>
+                            <td id="printK_mg" class="text-center">6.84</td>
+                            <td id="printK_kg" class="text-center font-bold text-blue-800">41.04</td>
+                            <td>Óxido de Potasio (K₂O) asimilable</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Azufre (SO₃)</td>
+                            <td id="printS_mg" class="text-center">197.00</td>
+                            <td id="printS_kg" class="text-center font-bold text-blue-800">986.23</td>
+                            <td>Anhídrido Sulfúrico (SO₃) asimilable</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="print-footer-page flex justify-between items-center mt-auto">
+                <span>© Eurochem Agro Iberia S.L. &bull; G. Morales</span>
+                <span>Página 2 de 3</span>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3: PLAN DE ÁCIDOS & CLORACIÓN -->
+        <div class="print-page">
+            <div class="print-header flex justify-between items-end">
+                <div>
+                    <h2 class="text-lg font-bold text-corporate-dark">EUROCHEM AGRO IBERIA S.L.</h2>
+                    <p class="text-xs text-gray-500">Manual de Corrección Hidráulica y Química</p>
+                </div>
+                <div class="text-right">
+                    <span id="printHeaderFinca3" class="text-xs font-semibold text-gray-600">Sector B-XII</span>
+                </div>
+            </div>
+
+            <div class="my-4">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-3 text-sm uppercase">5. Plan de Dosificación de Ácidos</h3>
+                <p class="text-xs text-gray-600 mb-3">Para evitar precipitaciones calizas y mantener un pH óptimo (5,5 - 6,5), se recomienda dosificar un ácido comercial respetando un residual de amortiguación de 1.5 meq/L de Bicarbonatos.</p>
+                
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-slate-800 text-white">
+                            <th>Ácido de Elección</th>
+                            <th class="text-center">Dosis Requerida (mL/m³)</th>
+                            <th class="text-center">Consumo Total (L)</th>
+                            <th>Aportes Nutricionales Extras (Descontar del Abono)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">Ácido Nítrico (65%, d=1.41)</td>
+                            <td id="printAcidNitricoDosis" class="text-center font-bold">42.9</td>
+                            <td id="printAcidNitricoTot" class="text-center font-semibold">214.4</td>
+                            <td id="printAcidNitricoExtra" class="text-green-800 font-bold">¡Aporta 44.13 kg/ha de Nitrógeno Nítrico gratuito!</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Ácido Fosfórico (85%, d=1.62)</td>
+                            <td id="printAcidFosforicoDosis" class="text-center font-bold">53.6</td>
+                            <td id="printAcidFosforicoTot" class="text-center font-semibold">267.9</td>
+                            <td>Aporta Fósforo asimilable de alta solubilidad. No mezclar con Calcio. Dosis de referencia, no estequiométrica exacta: verificar con prueba de jarras/pH-metro.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Ácido Sulfúrico (96%, d=1.84)</td>
+                            <td id="printAcidSulfuricoDosis" class="text-center font-bold">17.7</td>
+                            <td id="printAcidSulfuricoTot" class="text-center font-semibold">88.3</td>
+                            <td>Neutralización de alta potencia sin aportes nitrogenados ni de fósforo.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="my-6">
+                <h3 class="font-bold text-corporate-dark border-b border-gray-300 pb-2 mb-3 text-sm uppercase">6. Desinfección y Oxidación del Hierro (Cloración)</h3>
+                <div class="space-y-3 text-xs">
+                    <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                        <span class="font-bold block text-gray-700 mb-1">Mantenimiento Preventivo de Tuberías y Algas:</span>
+                        <p class="text-gray-600">Inyectar entre <span id="printCloroMin" class="font-bold">75.0</span> y <span id="printCloroMax" class="font-bold">100.0</span> litros de Hipoclorito Sódico (10% de cloro activo) al final del riego.</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                        <span class="font-bold block text-gray-700 mb-1">Oxidación de Hierro Disuelto (Prevención de Obturación):</span>
+                        <p class="text-gray-600">Para precipitar el hierro disuelto antes del filtro de arena, mantener una dosis constante de cloro libre en la entrada de filtros de <span id="printCloroFe" class="font-bold">0.016</span> ppm (mg/L).</p>
+                    </div>
+                    <div class="p-3 bg-red-50 text-red-900 border border-red-200 rounded font-bold">
+                        ⚠️ ALERTA DE SEGURIDAD VITAL: ¡NUNCA mezcle ácidos comerciales con hipoclorito sódico en el mismo recipiente o tanque concentrado! La reacción genera gas de cloro altamente letal para el operario.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque de Firmas y Validación -->
+            <div class="mt-8 border border-gray-300 rounded-lg p-4 bg-gray-50">
+                <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4 text-center">Acreditación y Firmas Técnicas</h4>
+                <div class="flex justify-between items-center text-center text-xs">
+                    <div style="width: 45%;">
+                        <div class="border-b border-gray-400 h-10 mb-2"></div>
+                        <p class="font-bold">Guillermo Morales</p>
+                        <p class="text-gray-500">Asesor de Fertirregación Avanzada</p>
+                    </div>
+                    <div style="width: 10%;"></div>
+                    <div style="width: 45%;">
+                        <div class="border-b border-gray-400 h-10 mb-2"></div>
+                        <p class="font-bold">Sello y Firma Autorizada</p>
+                        <p class="text-gray-500">Eurochem Agro Iberia S.L.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-footer-page flex justify-between items-center mt-auto">
+                <span>© Eurochem Agro Iberia S.L. &bull; G. Morales</span>
+                <span>Página 3 de 3</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CÓDIGO JAVASCRIPT: LÓGICA TÉCNICA Y ACTUALIZACIÓN EN TIEMPO REAL -->
+    <script>
+        let myChart = null;
+
+        // Carga Inicial
+        window.onload = function() {
+            sincronizarMeta();
+            calcularTodo();
+        };
+
+        function sincronizarMeta() {
+            // Sincronizar metadatos del cliente
+            const analitica = document.getElementById('metaAnalitica').value;
+            const finca = document.getElementById('metaFinca').value;
+            const empresa = document.getElementById('metaEmpresa').value;
+
+            document.getElementById('printMetaAnalitica').innerText = analitica;
+            document.getElementById('printMetaFinca').innerText = finca;
+            document.getElementById('printMetaEmpresa').innerText = empresa;
+
+            document.getElementById('printHeaderFinca').innerText = finca;
+            document.getElementById('printHeaderFinca3').innerText = finca;
+        }
+
+        function activarTab(tabId) {
+            const tabs = ['tab-alertas', 'tab-nutrientes', 'tab-acidos'];
+            tabs.forEach(t => {
+                const panel = document.getElementById('panel-' + t);
+                const btn = document.getElementById('btn-' + t);
+                if (t === tabId) {
+                    panel.classList.remove('hidden');
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('border-eurochem-blue', 'text-eurochem-blue');
+                } else {
+                    panel.classList.add('hidden');
+                    btn.classList.add('tab-inactive');
+                    btn.classList.remove('border-eurochem-blue', 'text-eurochem-blue');
+                }
+            });
+        }
+
+        function cargarMarismas() {
+            document.getElementById('metaAnalitica').value = "Analítica Marismas Sector B-XII";
+            document.getElementById('metaFinca').value = "Sector B-XII";
+            document.getElementById('metaEmpresa').value = "Las Marismas de Lebrija, S.C.A.";
+            
+            document.getElementById('ce_us').value = 1075;
+            document.getElementById('ph').value = 7.78;
+            document.getElementById('ca_mg').value = 65.9;
+            document.getElementById('mg_mg').value = 30.9;
+            document.getElementById('na_mg').value = 130.0;
+            document.getElementById('k_mg').value = 6.84;
+            document.getElementById('hco3_mg').value = 130.0;
+            document.getElementById('cl_mg').value = 189.0;
+            document.getElementById('so4_mg').value = 197.0;
+            document.getElementById('no3_mg').value = 5.0;
+            document.getElementById('b_mg').value = 0.10;
+            document.getElementById('fe_mg').value = 0.025;
+            document.getElementById('mn_mg').value = 0.005;
+
+            sincronizarMeta();
+            calcularTodo();
+        }
+
+        function cargarEjemploEurochem() {
+            document.getElementById('metaAnalitica').value = "Patrón de Calidad Eurochem Agro";
+            document.getElementById('metaFinca').value = "Parcela Demostración SGE";
+            document.getElementById('metaEmpresa').value = "Eurochem Agro Iberia S.L.";
+            
+            document.getElementById('ce_us').value = 1148;
+            document.getElementById('ph').value = 7.65;
+            document.getElementById('ca_mg').value = 107.6;
+            document.getElementById('mg_mg').value = 36.2;
+            document.getElementById('na_mg').value = 47.0;
+            document.getElementById('k_mg').value = 2.49;
+            document.getElementById('hco3_mg').value = 151.2;
+            document.getElementById('cl_mg').value = 56.0;
+            document.getElementById('so4_mg').value = 167.2;
+            document.getElementById('no3_mg').value = 107.3;
+            document.getElementById('b_mg').value = 0.07;
+            document.getElementById('fe_mg').value = 0.04;
+            document.getElementById('mn_mg').value = 0.02;
+
+            sincronizarMeta();
+            calcularTodo();
+        }
+
+        function calcularTodo() {
+            const vol = parseFloat(document.getElementById('vol_riego').value) || 0;
+            const ce = parseFloat(document.getElementById('ce_us').value) || 0;
+            const ph = parseFloat(document.getElementById('ph').value) || 0;
+
+            const ca_mg = parseFloat(document.getElementById('ca_mg').value) || 0;
+            const mg_mg = parseFloat(document.getElementById('mg_mg').value) || 0;
+            const na_mg = parseFloat(document.getElementById('na_mg').value) || 0;
+            const k_mg = parseFloat(document.getElementById('k_mg').value) || 0;
+
+            const hco3_mg = parseFloat(document.getElementById('hco3_mg').value) || 0;
+            const cl_mg = parseFloat(document.getElementById('cl_mg').value) || 0;
+            const so4_mg = parseFloat(document.getElementById('so4_mg').value) || 0;
+            const no3_mg = parseFloat(document.getElementById('no3_mg').value) || 0;
+
+            const b_mg = parseFloat(document.getElementById('b_mg').value) || 0;
+            const fe_mg = parseFloat(document.getElementById('fe_mg').value) || 0;
+            const mn_mg = parseFloat(document.getElementById('mn_mg').value) || 0;
+
+            // 1. Cálculos Físicos
+            const ce_ds = ce / 1000;
+            const std = ce * 0.64 / 1000;
+            const po = ce_ds * 0.36;
+            const dureza = (ca_mg * 2.5 + mg_mg * 4.12) / 10;
+
+            document.getElementById('resCe').innerText = ce_ds.toFixed(3) + " dS/m";
+            document.getElementById('resStd').innerText = std.toFixed(2) + " g/L";
+            document.getElementById('resPo').innerText = po.toFixed(2) + " atm";
+            document.getElementById('resDurezaVal').innerText = dureza.toFixed(1) + " °F";
+
+            document.getElementById('printCeVal').innerText = ce_ds.toFixed(3);
+            document.getElementById('printStdVal').innerText = std.toFixed(2);
+            document.getElementById('printPoVal').innerText = po.toFixed(2);
+            document.getElementById('printDurezaVal').innerText = dureza.toFixed(1);
+
+            // 2. Conversión a miliequivalentes (meq/l)
+            const ca_meq = ca_mg / 20.04;
+            const mg_meq = mg_mg / 12.16;
+            const na_meq = na_mg / 23.00;
+            const k_meq = k_mg / 39.10;
+
+            const hco3_meq = hco3_mg / 61.02;
+            const cl_meq = cl_mg / 35.46;
+            const so4_meq = so4_mg / 48.03;
+            const no3_meq = no3_mg / 62.00;
+
+            // Sólidos del Sodio (RAS)
+            const ras = na_meq / Math.sqrt((ca_meq + mg_meq) / 2.0);
+            document.getElementById('resRasVal').innerText = ras.toFixed(2);
+            document.getElementById('printRasVal').innerText = ras.toFixed(2);
+
+            // 3. Semáforos e Interpretaciones en Pantalla y Reporte
+            // Dureza
+            let durezaTxt = "";
+            let b_dureza = document.getElementById('badgeDureza');
+            if (dureza < 7) { durezaTxt = "Muy Dulce"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-300"; }
+            else if (dureza <= 14) { durezaTxt = "Dulce"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-300"; }
+            else if (dureza <= 22) { durezaTxt = "Medianamente Dulce"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-200"; }
+            else if (dureza <= 32) { durezaTxt = "Medianamente Dura"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-yellow-100 text-yellow-800 border border-yellow-300"; }
+            else if (dureza <= 54) { durezaTxt = "Dura"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-orange-100 text-orange-800 border border-orange-300"; }
+            else { durezaTxt = "Muy Dura"; b_dureza.className = "inline-block px-3 py-1 rounded font-bold bg-red-100 text-red-800 border border-red-300"; }
+            b_dureza.innerText = durezaTxt;
+            document.getElementById('printDurezaTxt').innerText = durezaTxt;
+
+            // Infiltración de Sodio (Criterio FAO completo: Ayers & Westcot, 1985, FAO Irrigation and
+            // Drainage Paper 29, Tabla 1 "Infiltration affected by SAR and ECw"). Antes solo se
+            // comprobaban dos combinaciones puntuales de RAS/CE; ahora se usan las 5 bandas de RAS
+            // reales de la tabla, cada una con su umbral de "ninguna restricción" y "restricción severa".
+            const bandasInfiltracionFAO = [
+                { rasMax: 3,  ninguna: 0.7, severa: 0.2 },
+                { rasMax: 6,  ninguna: 1.2, severa: 0.3 },
+                { rasMax: 12, ninguna: 1.9, severa: 0.5 },
+                { rasMax: 20, ninguna: 2.9, severa: 1.3 },
+                { rasMax: 40, ninguna: 5.0, severa: 2.9 }
+            ];
+            const bandaInf = bandasInfiltracionFAO.find(b => ras <= b.rasMax) || bandasInfiltracionFAO[bandasInfiltracionFAO.length - 1];
+
+            let infTxt = "";
+            let b_inf = document.getElementById('badgeInfiltracion');
+            let p_inf = document.getElementById('printAlertInfiltracion');
+            if (ce_ds < bandaInf.severa) {
+                infTxt = "RESTRICCIÓN SEVERA";
+                b_inf.className = "inline-block px-3 py-1 rounded font-bold bg-red-100 text-red-800 border border-red-300";
+                p_inf.className = "p-3 rounded border-badge-red";
+            } else if (ce_ds < bandaInf.ninguna) {
+                infTxt = "RESTRICCIÓN LIGERA-MODERADA";
+                b_inf.className = "inline-block px-3 py-1 rounded font-bold bg-yellow-100 text-yellow-800 border border-yellow-300";
+                p_inf.className = "p-3 rounded border-badge-yellow";
+            } else {
+                infTxt = "Sin restricción";
+                b_inf.className = "inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-300";
+                p_inf.className = "p-3 rounded border-badge-green";
+            }
+            b_inf.innerText = infTxt;
+            document.getElementById('printAlertInfiltracionTxt').innerText = infTxt + ` de infiltración (FAO-29, Ayers & Westcot 1985): RAS=${ras.toFixed(1)}, CE=${ce_ds.toFixed(2)} dS/m.`;
+
+            // Obturación Calcárea. Antes solo se comprobaba pH>7.5 y HCO3>2 meq/L, sin tener en cuenta
+            // si hay suficiente Ca disuelto para precipitar como CaCO3 (alcalinidad alta con poco Ca
+            // no forma tanto precipitado). Se añade el Ca como segundo factor. Esto sigue siendo un
+            // indicador simplificado, NO un índice de saturación real (Langelier/Ryznar), que requeriría
+            // además la temperatura del agua para calcularse correctamente.
+            let b_obt = document.getElementById('badgeObturacion');
+            let p_obt = document.getElementById('printAlertObturacion');
+            let p_obtTxt = document.getElementById('printAlertObturacionTxt');
+            let obtTxt = "";
+            if (ph > 7.5 && hco3_meq > 2.0 && ca_meq > 3.0) {
+                obtTxt = "Riesgo Importante";
+                b_obt.className = "inline-block px-3 py-1 rounded font-bold bg-red-100 text-red-800 border border-red-300";
+                p_obt.className = "p-3 rounded border-badge-red";
+                p_obtTxt.innerText = "Riesgo importante de precipitación calcárea: pH alcalino, bicarbonatos altos y calcio disponible suficiente para formar CaCO3. Indicador simplificado (no sustituye un índice de Langelier/Ryznar con temperatura).";
+            } else if (ph > 7.5 && hco3_meq > 2.0) {
+                obtTxt = "Riesgo Moderado";
+                b_obt.className = "inline-block px-3 py-1 rounded font-bold bg-yellow-100 text-yellow-800 border border-yellow-300";
+                p_obt.className = "p-3 rounded border-badge-yellow";
+                p_obtTxt.innerText = "pH alcalino y bicarbonatos altos, pero el calcio disponible es moderado: riesgo de precipitación calcárea presente pero más limitado. Vigilar evolución.";
+            } else {
+                obtTxt = "OK (Riesgo Bajo)";
+                b_obt.className = "inline-block px-3 py-1 rounded font-bold bg-green-100 text-green-800 border border-green-300";
+                p_obt.className = "p-3 rounded border-badge-green";
+                p_obtTxt.innerText = "Sin combinación de pH alcalino y alcalinidad elevada: riesgo bajo de obturación por precipitación calcárea.";
+            }
+            b_obt.innerText = obtTxt;
+
+            // Toxicidad de Iones Específicos
+            document.getElementById('resCloruro').innerText = cl_meq.toFixed(2) + " meq/L";
+            document.getElementById('resSodio').innerText = na_meq.toFixed(2) + " meq/L";
+            document.getElementById('resBoro').innerText = b_mg.toFixed(2) + " mg/L";
+
+            document.getElementById('printN_mg').innerText = no3_mg.toFixed(2);
+            document.getElementById('printCa_mg').innerText = ca_mg.toFixed(2);
+            document.getElementById('printMg_mg').innerText = mg_mg.toFixed(2);
+            document.getElementById('printK_mg').innerText = k_mg.toFixed(2);
+            document.getElementById('printS_mg').innerText = so4_mg.toFixed(2);
+
+            // Cloruros
+            let b_cl = document.getElementById('badgeCloruro');
+            let p_cl = document.getElementById('printAlertCloruro');
+            if (cl_meq < 4) { b_cl.innerText = "Excelente (Sin riesgo)"; b_cl.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-800"; p_cl.className = "p-3 rounded border-badge-green"; }
+            else if (cl_meq <= 10) { b_cl.innerText = "Moderado (Suelo/Frutales)"; b_cl.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800"; p_cl.className = "p-3 rounded border-badge-yellow"; }
+            else { b_cl.innerText = "Peligroso (Grave)"; b_cl.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-800"; p_cl.className = "p-3 rounded border-badge-red"; }
+
+            // Sodio
+            let b_na = document.getElementById('badgeSodio');
+            if (na_meq < 3) { b_na.innerText = "Sin riesgo"; b_na.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-800"; }
+            else if (na_meq <= 9) { b_na.innerText = "Moderado"; b_na.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800"; }
+            else { b_na.innerText = "Grave"; b_na.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-800"; }
+
+            // Boro
+            let b_bo = document.getElementById('badgeBoro');
+            if (b_mg < 0.7) { b_bo.innerText = "Sin riesgo"; b_bo.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-green-100 text-green-800"; }
+            else if (b_mg <= 3.0) { b_bo.innerText = "Precaución"; b_bo.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800"; }
+            else { b_bo.innerText = "Tóxico"; b_bo.className = "mt-2 inline-block text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-800"; }
+
+            // 4. Caja de Ahorros de Nutrientes Gratuitos (kg/ha)
+            const n_neto = (no3_mg * (14.0 / 62.0) * vol) / 1000.0;
+            const ca_neto = (ca_mg * vol) / 1000.0;
+            const cao_neto = ca_neto * 1.399; // Factor de meq a óxido asimilable
+            const mg_neto = (mg_mg * vol) / 1000.0;
+            const mgo_neto = mg_neto * 1.658;
+            const k_neto = (k_mg * vol) / 1000.0;
+            const k2o_neto = k_neto * 1.205;
+            const s_neto = (so4_mg * (32.06 / 96.06) * vol) / 1000.0;
+            const so3_neto = s_neto * 2.497;
+
+            document.getElementById('nutN_meq').innerText = no3_meq.toFixed(2);
+            document.getElementById('nutCa_meq').innerText = ca_meq.toFixed(2);
+            document.getElementById('nutMg_meq').innerText = mg_meq.toFixed(2);
+            document.getElementById('nutK_meq').innerText = k_meq.toFixed(2);
+            document.getElementById('nutS_meq').innerText = so4_meq.toFixed(2);
+
+            document.getElementById('nutN_kg').innerText = n_neto.toFixed(2) + " kg/ha";
+            document.getElementById('nutCa_kg').innerText = cao_neto.toFixed(2) + " kg/ha";
+            document.getElementById('nutMg_kg').innerText = mgo_neto.toFixed(2) + " kg/ha";
+            document.getElementById('nutK_kg').innerText = k2o_neto.toFixed(2) + " kg/ha";
+            document.getElementById('nutS_kg').innerText = so3_neto.toFixed(2) + " kg/ha";
+
+            document.getElementById('printN_kg').innerText = n_neto.toFixed(2);
+            document.getElementById('printCa_kg').innerText = cao_neto.toFixed(2);
+            document.getElementById('printMg_kg').innerText = mgo_neto.toFixed(2);
+            document.getElementById('printK_kg').innerText = k2o_neto.toFixed(2);
+            document.getElementById('printS_kg').innerText = so3_neto.toFixed(2);
+
+            // 5. Dosificación de Ácidos
+            const residual_seguro = 1.50;
+            const bic_neto = Math.max(0.0, hco3_meq - residual_seguro);
+
+            document.getElementById('acidBicIni').innerText = hco3_meq.toFixed(2) + " meq/L";
+            document.getElementById('acidBicNeto').innerText = bic_neto.toFixed(2) + " meq/L";
+
+            const nítrico_cc = bic_neto * 68.0;
+            const nítrico_total = (nítrico_cc * vol) / 1000.0;
+            const n_extra = bic_neto * 14.0 * vol / 1000.0; // Nitrógeno extra por neutralizar
+
+            const fosfórico_cc = bic_neto * 85.0;
+            const fosfórico_total = (fosfórico_cc * vol) / 1000.0;
+
+            const sulfúrico_cc = bic_neto * 28.0;
+            const sulfúrico_total = (sulfúrico_cc * vol) / 1000.0;
+
+            document.getElementById('valDosisNitrico').innerText = nítrico_cc.toFixed(1) + " mL/m³";
+            document.getElementById('valTotalNitrico').innerText = "Consumo total: " + nítrico_total.toFixed(1) + " Litros";
+            document.getElementById('valN_extra').innerText = "¡Aporta gratis: " + n_extra.toFixed(2) + " kg N/ha!";
+
+            document.getElementById('valDosisFosforico').innerText = fosfórico_cc.toFixed(1) + " mL/m³";
+            document.getElementById('valTotalFosforico').innerText = "Consumo total: " + fosfórico_total.toFixed(1) + " Litros";
+
+            document.getElementById('valDosisSulfurico').innerText = sulfúrico_cc.toFixed(1) + " mL/m³";
+            document.getElementById('valTotalSulfurico').innerText = "Consumo total: " + sulfúrico_total.toFixed(1) + " Litros";
+
+            // Sincronización con página 3 de impresión
+            document.getElementById('printAcidNitricoDosis').innerText = nítrico_cc.toFixed(1);
+            document.getElementById('printAcidNitricoTot').innerText = nítrico_total.toFixed(1);
+            document.getElementById('printAcidNitricoExtra').innerText = "¡Aporta " + n_extra.toFixed(2) + " kg/ha de Nitrógeno Nítrico gratuito!";
+
+            document.getElementById('printAcidFosforicoDosis').innerText = fosfórico_cc.toFixed(1);
+            document.getElementById('printAcidFosforicoTot').innerText = fosfórico_total.toFixed(1);
+
+            document.getElementById('printAcidSulfuricoDosis').innerText = sulfúrico_cc.toFixed(1);
+            document.getElementById('printAcidSulfuricoTot').innerText = sulfúrico_total.toFixed(1);
+
+            // Cloración e Hierro
+            // Dosis objetivo de cloro activo/libre: 15-20 ppm (mg/L) al final del riego.
+            // kg de cloro puro necesarios = ppm(mg/L) x vol(m3/ha) x 1000(L/m3) / 1e6(mg/kg) = ppm*vol/1000
+            const kgClPuroMin = (15.0 * vol) / 1000.0;
+            const kgClPuroMax = (20.0 * vol) / 1000.0;
+            // El hipoclorito sódico comercial se dosifica al 10% de cloro activo (10% p/v = 0.10 kg Cl activo por L de producto).
+            // Litros de producto = kg de cloro puro necesarios / 0.10. (Bug corregido: antes se mostraban los kg de cloro puro
+            // directamente como si fueran litros de producto al 10%, subdosificando por un factor de ~10).
+            const CONCENTRACION_HIPOCLORITO = 0.10;
+            const cloro_min = kgClPuroMin / CONCENTRACION_HIPOCLORITO;
+            const cloro_max = kgClPuroMax / CONCENTRACION_HIPOCLORITO;
+            const cloro_fe = 0.65 * fe_mg;
+
+            document.getElementById('printCloroMin').innerText = cloro_min.toFixed(1);
+            document.getElementById('printCloroMax').innerText = cloro_max.toFixed(1);
+            document.getElementById('printCloroFe').innerText = cloro_fe.toFixed(3);
+
+            // 6. Balance de Cargas (Electroneutralidad)
+            const sum_cationes = ca_meq + mg_meq + na_meq + k_meq;
+            const sum_aniones = hco3_meq + cl_meq + so4_meq + no3_meq;
+            const error_cargas = (Math.abs(sum_cationes - sum_aniones) / (sum_cationes + sum_aniones)) * 100;
+
+            let errorTxt = "Balance de Cargas (Error): " + error_cargas.toFixed(2) + "%. ";
+            if (error_cargas <= 5.0) {
+                errorTxt += "El balance de cargas es excelente (<5%), lo que garantiza que el análisis de laboratorio es sumamente riguroso y confiable.";
+            } else if (error_cargas <= 10.0) {
+                errorTxt += "El balance está en el rango tolerable (5-10%). El análisis es apto para uso agronómico.";
+            } else {
+                errorTxt += "¡PRECAUCIÓN! Desviación alta (>10%). Es posible que el laboratorio haya omitido algún elemento o exista un error de medición.";
+            }
+            document.getElementById('printElectroneutralidad').innerText = errorTxt;
+
+            // 7. Renderizar el Gráfico Dinámico de barras
+            actualizarGrafico(ca_meq, mg_meq, na_meq, k_meq, hco3_meq, cl_meq, so4_meq, no3_meq);
+        }
+
+        // Plugin personalizado para asegurar que el canvas de Chart.js tenga un fondo blanco sólido
+        const pluginFondoBlanco = {
+            id: 'customCanvasBackgroundColor',
+            beforeDraw: (chart) => {
+                const {ctx} = chart;
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-over';
+                ctx.fillStyle = '#ffffff'; // Fondo blanco para impresión nítida
+                ctx.fillRect(0, 0, chart.width, chart.height);
+                ctx.restore();
+            }
+        };
+
+        function actualizarGrafico(ca, mg, na, k, hco3, cl, so4, no3) {
+            const ctx = document.getElementById('chartBalance').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Calcio (Ca²⁺)', 'Bicarbonato (HCO₃⁻)', 
+                        'Magnesio (Mg²⁺)', 'Cloruro (Cl⁻)', 
+                        'Sodio (Na⁺)', 'Sulfato (SO₄²⁻)', 
+                        'Potasio (K⁺)', 'Nitrato (NO₃⁻)'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Cationes (Cargas +)',
+                            // NOTA: Se utilizan colores sólidos y opacos (alfa = 1.0) para evitar que se desvanezcan en el PDF imprimible
+                            data: [ca, 0, mg, 0, na, 0, k, 0],
+                            backgroundColor: '#003366', // Azul Oscuro Corporativo Sólido
+                            borderColor: '#001a33',
+                            borderWidth: 1,
+                            skipNull: true
+                        },
+                        {
+                            label: 'Aniones (Cargas -)',
+                            data: [0, hco3, 0, cl, 0, so4, 0, no3],
+                            backgroundColor: '#0088cc', // Azul Claro Eurochem Sólido
+                            borderColor: '#005f99',
+                            borderWidth: 1,
+                            skipNull: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0 // Desactivar animaciones para que esté listo al instante de la captura de impresión
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Concentración (meq/L)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [pluginFondoBlanco] // Registramos el plugin de fondo blanco
+            });
+        }
+
+        // FUNCIÓN CLAVE: Convierte el canvas en imagen estática e inicia el menú de impresión
+        function prepararEImprimir() {
+            if (myChart) {
+                // Convertir el canvas a una imagen de alta definición (Base64 PNG con fondo blanco)
+                const imgBase64 = myChart.toBase64Image();
+                const printImg = document.getElementById('printImageContainer');
+                printImg.src = imgBase64;
+                printImg.style.display = 'block'; // Mostrar la imagen en el flujo de impresión
+            }
+            
+            // Forzar retraso de milisegundos para permitir que la imagen se asiente antes de abrir la ventana síncrona
+            setTimeout(() => {
+                window.print();
+            }, 150);
+        }
+    </script>
+</body>
+</html>
+
+    
