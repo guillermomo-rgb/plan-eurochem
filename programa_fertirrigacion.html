@@ -1014,6 +1014,21 @@
             </div>
         </div>
 
+        <!-- Sugerencia Agronómica según Fase Fenológica de la Solución Nutritiva -->
+        <div class="config-card" id="fase-suggestion-card" style="border-color: #b2dfdb; background-color: #fafffe; margin-bottom: 15px;">
+            <h3 style="color: var(--primary-color);">🧭 Orientación de la Solución Nutritiva según la Fase (Punto 5)</h3>
+            <div id="fase-info-box" style="font-size: 12px; margin-bottom: 10px;">
+                <span><strong>Fase seleccionada:</strong> <span id="fase-label">-</span></span> &nbsp;|&nbsp;
+                <span><strong>Prioridad habitual:</strong> <span id="fase-prioridad">-</span></span> &nbsp;|&nbsp;
+                <span><strong>Tendencia esperada:</strong> <span id="fase-tendencia">-</span></span>
+            </div>
+            <div id="fase-suggestions-list"></div>
+            <div style="font-size: 10.5px; color: #888; margin-top: 8px;">
+                * Prioridades orientativas (no receta numérica universal) según guía de fertirrigación con base FAO/Penn State/OSU/UF-IFAS.
+                Las sugerencias combinan esa prioridad con los rangos Sonneveld ya calculados abajo — no sustituyen el análisis foliar ni el criterio agronómico.
+            </div>
+        </div>
+
         <div class="config-grid">
             <div class="config-card">
                 <h3>Cationes Resultantes</h3>
@@ -1167,6 +1182,9 @@
             <div style="font-size: 11px; color: #555; text-align: left; padding: 5px;">
                 * Nota de Electroneutralidad de la gota final en el gotero: <span id="gotero-electroneutralidad" style="font-weight:bold; color: var(--success-color);">0.0%</span>.
             </div>
+            <div style="font-size: 10.5px; color: #888; text-align: left; padding: 0 5px 5px;">
+                * La CE (Punto 5) es un buen control global de sales, pero no indica qué nutriente concreto falta o sobra: una CE correcta puede coexistir con un desequilibrio de K, Ca, Mg o N. Usa siempre esta tabla de ratios como complemento a la CE, no como sustituto.
+            </div>
         </div>
     </div>
 
@@ -1238,6 +1256,21 @@
             "Algodón": 7.7
         };
 
+        // Prioridades y tendencias nutricionales por fase fenológica (guía conceptual, no receta
+        // numérica universal — fuente: Guía práctica de fertirrigación, sección 10, con base FAO/
+        // Penn State/OSU/UF-IFAS). Se usa para interpretar los ratios Sonneveld ya calculados en el
+        // Punto 7 en función del momento del cultivo, no para sustituir sus rangos numéricos.
+        const FASES_INFO = {
+            sin_fase: { label: "Sin fase específica / Reposo", prioridad: "—", tendencia: "Sin prioridad nutricional específica definida para esta fase.", objetivo: "—" },
+            arranque: { label: "Arranque / Brotación", prioridad: "N + P + Ca", tendencia: "N moderado; P disponible; Ca estable; CE moderada", objetivo: "Raíz, brotación y establecimiento" },
+            vegetativo: { label: "Crecimiento vegetativo", prioridad: "N + K + Ca + Mg", tendencia: "Sube N/K según demanda; Mg y S acompañan", objetivo: "Biomasa y área foliar" },
+            floracion: { label: "Prefloración / Floración", prioridad: "P + K + Ca + B", tendencia: "Reducir dependencia de N; reforzar K/Ca; micronutrientes según cultivo", objetivo: "Floración, cuajado" },
+            cuajado: { label: "Cuajado / Crecimiento de fruto", prioridad: "K + Ca + Mg", tendencia: "K alto relativo; Ca estable; N controlado", objetivo: "Translocación, calibre y calidad" },
+            engorde: { label: "Engorde / Llenado", prioridad: "K + Ca + Mg", tendencia: "K dominante; N moderado-bajo", objetivo: "Materia seca, calibre y calidad" },
+            maduracion: { label: "Maduración", prioridad: "K; N bajo", tendencia: "Reducir N; mantener K según cultivo", objetivo: "Calidad y maduración" },
+            precosecha: { label: "Pre-cosecha", prioridad: "Según extracción y análisis", tendencia: "Evitar exceso de CE y de N", objetivo: "No forzar crecimiento vegetativo" }
+        };
+
         // Complejos Granulados de Fondo (Punto 4)
         const granuladosDB = {
             "ENTEC Nitrofoska Especial 12-12-17": { n: 12, p: 12, k: 17, mg: 3, ca: 0, s: 20 },
@@ -1290,26 +1323,26 @@
         let selectedMonth = 5; // Inicia en Mayo
 
         let monthlyData = {
-            1: { name: "Enero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            2: { name: "Febrero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            3: { name: "Marzo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            4: { name: "Abril", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            5: { name: "Mayo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
+            1: { name: "Enero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            2: { name: "Febrero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            3: { name: "Marzo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "arranque", solubles: [] },
+            4: { name: "Abril", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "arranque", solubles: [] },
+            5: { name: "Mayo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "floracion", solubles: [
                 { name: "Nitrofoska Solub 18-18-18", dosis: 0 },
                 { name: "MAP Solub", dosis: 0 }
             ]},
-            6: { name: "Junio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            7: { name: "Julio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
+            6: { name: "Junio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "cuajado", solubles: [] },
+            7: { name: "Julio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "engorde", solubles: [
                 { name: "ENTEC Solub 11-5-30", dosis: 0 },
                 { name: "Nitrato Cálcico Soluble", dosis: 0 }
             ]},
-            8: { name: "Agosto", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [
+            8: { name: "Agosto", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "engorde", solubles: [
                 { name: "SOP solub", dosis: 0 }
             ]},
-            9: { name: "Septiembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            10: { name: "Octubre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            11: { name: "Noviembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] },
-            12: { name: "Diciembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, solubles: [] }
+            9: { name: "Septiembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "maduracion", solubles: [] },
+            10: { name: "Octubre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "precosecha", solubles: [] },
+            11: { name: "Noviembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            12: { name: "Diciembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] }
         };
 
         // Inicialización al cargar la página
@@ -1411,6 +1444,21 @@
                                     <tr>
                                         <td style="text-align:left; font-weight:bold; width:60%;">Nombre Personalizado / Fase:</td>
                                         <td><input type="text" class="form-input" id="mname-${m}" value="${monthlyData[m].name}" oninput="syncMonthName(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;" title="Determina qué prioridad nutricional se espera en la solución (guía de fertirrigación, sección 10) para poder sugerir ajustes.">Fase Fenológica:</td>
+                                        <td>
+                                            <select class="form-select" id="mfase-${m}" onchange="syncMonthFase(${m})">
+                                                <option value="sin_fase">Sin fase específica / Reposo</option>
+                                                <option value="arranque">Arranque / Brotación</option>
+                                                <option value="vegetativo">Crecimiento vegetativo</option>
+                                                <option value="floracion">Prefloración / Floración</option>
+                                                <option value="cuajado">Cuajado / Crecimiento de fruto</option>
+                                                <option value="engorde">Engorde / Llenado</option>
+                                                <option value="maduracion">Maduración</option>
+                                                <option value="precosecha">Pre-cosecha</option>
+                                            </select>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="text-align:left; font-weight:bold;">Volumen de Riego (m³/ha-mes):</td>
@@ -1581,6 +1629,9 @@
                     opt.textContent = sol;
                     mSelector.appendChild(opt);
                 });
+
+                // Fijar la fase fenológica guardada en el selector recién creado
+                document.getElementById(`mfase-${m}`).value = monthlyData[m].fase || "sin_fase";
             }
         }
 
@@ -1633,6 +1684,10 @@
         }
         function syncMonthTiempo(m) {
             monthlyData[m].tiempo_riego = parseFloat(document.getElementById(`mtiempo-${m}`).value) || 0;
+            calculateAll();
+        }
+        function syncMonthFase(m) {
+            monthlyData[m].fase = document.getElementById(`mfase-${m}`).value;
             calculateAll();
         }
 
@@ -2449,12 +2504,14 @@
                 c_n_p.textContent = "⚠️ Relación alta. Exceso de Nitrógeno o deficiencia de Fósforo (afecta enraizamiento).";
                 c_n_p.style.color = "var(--danger-color)";
             }
-            // Diagnósticos visuales de relaciones molares con colores
-            evalRelationshipBadge("diag-k-ca-mg", r_k_ca_mg, 0.30, 0.50, "K / (Ca + Mg)");
-            evalRelationshipBadge("diag-ca-mg", r_ca_mg, 2.50, 5.00, "Ca / Mg");
-            evalRelationshipBadge("diag-k-mg", r_k_mg, 1.50, 3.00, "K / Mg");
-            evalRelationshipBadge("diag-n-k", r_n_k, 1.00, 1.60, "N / K");
-            evalRelationshipBadge("diag-n-p", r_n_p, 8.00, 12.00, "N / P");
+            // (Los diagnósticos de cada ratio ya se muestran en las celdas "comment-*" de arriba;
+            // las llamadas a evalRelationshipBadge() que había aquí apuntaban a elementos
+            // "diag-*" inexistentes en el HTML y lanzaban una excepción en cada recálculo,
+            // impidiendo que el código posterior de esta función (incluido el Dictamen del
+            // Punto 8) llegara a ejecutarse nunca. Se han retirado esas llamadas muertas.
+
+            // Sugerencia agronómica según la fase fenológica de esta fase (Punto 5/7)
+            renderFaseSuggestion(sm.fase, { r_k_ca_mg, r_ca_mg, r_k_mg, r_n_k, r_n_p });
 
             // Barra tricolor Tríada catiónica
             const cat_sum_molar = got_k + got_ca + got_mg;
@@ -2488,9 +2545,10 @@
             generateExpertDictamen(ec_gota_fase, ras_val, meq_cl, mesesConflictoTanque);
         }
 
-        // Diagnósticos de Sonneveld coloreados
+        // Diagnósticos de Sonneveld coloreados (sin uso actualmente: ver nota en calculateAll)
         function evalRelationshipBadge(id, val, min, max, label) {
             const b = document.getElementById(id);
+            if (!b) return;
             if (val < min) {
                 b.textContent = "Deficiente";
                 b.className = "diag-badge diag-danger";
@@ -2500,6 +2558,48 @@
             } else {
                 b.textContent = "Equilibrado";
                 b.className = "diag-badge diag-ok";
+            }
+        }
+
+        // Orientación agronómica de la solución nutritiva según la fase fenológica seleccionada
+        // (Punto 5). Combina la prioridad/tendencia cualitativa de la fase (ver FASES_INFO, guía
+        // de fertirrigación sección 10) con los rangos Sonneveld ya calculados y validados arriba:
+        // no introduce umbrales numéricos nuevos por fase, solo interpreta los ya existentes en
+        // función de qué se espera en ese momento del cultivo.
+        function renderFaseSuggestion(faseKey, ratios) {
+            const info = FASES_INFO[faseKey] || FASES_INFO.sin_fase;
+            document.getElementById("fase-label").textContent = info.label;
+            document.getElementById("fase-prioridad").textContent = info.prioridad;
+            document.getElementById("fase-tendencia").textContent = info.tendencia;
+
+            const list = document.getElementById("fase-suggestions-list");
+            const sugerencias = [];
+
+            const { r_k_ca_mg, r_ca_mg, r_k_mg, r_n_k, r_n_p } = ratios;
+
+            if (faseKey === "arranque") {
+                if (r_n_p > 12.00) sugerencias.push("Esta fase prioriza P disponible para el arranque radicular, pero tu relación N/P (" + r_n_p.toFixed(2) + ") es alta: hay más N relativo (o menos P) de lo recomendado. Considera reforzar el aporte de P.");
+            } else if (faseKey === "vegetativo") {
+                if (r_n_k < 1.00) sugerencias.push("En crecimiento vegetativo se espera N suficiente para biomasa y área foliar, pero tu relación N/K (" + r_n_k.toFixed(2) + ") es baja: el K relativo es alto. Revisa si el N está siendo limitante.");
+            } else if (faseKey === "floracion") {
+                if (r_n_k > 1.60) sugerencias.push("En floración se recomienda reducir la dependencia de N y reforzar K/Ca, pero tu relación N/K (" + r_n_k.toFixed(2) + ") es alta. Considera bajar el aporte de N y/o subir K.");
+                if (r_k_ca_mg < 0.30) sugerencias.push("Se espera reforzar K en esta fase; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja. Valora aumentar el aporte de K.");
+            } else if (faseKey === "cuajado" || faseKey === "engorde") {
+                if (r_k_ca_mg < 0.30) sugerencias.push("En " + info.label.toLowerCase() + " se espera K alto relativo para calibre y calidad; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja. Considera reforzar K.");
+                if (r_n_k > 1.60) sugerencias.push("Se recomienda N controlado en esta fase; tu relación N/K (" + r_n_k.toFixed(2) + ") es alta. Valora reducir el aporte de N.");
+            } else if (faseKey === "maduracion") {
+                if (r_n_k > 1.60) sugerencias.push("En maduración se recomienda reducir N y mantener K; tu relación N/K (" + r_n_k.toFixed(2) + ") sigue siendo alta. Considera bajar la dosis de fertilizantes nitrogenados.");
+                if (r_k_ca_mg < 0.30) sugerencias.push("Se recomienda mantener K en esta fase; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja para el objetivo de calidad y maduración.");
+            } else if (faseKey === "precosecha") {
+                sugerencias.push("En pre-cosecha el objetivo es no forzar crecimiento vegetativo: evita subir N y vigila que la CE no se dispare (revisa el Punto 5 y el Punto 8 de esta misma fase).");
+            }
+
+            if (sugerencias.length === 0) {
+                list.innerHTML = faseKey === "sin_fase"
+                    ? '<div style="font-size:12px; color:#777;">Selecciona una fase fenológica arriba para recibir orientación sobre el equilibrio esperado de la solución.</div>'
+                    : '<div class="diag-badge diag-ok" style="display:inline-block;">✅ La solución de esta fase no contradice la prioridad nutricional esperada.</div>';
+            } else {
+                list.innerHTML = sugerencias.map(s => `<div class="diag-badge diag-warn" style="display:block; margin-bottom:6px; white-space:normal;">⚠️ ${s}</div>`).join("");
             }
         }
 
