@@ -590,6 +590,28 @@
                 </select>
                 <span style="font-weight: bold; font-size: 13px; color: var(--primary-color); margin-left: 15px; margin-right: 8px;">Rendimiento (t/ha):</span>
                 <input type="number" id="crop-yield" value="40" style="width: 70px; padding: 4px; text-align: center;" oninput="calculateAll()">
+                <button class="btn-action" style="margin-left: 15px;" onclick="toggleNuevoCultivoForm()">➕ Añadir Cultivo Nuevo</button>
+            </div>
+        </div>
+
+        <div id="nuevo-cultivo-form" class="config-card no-print" style="display:none; margin-bottom: 15px; border-color: var(--primary-color);">
+            <h3>Añadir Cultivo Nuevo (Extracciones kg / t de producción)</h3>
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items:end;">
+                <div><label>Nombre del Cultivo:</label><input type="text" id="nc-nombre" placeholder="Ej. Kiwi"></div>
+                <div><label>N (kg/t):</label><input type="number" id="nc-n" step="0.01" value="0"></div>
+                <div><label>P (kg/t):</label><input type="number" id="nc-p" step="0.01" value="0"></div>
+                <div><label>K (kg/t):</label><input type="number" id="nc-k" step="0.01" value="0"></div>
+                <div><label>Mg (kg/t):</label><input type="number" id="nc-mg" step="0.01" value="0"></div>
+                <div><label>Ca (kg/t):</label><input type="number" id="nc-ca" step="0.01" value="0"></div>
+                <div><label>S (kg/t):</label><input type="number" id="nc-s" step="0.01" value="0"></div>
+                <div><label>Umbral Salino CE Gotero (dS/m):</label><input type="number" id="nc-salino" step="0.1" value="2.0"></div>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn-action" onclick="guardarCultivoNuevo()">💾 Guardar Cultivo</button>
+                <button class="btn-action" style="background-color:#94a3b8;" onclick="toggleNuevoCultivoForm()">Cancelar</button>
+            </div>
+            <div class="note" style="margin-top:8px;">
+                Los cultivos que añada aquí se guardan en este navegador (localStorage) y quedan disponibles en el selector de Cultivo de este programa en próximas visitas. Introduzca las extracciones (kg de nutriente por tonelada de producción) tal como las tenga documentadas para ese cultivo.
             </div>
         </div>
 
@@ -1066,6 +1088,96 @@
                 </tr>
             </tfoot>
         </table>
+
+        <!-- APLICACIÓN FOLIAR (macro y micronutrientes vía hoja) -->
+        <div class="section-header" style="margin-top: 30px;">
+            <h2>Aplicación Foliar (Correctores y Foliares Eurochem)</h2>
+        </div>
+
+        <div class="adder-panel no-print">
+            <span style="font-weight:bold; color: var(--dark-blue);">Producto Foliar:</span>
+            <select id="foliar-selector" class="form-select" style="width: 250px;" onchange="updateFoliarPreview()">
+                <!-- Se popula con foliaresDB -->
+            </select>
+            <span style="font-weight:bold; color: var(--dark-blue);">Dosis (kg o L/ha):</span>
+            <input type="number" id="foliar-dosis" class="form-input" style="width: 80px;" value="2" step="0.1" oninput="updateFoliarPreview()">
+            <button class="btn-action" onclick="addFoliarAbono()">➕ Añadir Aplicación Foliar</button>
+            <button class="btn-action" style="background-color:#0d9488;" onclick="toggleNuevoFoliarForm()">📋 Definir Producto Foliar Nuevo</button>
+            <div id="foliar-preview" class="preview-uf-card"></div>
+        </div>
+
+        <div id="nuevo-foliar-form" class="config-card no-print" style="display:none; margin-bottom: 15px; border-color: #0d9488;">
+            <h3>Definir Producto Foliar / Corrector Nuevo (% p/p o p/v según ficha del producto)</h3>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                <div><label>Nombre del Producto:</label><input type="text" id="nf-nombre" placeholder="Ej. Nitrofoska Foliar"></div>
+                <div><label>N (%):</label><input type="number" id="nf-n" step="0.01" value="0"></div>
+                <div><label>P₂O₅ (%):</label><input type="number" id="nf-p" step="0.01" value="0"></div>
+                <div><label>K₂O (%):</label><input type="number" id="nf-k" step="0.01" value="0"></div>
+                <div><label>MgO (%):</label><input type="number" id="nf-mg" step="0.01" value="0"></div>
+                <div><label>CaO (%):</label><input type="number" id="nf-ca" step="0.01" value="0"></div>
+                <div><label>SO₃ (%):</label><input type="number" id="nf-s" step="0.01" value="0"></div>
+                <div><label>Fe (%):</label><input type="number" id="nf-fe" step="0.001" value="0"></div>
+                <div><label>Mn (%):</label><input type="number" id="nf-mn" step="0.001" value="0"></div>
+                <div><label>Zn (%):</label><input type="number" id="nf-zn" step="0.001" value="0"></div>
+                <div><label>Cu (%):</label><input type="number" id="nf-cu" step="0.001" value="0"></div>
+                <div><label>B (%):</label><input type="number" id="nf-b" step="0.001" value="0"></div>
+                <div><label>Mo (%):</label><input type="number" id="nf-mo" step="0.0001" value="0"></div>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn-action" onclick="guardarFoliarNuevo()">💾 Guardar Producto</button>
+                <button class="btn-action" style="background-color:#94a3b8;" onclick="toggleNuevoFoliarForm()">Cancelar</button>
+            </div>
+            <div class="note" style="margin-top:8px;">
+                Introduzca los % de la ficha técnica real del producto (etiqueta/PDS). Los productos definidos aquí se guardan en este navegador y quedan disponibles en el selector de "Producto Foliar" en próximas visitas.
+            </div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Producto Foliar</th>
+                    <th>Dosis</th>
+                    <th>N</th>
+                    <th>P₂O₅</th>
+                    <th>K₂O</th>
+                    <th>MgO</th>
+                    <th>CaO</th>
+                    <th>SO₃</th>
+                    <th>Fe</th>
+                    <th>Mn</th>
+                    <th>Zn</th>
+                    <th>Cu</th>
+                    <th>B</th>
+                    <th>Mo</th>
+                    <th class="no-print">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="foliar-table-body">
+                <!-- Se llena dinámicamente -->
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f1f5f9; font-weight: bold; color: var(--dark-blue);">
+                    <td>Total Aportado por Vía Foliar (kg/ha macros, g/ha micros):</td>
+                    <td id="total-foliar-dosis">-</td>
+                    <td id="foliar-total-n">0.0</td>
+                    <td id="foliar-total-p">0.0</td>
+                    <td id="foliar-total-k">0.0</td>
+                    <td id="foliar-total-mg">0.0</td>
+                    <td id="foliar-total-ca">0.0</td>
+                    <td id="foliar-total-s">0.0</td>
+                    <td id="foliar-total-fe">0.0</td>
+                    <td id="foliar-total-mn">0.0</td>
+                    <td id="foliar-total-zn">0.0</td>
+                    <td id="foliar-total-cu">0.0</td>
+                    <td id="foliar-total-b">0.0</td>
+                    <td id="foliar-total-mo">0.00</td>
+                    <td class="no-print">-</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div style="font-size: 10.5px; color: #888; margin-top: 5px;">
+            * El aporte foliar es complementario al abonado de fondo/fertirrigación (Puntos 4-7): la vía foliar corrige carencias puntuales de forma rápida pero aporta cantidades pequeñas de nutriente en comparación con el aporte radicular, especialmente para macronutrientes móviles como el N-K. No sustituye el plan de fondo/fertirrigación.
+        </div>
     </div>
 
     <!-- PUNTO 5: PLANIFICACIÓN MENSUAL (FASES FIJAS v52 CON NAV v61) -->
@@ -1413,6 +1525,67 @@
             "Algodón": 7.7
         };
 
+        // Cultivos personalizados añadidos por el usuario (localStorage). Se fusionan con los catálogos
+        // fijos cultivoExtracciones/limitesSalinos justo después de cargarlos, así el resto del programa
+        // (selector, cálculo de necesidades, alertas de salinidad) los trata exactamente igual que los
+        // cultivos predefinidos, sin necesidad de tocar ninguna otra parte del código.
+        const CULTIVOS_CUSTOM_KEY = "fertirrigacion_cultivos_custom_v1";
+        function cargarCultivosPersonalizados() {
+            try {
+                const guardados = JSON.parse(localStorage.getItem(CULTIVOS_CUSTOM_KEY) || "{}");
+                Object.keys(guardados).forEach(nombre => {
+                    cultivoExtracciones[nombre] = guardados[nombre].extracciones;
+                    limitesSalinos[nombre] = guardados[nombre].salino;
+                });
+            } catch (e) {
+                console.warn("No se pudieron cargar los cultivos personalizados:", e);
+            }
+        }
+        cargarCultivosPersonalizados();
+
+        function toggleNuevoCultivoForm() {
+            const div = document.getElementById("nuevo-cultivo-form");
+            div.style.display = (div.style.display === "none") ? "block" : "none";
+        }
+
+        function guardarCultivoNuevo() {
+            const nombre = document.getElementById("nc-nombre").value.trim();
+            if (!nombre) { alert("Introduce un nombre para el cultivo."); return; }
+            if (cultivoExtracciones[nombre]) {
+                if (!confirm(`Ya existe un cultivo llamado "${nombre}". ¿Sobrescribir sus valores?`)) return;
+            }
+            const extracciones = {
+                n: parseFloat(document.getElementById("nc-n").value) || 0,
+                p: parseFloat(document.getElementById("nc-p").value) || 0,
+                k: parseFloat(document.getElementById("nc-k").value) || 0,
+                mg: parseFloat(document.getElementById("nc-mg").value) || 0,
+                ca: parseFloat(document.getElementById("nc-ca").value) || 0,
+                s: parseFloat(document.getElementById("nc-s").value) || 0
+            };
+            const salino = parseFloat(document.getElementById("nc-salino").value) || 2.0;
+
+            cultivoExtracciones[nombre] = extracciones;
+            limitesSalinos[nombre] = salino;
+
+            let guardados = {};
+            try { guardados = JSON.parse(localStorage.getItem(CULTIVOS_CUSTOM_KEY) || "{}"); } catch (e) { guardados = {}; }
+            guardados[nombre] = { extracciones, salino };
+            localStorage.setItem(CULTIVOS_CUSTOM_KEY, JSON.stringify(guardados));
+
+            // Repoblar el selector de cultivos y seleccionar el recién creado
+            const cropSel = document.getElementById("crop-selector");
+            if (!Array.from(cropSel.options).some(o => o.value === nombre)) {
+                const opt = document.createElement("option");
+                opt.value = nombre;
+                opt.textContent = nombre + " (personalizado)";
+                cropSel.appendChild(opt);
+            }
+            cropSel.value = nombre;
+            toggleNuevoCultivoForm();
+            loadSelectedCrop();
+            alert(`Cultivo "${nombre}" guardado. Ya está disponible en el selector de Cultivo.`);
+        }
+
         // Prioridades y tendencias nutricionales por fase fenológica (guía conceptual, no receta
         // numérica universal — fuente: Guía práctica de fertirrigación, sección 10, con base FAO/
         // Penn State/OSU/UF-IFAS). Se usa para interpretar los ratios Sonneveld ya calculados en el
@@ -1481,6 +1654,98 @@
             "ENTEC Evo 27S": { n: 27, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
             "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 }
         };
+
+        // Catálogo de productos foliares/correctores. Vacío de fábrica salvo lo que el usuario defina
+        // (botón "Definir Producto Foliar Nuevo") — no se han incluido composiciones de productos
+        // comerciales reales (p.ej. Nitrofoska Foliar) sin la ficha técnica/PDS que las confirme, para
+        // no fabricar datos agronómicos. % expresados sobre el producto tal como viene en su etiqueta.
+        const foliaresDB = {};
+        const FOLIARES_CUSTOM_KEY = "fertirrigacion_foliares_custom_v1";
+        function cargarFoliaresPersonalizados() {
+            try {
+                const guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY) || "{}");
+                Object.assign(foliaresDB, guardados);
+            } catch (e) {
+                console.warn("No se pudieron cargar los productos foliares personalizados:", e);
+            }
+        }
+        cargarFoliaresPersonalizados();
+
+        let foliarItems = [];
+
+        function toggleNuevoFoliarForm() {
+            const div = document.getElementById("nuevo-foliar-form");
+            div.style.display = (div.style.display === "none") ? "block" : "none";
+        }
+
+        function guardarFoliarNuevo() {
+            const nombre = document.getElementById("nf-nombre").value.trim();
+            if (!nombre) { alert("Introduce un nombre para el producto foliar."); return; }
+            if (foliaresDB[nombre] && !confirm(`Ya existe un producto llamado "${nombre}". ¿Sobrescribir su composición?`)) return;
+
+            const comp = {
+                n: parseFloat(document.getElementById("nf-n").value) || 0,
+                p: parseFloat(document.getElementById("nf-p").value) || 0,
+                k: parseFloat(document.getElementById("nf-k").value) || 0,
+                mg: parseFloat(document.getElementById("nf-mg").value) || 0,
+                ca: parseFloat(document.getElementById("nf-ca").value) || 0,
+                s: parseFloat(document.getElementById("nf-s").value) || 0,
+                fe: parseFloat(document.getElementById("nf-fe").value) || 0,
+                mn: parseFloat(document.getElementById("nf-mn").value) || 0,
+                zn: parseFloat(document.getElementById("nf-zn").value) || 0,
+                cu: parseFloat(document.getElementById("nf-cu").value) || 0,
+                b: parseFloat(document.getElementById("nf-b").value) || 0,
+                mo: parseFloat(document.getElementById("nf-mo").value) || 0
+            };
+
+            foliaresDB[nombre] = comp;
+            let guardados = {};
+            try { guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY) || "{}"); } catch (e) { guardados = {}; }
+            guardados[nombre] = comp;
+            localStorage.setItem(FOLIARES_CUSTOM_KEY, JSON.stringify(guardados));
+
+            const foliarSel = document.getElementById("foliar-selector");
+            if (!Array.from(foliarSel.options).some(o => o.value === nombre)) {
+                const opt = document.createElement("option");
+                opt.value = nombre;
+                opt.textContent = nombre;
+                foliarSel.appendChild(opt);
+            }
+            foliarSel.value = nombre;
+            toggleNuevoFoliarForm();
+            alert(`Producto foliar "${nombre}" guardado. Ya está disponible en el selector.`);
+        }
+
+        // Añadir/quitar aplicaciones foliares (sección de Punto 4)
+        function addFoliarAbono() {
+            const name = document.getElementById("foliar-selector").value;
+            const dosis = parseFloat(document.getElementById("foliar-dosis").value) || 0;
+            if (!name || dosis <= 0) return;
+            foliarItems.push({ name, dosis });
+            calculateAll();
+        }
+
+        function removeFoliarItem(index) {
+            foliarItems.splice(index, 1);
+            calculateAll();
+        }
+
+        function updateFoliarItemDosis(index, newDosis) {
+            foliarItems[index].dosis = parseFloat(newDosis) || 0;
+            calculateAll();
+        }
+
+        function updateFoliarPreview() {
+            const name = document.getElementById("foliar-selector").value;
+            const dosis = parseFloat(document.getElementById("foliar-dosis").value) || 0;
+            const preview = document.getElementById("foliar-preview");
+            if (dosis <= 0 || !name) { preview.style.display = "none"; return; }
+            const p = foliaresDB[name];
+            if (p) {
+                preview.textContent = `Aporte estimado: N: ${(dosis*p.n/100).toFixed(2)} | P₂O₅: ${(dosis*p.p/100).toFixed(2)} | K₂O: ${(dosis*p.k/100).toFixed(2)} | MgO: ${(dosis*p.mg/100).toFixed(2)} | CaO: ${(dosis*p.ca/100).toFixed(2)} | SO₃: ${(dosis*p.s/100).toFixed(2)} kg/ha — Fe: ${(dosis*p.fe*10).toFixed(1)} | Mn: ${(dosis*p.mn*10).toFixed(1)} | Zn: ${(dosis*p.zn*10).toFixed(1)} | Cu: ${(dosis*p.cu*10).toFixed(1)} | B: ${(dosis*p.b*10).toFixed(1)} | Mo: ${(dosis*p.mo*10).toFixed(2)} g/ha`;
+                preview.style.display = "block";
+            }
+        }
 
         // 22 Fertilizantes Solubles de Eurochem (Punto 5 y Sonneveld)
         // Propiedad 'tanque' (A = cálcicos, B = sulfatos/fosfatos, N = neutro/compatible con ambos):
@@ -1562,6 +1827,16 @@
                 opt.value = prod;
                 opt.textContent = prod;
                 fondoSel.appendChild(opt);
+            });
+
+            // Cargar selector de productos foliares
+            const foliarSel = document.getElementById("foliar-selector");
+            foliarSel.innerHTML = "";
+            Object.keys(foliaresDB).forEach(prod => {
+                const opt = document.createElement("option");
+                opt.value = prod;
+                opt.textContent = prod;
+                foliarSel.appendChild(opt);
             });
 
             // Establecer fecha por defecto (hoy)
@@ -2237,6 +2512,71 @@
             document.getElementById("fondo-mg").textContent = fondo_sum_mg.toFixed(1);
             document.getElementById("fondo-ca").textContent = fondo_sum_ca.toFixed(1);
             document.getElementById("fondo-s").textContent = fondo_sum_s.toFixed(1);
+
+            // 3b. Renderizar y calcular Aplicación Foliar (macro en kg/ha, micro en g/ha)
+            const foBody = document.getElementById("foliar-table-body");
+            foBody.innerHTML = "";
+            let foliar_sum_n = 0, foliar_sum_p = 0, foliar_sum_k = 0, foliar_sum_mg = 0, foliar_sum_ca = 0, foliar_sum_s = 0;
+            let foliar_sum_fe = 0, foliar_sum_mn = 0, foliar_sum_zn = 0, foliar_sum_cu = 0, foliar_sum_b = 0, foliar_sum_mo = 0;
+            let total_foliar_dosis_acum = 0;
+
+            foliarItems.forEach((item, idx) => {
+                const p = foliaresDB[item.name];
+                if (p) {
+                    const n = item.dosis * p.n / 100;
+                    const p2 = item.dosis * p.p / 100;
+                    const k = item.dosis * p.k / 100;
+                    const mg = item.dosis * p.mg / 100;
+                    const ca = item.dosis * p.ca / 100;
+                    const s = item.dosis * p.s / 100;
+                    const fe = item.dosis * p.fe * 10;
+                    const mn = item.dosis * p.mn * 10;
+                    const zn = item.dosis * p.zn * 10;
+                    const cu = item.dosis * p.cu * 10;
+                    const b = item.dosis * p.b * 10;
+                    const mo = item.dosis * p.mo * 10;
+
+                    foliar_sum_n += n; foliar_sum_p += p2; foliar_sum_k += k;
+                    foliar_sum_mg += mg; foliar_sum_ca += ca; foliar_sum_s += s;
+                    foliar_sum_fe += fe; foliar_sum_mn += mn; foliar_sum_zn += zn;
+                    foliar_sum_cu += cu; foliar_sum_b += b; foliar_sum_mo += mo;
+                    total_foliar_dosis_acum += item.dosis;
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="text-align:left; font-weight:bold; color: var(--dark-blue);">${item.name}</td>
+                        <td><input type="number" class="form-input" style="width:70px;" value="${item.dosis}" step="0.1" oninput="updateFoliarItemDosis(${idx}, this.value)"></td>
+                        <td style="font-weight:bold;">${n.toFixed(2)}</td>
+                        <td style="font-weight:bold;">${p2.toFixed(2)}</td>
+                        <td style="font-weight:bold;">${k.toFixed(2)}</td>
+                        <td>${mg.toFixed(2)}</td>
+                        <td>${ca.toFixed(2)}</td>
+                        <td>${s.toFixed(2)}</td>
+                        <td>${fe.toFixed(1)}</td>
+                        <td>${mn.toFixed(1)}</td>
+                        <td>${zn.toFixed(1)}</td>
+                        <td>${cu.toFixed(1)}</td>
+                        <td>${b.toFixed(1)}</td>
+                        <td>${mo.toFixed(2)}</td>
+                        <td class="no-print"><button class="btn-danger" onclick="removeFoliarItem(${idx})">🗑️ Retirar</button></td>
+                    `;
+                    foBody.appendChild(row);
+                }
+            });
+
+            document.getElementById("total-foliar-dosis").textContent = `${total_foliar_dosis_acum.toFixed(1)} kg-L/ha`;
+            document.getElementById("foliar-total-n").textContent = foliar_sum_n.toFixed(2);
+            document.getElementById("foliar-total-p").textContent = foliar_sum_p.toFixed(2);
+            document.getElementById("foliar-total-k").textContent = foliar_sum_k.toFixed(2);
+            document.getElementById("foliar-total-mg").textContent = foliar_sum_mg.toFixed(2);
+            document.getElementById("foliar-total-ca").textContent = foliar_sum_ca.toFixed(2);
+            document.getElementById("foliar-total-s").textContent = foliar_sum_s.toFixed(2);
+            document.getElementById("foliar-total-fe").textContent = foliar_sum_fe.toFixed(1);
+            document.getElementById("foliar-total-mn").textContent = foliar_sum_mn.toFixed(1);
+            document.getElementById("foliar-total-zn").textContent = foliar_sum_zn.toFixed(1);
+            document.getElementById("foliar-total-cu").textContent = foliar_sum_cu.toFixed(1);
+            document.getElementById("foliar-total-b").textContent = foliar_sum_b.toFixed(1);
+            document.getElementById("foliar-total-mo").textContent = foliar_sum_mo.toFixed(2);
 
             // 4. PRE-CÁLCULO DEL BALANCE ANUAL PARA SOLUCIONAR CIRCULARIDAD v72
             let water_annual_sum_n = 0, water_annual_sum_p = 0, water_annual_sum_k = 0, water_annual_sum_mg = 0, water_annual_sum_ca = 0, water_annual_sum_s = 0;
