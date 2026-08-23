@@ -629,19 +629,20 @@
                 <h3 style="font-size:14px; color:var(--primary); margin-top:0;">Variables DRIS Olivar</h3>
                 <div class="form-group">
                     <label for="dris-manejo">Sistema de Cultivo / Manejo:</label>
-                    <select id="dris-manejo">
-                        <option value="secano">Secano Tradicional</option>
-                        <option value="regadio">Intensivo (Regadío)</option>
-                        <option value="superintensivo">Superintensivo (Seto)</option>
+                    <select id="dris-manejo" onchange="actualizarAvisoDrisOlivo()">
+                        <option value="secano">Secano Tradicional (Picual)</option>
+                        <option value="regadio">Intensivo (Regadío) (Picual)</option>
+                        <option value="superintensivo">Superintensivo (Seto) (Arbequina/Arbosana/Picual)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="dris-zona">Zona de Cultivo / Suelo:</label>
-                    <select id="dris-zona">
+                    <select id="dris-zona" onchange="actualizarAvisoDrisOlivo()">
                         <option value="estandar">Suelo Estándar / Otros</option>
                         <option value="Guadalquivir_Arcillas">Valle del Guadalquivir - Arcillas / Vertisoles</option>
                     </select>
                 </div>
+                <div id="aviso-ambito-dris" class="note" style="line-height:1.4;"></div>
             </div>
 
             <button class="btn btn-secondary" onclick="cargarEjemploMuestra()">Cargar Análisis de Ejemplo</button>
@@ -821,11 +822,12 @@
             <!-- TAB 3: SISTEMA DRIS EXCLUSIVO OLIVAR -->
             <div id="dris-tab" class="tab-content">
                 <h2>Módulo de Diagnóstico Avanzado DRIS Olivar</h2>
-                
+                <div class="alert-box alert-warning" id="aviso-ambito-dris-tab" style="margin-bottom:20px; line-height:1.5;"></div>
+
                 <!-- SUBTABLA 1: DRIS MACROS DE 3 PUNTOS (UCO) -->
                 <div class="card" style="border: 1px solid var(--border); margin-bottom: 25px;">
                     <h3 style="color: var(--primary); margin-top: 0; font-size: 16px;">1. Índices DRIS de Macronutrientes (Modelo UCO / Beaufils)</h3>
-                    <p style="font-size: 12px; color: #52606D; margin: -5px 0 15px 0;">Calibrado según el sistema de cultivo (Secano, Riego o Superintensivo) y desviación estándar poblacional española.</p>
+                    <p style="font-size: 12px; color: #52606D; margin: -5px 0 15px 0;">Norma calibrada según el sistema de cultivo (Secano, Riego o Superintensivo). No existe una única norma DRIS validada para todo el olivar andaluz: use el resultado como orientación, contrastada con suelo y criterio agronómico, no como diagnóstico cerrado.</p>
                     <table>
                         <thead>
                             <tr>
@@ -1180,6 +1182,7 @@
             if (cultivo === "olivo") {
                 divDris.style.display = "block";
                 btnDris.style.display = "block";
+                actualizarAvisoDrisOlivo();
             } else {
                 divDris.style.display = "none";
                 btnDris.style.display = "none";
@@ -1190,6 +1193,35 @@
                 note.textContent = "";
             }
         }
+    }
+
+    // Ámbito de validez de las normas DRIS de Olivo según sistema/zona seleccionados.
+    // Fuente: revisión bibliográfica "DRIS en otros cultivos y ámbito de validación en olivar" (rev. 23/08/2026),
+    // que cita Lucena Marotta et al. (2002, UPM/Fertiberia) para Jaén y Giménez et al. (2021) para Murcia.
+    function textoAvisoDrisOlivo() {
+        const sistema = document.getElementById("dris-manejo").value;
+        const zona = document.getElementById("dris-zona").value;
+
+        let base = "";
+        if (sistema === "secano" || sistema === "regadio") {
+            base = `<strong>Referencia de partida: Jaén</strong> (Lucena Marotta et al., 2002, UPM/Fertiberia) — obtenida para <strong>Picual en cultivo tradicional</strong> ${sistema === "regadio" ? "bajo riego" : "de secano"}. `;
+        } else if (sistema === "superintensivo") {
+            base = `<strong>Referencia orientativa: Murcia</strong> (Giménez et al., 2021) — obtenida en una plantación superintensiva de <strong>Arbequina/Arbosana/Picual</strong> en Alhama de Murcia (&gt;8.000 kg/ha, fertirrigación). Los propios autores señalan que estas normas <strong>todavía necesitan validación práctica</strong>. `;
+        }
+
+        let zonaTexto = (zona === "Guadalquivir_Arcillas")
+            ? "Ajuste adicional aplicado para suelos arcillosos/vertisoles del Valle del Guadalquivir (mayor fijación de K)."
+            : "";
+
+        return `⚠️ <strong>Ámbito de validez:</strong> ${base}No existe una única norma DRIS publicada y validada para todo el olivar andaluz: variedad, sistema de cultivo, rendimiento de referencia, época y protocolo de muestreo deben coincidir razonablemente con la población de origen para que el diagnóstico sea fiable. Si su parcela se aleja mucho de esa población (otra variedad, otro nivel productivo, secano en vez de regadío, etc.), use estos índices como orientación complementaria, no como criterio único. ${zonaTexto}`;
+    }
+
+    function actualizarAvisoDrisOlivo() {
+        const texto = textoAvisoDrisOlivo();
+        const cajaSidebar = document.getElementById("aviso-ambito-dris");
+        const cajaTab = document.getElementById("aviso-ambito-dris-tab");
+        if (cajaSidebar) cajaSidebar.innerHTML = texto;
+        if (cajaTab) cajaTab.innerHTML = texto;
     }
 
     function cargarEjemploMuestra() {
@@ -1659,11 +1691,16 @@
         const rNK = valores.N / valores.K;
         const rKP = valores.K / valores.P;
 
-        function beaufilsFunc(val, mean, sd) { 
+        // Fórmula de Beaufils: el divisor debe ser el Coeficiente de Variación en % (100*sd/mean),
+        // no la desviación estándar en bruto de la relación. Usar "sd" directamente como si fuera el
+        // CV (bug detectado: producía índices de miles en vez de decenas) infla el resultado en un
+        // factor ~ (mean/100), disparando falsos "Déficit/Exceso Fuerte" en cualquier análisis real.
+        function beaufilsFunc(val, mean, sd) {
+            const cv = (sd / mean) * 100;
             if (val > mean) {
-                return ((val / mean) - 1) * (1000 / sd);
+                return ((val / mean) - 1) * (1000 / cv);
             } else if (val < mean) {
-                return (1 - (mean / val)) * (1000 / sd);
+                return (1 - (mean / val)) * (1000 / cv);
             }
             return 0;
         }
