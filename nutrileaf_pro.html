@@ -614,15 +614,29 @@
                 <select id="cultivo" onchange="actualizarNormasUI()">
                     <option value="olivo">Olivo (Muestreo de Julio - Con DRIS)</option>
                     <option value="viña">Viña (Floración - Limbos W17-W23)</option>
-                    <option value="almendro">Almendro (Muestreo de Julio)</option>
+                    <option value="almendro">Almendro (Muestreo de Julio - Con DRIS)</option>
                     <option value="citricos">Cítricos (Muestreo de Otoño)</option>
                     <option value="aguacate">Aguacate (Muestreo de Otoño)</option>
                     <option value="tomate">Tomate (Brotación / Floración)</option>
                     <option value="melocoton">Melocotón (Muestreo de Julio)</option>
                     <option value="pistacho">Pistacho (Muestreo Julio-Agosto)</option>
+                    <option value="caqui">Caqui 'Rojo Brillante' (Engorde de Fruto / Julio - Con DRIS)</option>
                     <option value="personalizado">Personalizado / Otros Cultivos</option>
                 </select>
                 <div class="note" id="cultivo-note">Cargando base de datos agroquímica...</div>
+            </div>
+
+            <div id="almendro-variedad-config" style="display:none; border-top: 1px solid var(--border); padding-top:15px; margin-top:15px;">
+                <div class="form-group">
+                    <label for="almendro-variedad">Variedad de Almendro:</label>
+                    <select id="almendro-variedad" onchange="actualizarNormasUI()">
+                        <option value="generico">Genérica / Otras variedades (IFAPA, UC ANR)</option>
+                        <option value="ferraduel">Ferraduel</option>
+                        <option value="ferragnes">Ferragnès</option>
+                        <option value="garrigues">Garrigues</option>
+                    </select>
+                    <div class="note">Ferraduel/Ferragnès/Garrigues usan las normas de suficiencia y DRIS de Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete) y Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio.</div>
+                </div>
             </div>
 
             <div id="dris-olivo-config" style="display:none; border-top: 1px solid var(--border); padding-top:15px; margin-top:15px;">
@@ -702,6 +716,24 @@
                     </div>
                 </div>
 
+                <div id="caqui-extra-fields" style="display:none; margin-top:10px;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Sodio (Na %):</label>
+                            <input type="number" id="val_Na" step="0.001" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Azufre (S %):</label>
+                            <input type="number" id="val_S" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Cloruro (Cl⁻ %):</label>
+                            <input type="number" id="val_Cl_caqui" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="note">Solo aplica a Caqui: el sistema DRIS completo de Morales et al. (2022) usa 13 elementos (incluye Na, S y Cl como indicadores, además de N-P-K-Ca-Mg y micros).</div>
+                </div>
+
                 <div id="personalizado-limits" style="display:none; margin-top:15px; border-top: 1px dashed var(--border); padding-top:10px;">
                     <h3 style="font-size:13px; margin:0 0 10px 0; color:var(--primary);">Límites Óptimos Personalizados</h3>
                     <div class="form-grid" style="font-size:12px;">
@@ -768,6 +800,7 @@
                     <button class="tab-btn active" id="btn-tab-estado" onclick="switchTab('estado-tab')">Estado de Suficiencia</button>
                     <button class="tab-btn" id="btn-tab-equilibrio" onclick="switchTab('equilibrio-tab')">Ratios de Equilibrio</button>
                     <button class="tab-btn" id="btn-tab-dris" onclick="switchTab('dris-tab')" style="display:none;">Sistema DRIS Olivar</button>
+                    <button class="tab-btn" id="btn-tab-dris-generic" onclick="switchTab('dris-generic-tab')" style="display:none;">Sistema DRIS</button>
                     <button class="tab-btn" id="btn-tab-correccion" onclick="switchTab('correccion-tab')">Plan de Abonado y Corrección</button>
                     <button class="tab-btn" id="btn-tab-historico" onclick="switchTab('historico-tab')">Histórico Multi-Año</button>
                 </div>
@@ -866,6 +899,29 @@
                 </div>
 
                 <div id="alertas-condicionales-dris" style="margin-top:20px;"></div>
+            </div>
+
+            <!-- TAB DRIS GENÉRICA: ALMENDRO / CAQUI -->
+            <div id="dris-generic-tab" class="tab-content">
+                <h2 id="dris-generic-title">Módulo DRIS</h2>
+                <div class="alert-box alert-warning" id="dris-generic-aviso" style="margin-bottom:20px; line-height:1.5;"></div>
+                <div class="card" style="border: 1px solid var(--border); margin-bottom: 25px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nutriente</th>
+                                <th>Índice DRIS</th>
+                                <th>Desviación del Equilibrio</th>
+                                <th>Prioridad de Corrección</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-dris-generic-body"></tbody>
+                    </table>
+                    <div style="background-color:#F0F4F8; padding: 10px 15px; border-radius: 4px; border-left: 4px solid var(--primary); margin-top: 15px; font-size:13px;">
+                        <strong>Índice de Balance Nutricional (IBN):</strong> <span id="dris-generic-ibn" style="font-weight:bold; font-size:15px; color: var(--primary);">-</span>
+                        <span style="font-size:11px; color:#52606D; display:block; margin-top:3px;">Cuanto más cerca de cero, más equilibrada está la analítica en conjunto. Índices negativos = elemento relativamente limitante; positivos = elemento relativamente en exceso frente al resto.</span>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 4: FACTORES DE CORRECCIÓN -->
@@ -1040,7 +1096,7 @@
             Zn: { mb: 20,   o_min: 30,   o_max: 50,   alto_max: 70,  unit: 'mg/kg' },
             B:  { mb: 25,   o_min: 35,   o_max: 75,   alto_max: 100, unit: 'mg/kg' }
         },
-        almendro: {
+        almendro_generico: {
             fuenteCultivo: 'Arquero, O. et al. (IFAPA); UC Agriculture and Natural Resources, Almond Nutrients & Fertilization; MAPA',
             ventanaMuestreo: { meses: [6, 7], texto: 'Finales de junio a mediados de julio' },
             N:  { mb: 1.80, o_min: 2.20, o_max: 2.50, alto_max: 3.00, unit: '%' },
@@ -1053,6 +1109,58 @@
             Fe: { mb: null, o_min: null, o_max: null, alto_max: null, unit: 'mg/kg', nota: 'UC ANR: sin valor crítico establecido para Fe en almendro; no se aplica clasificación por umbral.' },
             Mn: { mb: 20,   o_min: 30,   o_max: 80,   alto_max: null, unit: 'mg/kg', nota: 'UC ANR; sin techo de exceso establecido.' },
             Cu: { mb: 4,    o_min: 6,    o_max: 10,   alto_max: null, unit: 'mg/kg', nota: 'UC ANR; sin techo de exceso establecido.' }
+        },
+        // Rangos de normalidad (Tabla 2) de Ferrández-Cámara et al. (2021), Horticulturae 7, 481.
+        // Hellín (Albacete) / Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio.
+        almendro_ferraduel: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.45, o_min: 1.83, o_max: 2.63, alto_max: 3.01, unit: '%' },
+            P:  { mb: 0.01, o_min: 0.07, o_max: 0.21, alto_max: 0.27, unit: '%' },
+            K:  { mb: 0.34, o_min: 0.68, o_max: 1.39, alto_max: 1.74, unit: '%' },
+            Ca: { mb: 2.39, o_min: 3.26, o_max: 5.04, alto_max: 5.92, unit: '%' },
+            Mg: { mb: 0.47, o_min: 0.63, o_max: 0.97, alto_max: 1.14, unit: '%' }
+            // Fe, Mn, Zn, Cu, B: no evaluados en este estudio (solo macronutrientes N,P,K,Ca,Mg).
+        },
+        almendro_ferragnes: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.44,  o_min: 1.82, o_max: 2.61, alto_max: 3.00, unit: '%' },
+            P:  { mb: 0.01,  o_min: 0.06, o_max: 0.19, alto_max: 0.25, unit: '%' },
+            K:  { mb: 0.298, o_min: 0.64, o_max: 1.39, alto_max: 1.76, unit: '%' },
+            Ca: { mb: 2.32,  o_min: 3.25, o_max: 5.15, alto_max: 6.09, unit: '%' },
+            Mg: { mb: 0.50,  o_min: 0.68, o_max: 1.07, alto_max: 1.26, unit: '%' }
+        },
+        almendro_garrigues: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Jumilla (Murcia), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.00, o_min: 1.42, o_max: 2.23, alto_max: 2.73, unit: '%' },
+            P:  { mb: 0.03, o_min: 0.05, o_max: 0.12, alto_max: 0.15, unit: '%' },
+            // Nota: la Tabla 2 original publica la banda "Low" de K como "0.33–0.32" (invertida), un
+            // error tipográfico aparente en la fuente. Se usan solo los cortes inequívocos (mb, o_max,
+            // alto_max) y se colapsa o_min=mb hasta poder contrastar el valor real con los autores.
+            K:  { mb: 0.33, o_min: 0.33, o_max: 1.02, alto_max: 1.36, unit: '%', nota: 'Banda "Bajo" no reconstruible: la publicación original (Tabla 2) da un rango invertido (0.33–0.32) para Garrigues-K, posible errata. Umbrales mb/óptimo/alto tomados tal cual del resto de la tabla.' },
+            Ca: { mb: 2.54, o_min: 3.17, o_max: 4.46, alto_max: 5.10, unit: '%' },
+            Mg: { mb: 0.63, o_min: 0.80, o_max: 1.17, alto_max: 1.35, unit: '%' }
+        },
+        // NOR fase Fruit Enlargement (FE, ~julio en Comunidad Valenciana) de Morales et al. (2022),
+        // Agronomy 12, 1269. PDO Kaki Ribera del Xúquer, cv. Rojo Brillante, población de alto rendimiento.
+        caqui: {
+            fuenteCultivo: "Morales et al. (2022), Agronomy 12, 1269 — PDO Kaki Ribera del Xúquer, cv. 'Rojo Brillante'",
+            ventanaMuestreo: { meses: [7], texto: 'Engorde de fruto (Fruit Enlargement, ~julio en la Comunidad Valenciana)' },
+            N:  { mb: 1.723, o_min: 1.826, o_max: 2.033, alto_max: 2.136, unit: '%' },
+            P:  { mb: 0.094, o_min: 0.099, o_max: 0.109, alto_max: 0.114, unit: '%' },
+            K:  { mb: 1.198, o_min: 1.318, o_max: 1.559, alto_max: 1.679, unit: '%' },
+            Ca: { mb: 1.437, o_min: 1.595, o_max: 1.911, alto_max: 2.069, unit: '%' },
+            Mg: { mb: 0.418, o_min: 0.480, o_max: 0.604, alto_max: 0.666, unit: '%' },
+            Na: { mb: 0.008, o_min: 0.010, o_max: 0.017, alto_max: 0.020, unit: '%', nota: 'Indicador de salinidad más que de suficiencia nutricional.' },
+            S:  { mb: 0.187, o_min: 0.214, o_max: 0.269, alto_max: 0.296, unit: '%' },
+            Cl: { mb: 0.543, o_min: 0.630, o_max: 0.805, alto_max: 0.892, unit: '%', nota: 'Indicador de salinidad más que de suficiencia nutricional; caqui es sensible a la salinidad.' },
+            B:  { mb: 15.97, o_min: 24.38, o_max: 41.23, alto_max: 49.65, unit: 'mg/kg' },
+            Cu: { mb: 1.65,  o_min: 2.72,  o_max: 4.86,  alto_max: 5.93,  unit: 'mg/kg' },
+            Fe: { mb: 31.97, o_min: 41.07, o_max: 59.30, alto_max: 68.41, unit: 'mg/kg' },
+            Mn: { mb: 0.00,  o_min: 44.67, o_max: 207.42, alto_max: 288.79, unit: 'mg/kg' },
+            Zn: { mb: 20.81, o_min: 29.73, o_max: 47.59, alto_max: 56.52, unit: 'mg/kg' }
         },
         citricos: {
             fuenteCultivo: 'Legaz, F. et al. (IVIA); UF/IFAS, Nutrition of Florida Citrus Trees; MAPA',
@@ -1161,31 +1269,57 @@
         return { estado, badgeClass, factor };
     }
 
+    // Resuelve la clave real de BASE_DE_DATOS_CULTIVOS a usar, que puede depender de un
+    // selector secundario (variedad de almendro) además del cultivo elegido en el desplegable principal.
+    function resolveNormasKey(cultivo) {
+        if (cultivo === "almendro") {
+            const variedad = document.getElementById("almendro-variedad").value;
+            return "almendro_" + variedad;
+        }
+        return cultivo;
+    }
+
     function actualizarNormasUI() {
         const cultivo = document.getElementById("cultivo").value;
         const note = document.getElementById("cultivo-note");
         const divPers = document.getElementById("personalizado-limits");
         const divDris = document.getElementById("dris-olivo-config");
         const btnDris = document.getElementById("btn-tab-dris");
+        const btnDrisGeneric = document.getElementById("btn-tab-dris-generic");
         const divCloruro = document.getElementById("cloruro-field");
+        const divAlmendroVariedad = document.getElementById("almendro-variedad-config");
+        const divCaquiExtra = document.getElementById("caqui-extra-fields");
 
         divCloruro.style.display = (cultivo === "aguacate") ? "block" : "none";
+        divAlmendroVariedad.style.display = (cultivo === "almendro") ? "block" : "none";
+        divCaquiExtra.style.display = (cultivo === "caqui") ? "block" : "none";
 
         if (cultivo === "personalizado") {
             divPers.style.display = "block";
             divDris.style.display = "none";
             btnDris.style.display = "none";
+            btnDrisGeneric.style.display = "none";
             note.textContent = "Ingrese los niveles de referencia recomendados de su laboratorio.";
         } else {
             divPers.style.display = "none";
-            const datosCultivo = BASE_DE_DATOS_CULTIVOS[cultivo];
+            const normasKey = resolveNormasKey(cultivo);
+            const datosCultivo = BASE_DE_DATOS_CULTIVOS[normasKey];
             if (cultivo === "olivo") {
                 divDris.style.display = "block";
                 btnDris.style.display = "block";
+                btnDrisGeneric.style.display = "none";
                 actualizarAvisoDrisOlivo();
+            } else if (cultivo === "almendro" || cultivo === "caqui") {
+                divDris.style.display = "none";
+                btnDris.style.display = "none";
+                btnDrisGeneric.style.display = "block";
+                document.getElementById("dris-generic-title").textContent =
+                    cultivo === "almendro" ? "Módulo DRIS Almendro" : "Módulo DRIS Caqui 'Rojo Brillante'";
+                document.getElementById("dris-generic-aviso").innerHTML = textoAvisoDrisGeneric(cultivo);
             } else {
                 divDris.style.display = "none";
                 btnDris.style.display = "none";
+                btnDrisGeneric.style.display = "none";
             }
             if (datosCultivo) {
                 note.textContent = `Momento de muestreo: ${datosCultivo.ventanaMuestreo.texto}. Fuente: ${datosCultivo.fuenteCultivo}`;
@@ -1193,6 +1327,23 @@
                 note.textContent = "";
             }
         }
+    }
+
+    function textoAvisoDrisGeneric(cultivo) {
+        if (cultivo === "almendro") {
+            const variedad = document.getElementById("almendro-variedad").value;
+            if (variedad === "generico") {
+                return `⚠️ Selecciona una variedad concreta (Ferraduel, Ferragnès o Garrigues) en "Configuración del Cultivo" para activar el DRIS de almendro. La norma genérica no tiene DRIS asociado — solo rango de suficiencia.`;
+            }
+            const avisoGarrigues = variedad === "garrigues"
+                ? ` <strong>Aviso adicional:</strong> se detectaron 3 de las 10 normas de esta variedad con etiquetas que no cuadraban con las concentraciones medias reales publicadas por los mismos autores (posibles erratas de la Tabla 4 original) y se han reinterpretado en consecuencia (ver comentario en el código fuente). Se recomienda contrastar con los autores antes de un uso crítico.`
+                : "";
+            return `⚠️ <strong>Ámbito de validez:</strong> Norma DRIS de Ferrández-Cámara et al. (2021) para <strong>${variedad.charAt(0).toUpperCase() + variedad.slice(1)}</strong>, obtenida en Hellín (Albacete) / Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio. Los términos tipo producto (ej. K×Mg) siguen la convención estándar de Beaufils: contribuyen con el mismo signo al índice de ambos nutrientes implicados. No usar directamente sobre variedades distintas a las tres estudiadas sin contrastar.${avisoGarrigues}`;
+        }
+        if (cultivo === "caqui") {
+            return `⚠️ <strong>Ámbito de validez:</strong> Norma DRIS de Morales et al. (2022) para caqui 'Rojo Brillante', PDO Kaki Ribera del Xúquer (Comunidad Valenciana), población de alto rendimiento (&gt;46,4 t/ha). Sistema completo de 78 relaciones entre 13 elementos (N,P,K,Ca,Mg,Na,S,Cl,B,Cu,Fe,Mn,Zn). Los propios autores señalan que debería validarse en otras variedades y condiciones de cultivo antes de generalizarse fuera de esta zona.`;
+        }
+        return "";
     }
 
     // Ámbito de validez de las normas DRIS de Olivo según sistema/zona seleccionados.
@@ -1337,6 +1488,7 @@
         if (tabId === 'estado-tab') document.getElementById('btn-tab-estado').classList.add('active');
         if (tabId === 'equilibrio-tab') document.getElementById('btn-tab-equilibrio').classList.add('active');
         if (tabId === 'dris-tab') document.getElementById('btn-tab-dris').classList.add('active');
+        if (tabId === 'dris-generic-tab') document.getElementById('btn-tab-dris-generic').classList.add('active');
         if (tabId === 'correccion-tab') document.getElementById('btn-tab-correccion').classList.add('active');
         if (tabId === 'historico-tab') { document.getElementById('btn-tab-historico').classList.add('active'); renderHistorico(); }
     }
@@ -1368,7 +1520,7 @@
                 normas[el] = { mb: optVal*0.7, o_min: optVal*0.9, o_max: optVal*1.1, alto_max: optVal*1.3, unit: el==='N'||el==='P'||el==='K'||el==='Ca'||el==='Mg'?'%':'mg/kg' };
             });
         } else {
-            normas = BASE_DE_DATOS_CULTIVOS[cultivo];
+            normas = BASE_DE_DATOS_CULTIVOS[resolveNormasKey(cultivo)];
         }
 
         const valores = {
@@ -1384,9 +1536,16 @@
             B: parseFloat(document.getElementById("val_B").value)
         };
 
+        if (cultivo === "caqui") {
+            valores.Na = parseFloat(document.getElementById("val_Na").value);
+            valores.S = parseFloat(document.getElementById("val_S").value);
+            const valClCaqui = parseFloat(document.getElementById("val_Cl_caqui").value);
+            if (!isNaN(valClCaqui)) valores.Cl = valClCaqui;
+        }
+
         // Aviso de ventana de muestreo: compara la fecha analítica con la época óptima citada en bibliografía
         const banner = document.getElementById("banner-diagnostico");
-        const datosCultivoActual = BASE_DE_DATOS_CULTIVOS[cultivo];
+        const datosCultivoActual = BASE_DE_DATOS_CULTIVOS[resolveNormasKey(cultivo)];
         let avisoFecha = "";
         if (datosCultivoActual && datosCultivoActual.ventanaMuestreo && datosCultivoActual.ventanaMuestreo.meses.length > 0 && document.getElementById("finca_fecha").value) {
             const mesMuestra = parseInt(document.getElementById("finca_fecha").value.split("-")[1], 10);
@@ -1412,7 +1571,7 @@
             const val = valores[el];
             const ref = normas[el];
 
-            if (el === "Cl") continue; // el Cl se trata aparte por ser umbral de toxicidad, no de suficiencia
+            if (el === "Cl" && cultivo !== "caqui") continue; // en Aguacate el Cl se trata aparte (umbral de toxicidad); en Caqui es un elemento más del sistema DRIS de 13 elementos
 
             if (!ref || ref.mb === null || ref.mb === undefined || isNaN(val)) {
                 sinBibliografia.push(el);
@@ -1570,6 +1729,10 @@
         // 4. MÓDULO EXCLUSIVO DRIS OLIVAR (Si se selecciona Olivo)
         if (cultivo === "olivo") {
             procesarDrisOlivoCompleto(valores);
+        } else if (cultivo === "almendro") {
+            procesarDrisAlmendro(valores);
+        } else if (cultivo === "caqui") {
+            procesarDrisCaqui(valores);
         }
 
         // 5. PLAN DE ABONADO EUROCHEM CON FACTORES DE CORRECCIÓN
@@ -1927,6 +2090,247 @@
             b.innerHTML = `<strong>Alerta Específica para Valle del Guadalquivir:</strong> Los suelos arcillosos/vérticos presentan una alta tasa de fijación de Potasio en los espacios interlaminares de las arcillas durante el secado del suelo. El exceso relativo de Nitrógeno agrava este escenario. Se aconseja fraccionar los aportes de Potasio mediante fertirrigación continua en el bulbo húmedo para saturar la capacidad de fijación edáfica y restablecer el balance DRIS foliar.`;
             divAlertas.appendChild(b);
         }
+    }
+
+    // ============================================================
+    // DRIS ALMENDRO (Ferrández-Cámara et al. 2021, Horticulturae 7, 481)
+    // ============================================================
+    // Cada variedad tiene 10 normas (una por cada par entre N,P,K,Ca,Mg), en dos formas:
+    // 'ratio' (num/den) y 'product' (a×b). Mean/SD/CV tomados literalmente de la Tabla 4 del artículo.
+    const NORMAS_ALMENDRO_DRIS = {
+        ferraduel: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 17.05, sd: 4.06, cv: 23.84 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 2.30,  sd: 0.58, cv: 25.19 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 9.13,  sd: 1.88, cv: 20.63 },
+            { type: 'ratio',   num: 'N', den: 'Mg', mean: 1.76,  sd: 0.32, cv: 18.28 },
+            { type: 'ratio',   num: 'K', den: 'P',  mean: 7.74,  sd: 2.31, cv: 29.89 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.80,  sd: 0.19, cv: 23.77 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.57,  sd: 0.18, cv: 31.01 },
+            { type: 'product', a: 'P',   b: 'Mg',   mean: 0.11,  sd: 0.03, cv: 25.40 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 4.14,  sd: 1.10, cv: 26.52 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 5.27, sd: 1.11, cv: 21.07 }
+        ],
+        ferragnes: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 17.71, sd: 4.04, cv: 22.81 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 2.33,  sd: 0.57, cv: 24.62 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 9.13,  sd: 1.71, cv: 18.71 },
+            { type: 'product', a: 'N',   b: 'Mg',   mean: 1.91,  sd: 0.36, cv: 18.71 },
+            { type: 'ratio',   num: 'P', den: 'K',  mean: 0.14,  sd: 0.05, cv: 33.63 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.86,  sd: 0.22, cv: 25.21 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.54,  sd: 0.16, cv: 28.92 },
+            { type: 'product', a: 'P',   b: 'Mg',   mean: 0.11,  sd: 0.02, cv: 20.57 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 4.12,  sd: 1.09, cv: 26.43 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 4.84, sd: 0.79, cv: 16.30 }
+        ],
+        // Nota: se corrigen tres probables erratas de etiquetado de la Tabla 4 original para Garrigues,
+        // detectadas al contrastar cada media publicada contra las concentraciones foliares medias reales
+        // de Garrigues (Tabla 1 del mismo artículo: N=2.00, P=0.09, K=0.67, Ca=4.05, Mg=0.99):
+        //  - La norma publicada como "P/K" (media 7.45) solo es compatible con K/P (K/P real ≈ 7.44;
+        //    P/K real ≈ 0.13, incompatible con 7.45).
+        //  - La norma publicada como "P × Mg" (media 11.75) solo es compatible con Mg/P (Mg/P real = 11.0;
+        //    P×Mg real ≈ 0.089, incompatible con 11.75).
+        //  - La norma publicada como "N × Mg" (media 0.56) es mucho más compatible con Mg/N (Mg/N real
+        //    ≈ 0.495) que con N×Mg (N×Mg real ≈ 1.98, incompatible con 0.56).
+        // Dado que son 3 de las 10 normas de esta variedad, se recomienda encarecidamente contrastar
+        // con los autores antes de un uso crítico; el resto de normas de Garrigues sí son coherentes
+        // con la Tabla 1 y se han dejado tal cual se publicaron.
+        garrigues: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 21.03, sd: 2.70, cv: 12.85 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 3.25,  sd: 1.27, cv: 39.20 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 7.01,  sd: 1.49, cv: 21.28 },
+            { type: 'ratio',   num: 'Mg', den: 'N',  mean: 0.56,  sd: 0.15, cv: 27.33 },
+            { type: 'ratio',   num: 'K', den: 'P',  mean: 7.45,  sd: 2.92, cv: 39.24 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.63,  sd: 0.28, cv: 43.82 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.34,  sd: 0.08, cv: 24.67 },
+            { type: 'ratio',   num: 'Mg', den: 'P',  mean: 11.75, sd: 3.60, cv: 30.65 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 2.47,  sd: 1.15, cv: 46.70 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 3.92, sd: 0.66, cv: 16.74 }
+        ]
+    };
+
+    function beaufilsRatioF(sampleRatio, mean, cv) {
+        if (sampleRatio > mean) return ((sampleRatio / mean) - 1) * (1000 / cv);
+        if (sampleRatio < mean) return (1 - (mean / sampleRatio)) * (1000 / cv);
+        return 0;
+    }
+    // Convención de Beaufils para normas tipo producto (a·b): el término se suma con el MISMO signo
+    // a los índices de ambos nutrientes implicados (a diferencia de las normas tipo ratio, que suman
+    // con signo opuesto al numerador/denominador). Ver Beaufils (1973); Walworth & Sumner (1987).
+    function beaufilsProductF(sampleProduct, mean, sd) {
+        return (sampleProduct - mean) * (10 / sd);
+    }
+
+    function calcDrisIndicesAlmendro(valores, normsList, nutrientes) {
+        const indices = {};
+        nutrientes.forEach(nut => {
+            let suma = 0, n = 0;
+            normsList.forEach(norm => {
+                if (norm.type === 'ratio') {
+                    const ratioVal = valores[norm.num] / valores[norm.den];
+                    const f = beaufilsRatioF(ratioVal, norm.mean, norm.cv);
+                    if (norm.num === nut) { suma += f; n++; }
+                    else if (norm.den === nut) { suma -= f; n++; }
+                } else if (norm.type === 'product') {
+                    if (norm.a === nut || norm.b === nut) {
+                        const prodVal = valores[norm.a] * valores[norm.b];
+                        const f = beaufilsProductF(prodVal, norm.mean, norm.sd);
+                        suma += f;
+                        n++;
+                    }
+                }
+            });
+            indices[nut] = n > 0 ? suma / n : 0;
+        });
+        return indices;
+    }
+
+    function procesarDrisAlmendro(valores) {
+        const variedad = document.getElementById("almendro-variedad").value;
+        const tbody = document.getElementById("tabla-dris-generic-body");
+        tbody.innerHTML = "";
+        if (variedad === "generico") {
+            document.getElementById("dris-generic-ibn").textContent = "N/D";
+            return;
+        }
+        const normsList = NORMAS_ALMENDRO_DRIS[variedad];
+        const nutrientes = ['N', 'P', 'K', 'Ca', 'Mg'];
+        const indices = calcDrisIndicesAlmendro(valores, normsList, nutrientes);
+        renderDrisGenericTable(indices, nutrientes, { N: 'Nitrógeno', P: 'Fósforo', K: 'Potasio', Ca: 'Calcio', Mg: 'Magnesio' });
+    }
+
+    // ============================================================
+    // DRIS CAQUI 'ROJO BRILLANTE' (Morales et al. 2022, Agronomy 12, 1269)
+    // ============================================================
+    // Las 78 normas (todas de tipo ratio puro, sin productos) cubren cada par posible entre los
+    // 13 elementos N,P,K,Ca,Mg,Na,S,Cl,B,Cu,Fe,Mn,Zn exactamente una vez (Tabla 1 del artículo).
+    const NORMS_DRIS_CAQUI = [
+        { num: 'N', den: 'Na', mean: 149.086, sd: 69.8038 },
+        { num: 'N', den: 'S', mean: 8.468, sd: 1.891 },
+        { num: 'N', den: 'Cl', mean: 3.169, sd: 2.322 },
+        { num: 'N', den: 'B', mean: 0.060, sd: 0.046 },
+        { num: 'N', den: 'Cu', mean: 0.495, sd: 0.210 },
+        { num: 'N', den: 'Fe', mean: 0.039, sd: 0.015 },
+        { num: 'N', den: 'Zn', mean: 0.057, sd: 0.024 },
+        { num: 'Ca', den: 'N', mean: 1.060, sd: 0.573 },
+        { num: 'K', den: 'N', mean: 0.765, sd: 0.169 },
+        { num: 'Mg', den: 'N', mean: 0.303, sd: 0.132 },
+        { num: 'P', den: 'N', mean: 0.058, sd: 0.009 },
+        { num: 'Mn', den: 'N', mean: 80.440, sd: 63.845 },
+        { num: 'P', den: 'Ca', mean: 0.078, sd: 0.061 },
+        { num: 'P', den: 'Mg', mean: 0.231, sd: 0.124 },
+        { num: 'P', den: 'S', mean: 0.489, sd: 0.096 },
+        { num: 'P', den: 'Cl', mean: 0.184, sd: 0.161 },
+        { num: 'P', den: 'B', mean: 0.003, sd: 0.003 },
+        { num: 'P', den: 'Cu', mean: 0.028, sd: 0.012 },
+        { num: 'P', den: 'Fe', mean: 0.002, sd: 0.001 },
+        { num: 'K', den: 'P', mean: 13.252, sd: 2.485 },
+        { num: 'Na', den: 'P', mean: 0.133, sd: 0.052 },
+        { num: 'Mn', den: 'P', mean: 1689.810, sd: 1398.100 },
+        { num: 'Zn', den: 'P', mean: 353.202, sd: 147.619 },
+        { num: 'K', den: 'Ca', mean: 1.009, sd: 0.665 },
+        { num: 'K', den: 'Mg', mean: 3.117, sd: 1.571 },
+        { num: 'K', den: 'Na', mean: 115.132, sd: 51.830 },
+        { num: 'K', den: 'S', mean: 6.478, sd: 1.720 },
+        { num: 'K', den: 'Cl', mean: 2.467, sd: 1.977 },
+        { num: 'K', den: 'B', mean: 0.044, sd: 0.035 },
+        { num: 'K', den: 'Cu', mean: 0.370, sd: 0.165 },
+        { num: 'K', den: 'Zn', mean: 0.045, sd: 0.023 },
+        { num: 'Fe', den: 'K', mean: 39.738, sd: 15.495 },
+        { num: 'Mn', den: 'K', mean: 135.820, sd: 122.740 },
+        { num: 'Ca', den: 'Mg', mean: 3.344, sd: 0.834 },
+        { num: 'Ca', den: 'Cl', mean: 2.387, sd: 0.762 },
+        { num: 'Ca', den: 'B', mean: 0.046, sd: 0.026 },
+        { num: 'Ca', den: 'Cu', mean: 0.510, sd: 0.339 },
+        { num: 'Na', den: 'Ca', mean: 0.009, sd: 0.005 },
+        { num: 'S', den: 'Ca', mean: 0.157, sd: 0.098 },
+        { num: 'Fe', den: 'Ca', mean: 34.013, sd: 17.862 },
+        { num: 'Mn', den: 'Ca', mean: 95.052, sd: 71.053 },
+        { num: 'Zn', den: 'Ca', mean: 23.796, sd: 15.013 },
+        { num: 'Mg', den: 'Na', mean: 41.094, sd: 16.650 },
+        { num: 'Mg', den: 'S', mean: 2.424, sd: 0.836 },
+        { num: 'Mg', den: 'Cl', mean: 0.768, sd: 0.337 },
+        { num: 'Mg', den: 'B', mean: 0.015, sd: 0.009 },
+        { num: 'Mg', den: 'Cu', mean: 0.145, sd: 0.085 },
+        { num: 'Mg', den: 'Zn', mean: 0.017, sd: 0.009 },
+        { num: 'Fe', den: 'Mg', mean: 106.796, sd: 40.603 },
+        { num: 'Mn', den: 'Mg', mean: 321.806, sd: 245.416 },
+        { num: 'Na', den: 'S', mean: 0.063, sd: 0.025 },
+        { num: 'Na', den: 'Cl', mean: 0.022, sd: 0.015 },
+        { num: 'Na', den: 'B', mean: 0.0004, sd: 0.0002 },
+        { num: 'Na', den: 'Cu', mean: 0.004, sd: 0.002 },
+        { num: 'Na', den: 'Mn', mean: 0.0001, sd: 0.0001 },
+        { num: 'Na', den: 'Zn', mean: 0.0004, sd: 0.0002 },
+        { num: 'Fe', den: 'Na', mean: 4104.840, sd: 1700.294 },
+        { num: 'S', den: 'Cl', mean: 0.364, sd: 0.233 },
+        { num: 'S', den: 'B', mean: 0.007, sd: 0.006 },
+        { num: 'S', den: 'Cu', mean: 0.059, sd: 0.028 },
+        { num: 'S', den: 'Fe', mean: 0.005, sd: 0.002 },
+        { num: 'S', den: 'Zn', mean: 0.007, sd: 0.003 },
+        { num: 'Mn', den: 'S', mean: 821.265, sd: 717.909 },
+        { num: 'Cl', den: 'B', mean: 0.020, sd: 0.012 },
+        { num: 'Cl', den: 'Cu', mean: 0.232, sd: 0.177 },
+        { num: 'Cl', den: 'Mn', mean: 0.008, sd: 0.007 },
+        { num: 'Fe', den: 'Cl', mean: 82.127, sd: 49.408 },
+        { num: 'Zn', den: 'Cl', mean: 54.806, sd: 37.647 },
+        { num: 'B', den: 'Cu', mean: 12.442, sd: 8.851 },
+        { num: 'B', den: 'Zn', mean: 1.461, sd: 1.061 },
+        { num: 'Fe', den: 'B', mean: 1.453, sd: 0.915 },
+        { num: 'Mn', den: 'B', mean: 3.824, sd: 2.735 },
+        { num: 'Fe', den: 'Cu', mean: 15.117, sd: 7.301 },
+        { num: 'Mn', den: 'Cu', mean: 46.064, sd: 42.338 },
+        { num: 'Zn', den: 'Cu', mean: 9.448, sd: 5.431 },
+        { num: 'Fe', den: 'Mn', mean: 0.487, sd: 0.354 },
+        { num: 'Fe', den: 'Zn', mean: 1.727, sd: 0.788 },
+        { num: 'Mn', den: 'Zn', mean: 4.455, sd: 3.675 }
+    ];
+    const NUTRIENTES_CAQUI = ['N', 'P', 'K', 'Ca', 'Mg', 'Na', 'S', 'Cl', 'B', 'Cu', 'Fe', 'Mn', 'Zn'];
+
+    // Índice lineal de Jones (Sección 2.5 del artículo): f(Y/X) = [(Y/X)_muestra - (y/x)_norma] / SD_norma.
+    // El índice de cada nutriente es la media de sus f(+) como numerador menos sus f como denominador.
+    function calcDrisIndicesCaqui(valores) {
+        const indices = {};
+        NUTRIENTES_CAQUI.forEach(nut => {
+            let suma = 0, n = 0;
+            NORMS_DRIS_CAQUI.forEach(norm => {
+                const ratioVal = valores[norm.num] / valores[norm.den];
+                const f = (ratioVal - norm.mean) / norm.sd;
+                if (norm.num === nut) { suma += f; n++; }
+                else if (norm.den === nut) { suma -= f; n++; }
+            });
+            indices[nut] = n > 0 ? suma / n : 0;
+        });
+        return indices;
+    }
+
+    function procesarDrisCaqui(valores) {
+        const indices = calcDrisIndicesCaqui(valores);
+        const nombres = { N: 'Nitrógeno', P: 'Fósforo', K: 'Potasio', Ca: 'Calcio', Mg: 'Magnesio', Na: 'Sodio', S: 'Azufre', Cl: 'Cloruro', B: 'Boro', Cu: 'Cobre', Fe: 'Hierro', Mn: 'Manganeso', Zn: 'Zinc' };
+        renderDrisGenericTable(indices, NUTRIENTES_CAQUI, nombres);
+    }
+
+    // Renderizado compartido para las tablas DRIS de Almendro y Caqui (Punto: pestaña "Sistema DRIS").
+    function renderDrisGenericTable(indices, nutrientes, nombres) {
+        const tbody = document.getElementById("tabla-dris-generic-body");
+        tbody.innerHTML = "";
+        const lista = nutrientes.map(nut => ({ nut, val: indices[nut] })).sort((a, b) => a.val - b.val);
+        let ibn = 0;
+        lista.forEach((item, idx) => {
+            ibn += Math.abs(item.val);
+            let desc = "Equilibrado", color = "var(--success)", prioridad = "Baja / Mantenimiento";
+            if (item.val < -10) { desc = "Déficit Fuerte"; color = "var(--danger)"; prioridad = `Alta (Prioridad ${idx + 1})`; }
+            else if (item.val < -2) { desc = "Déficit Ligero"; color = "var(--warning)"; prioridad = `Moderada (Prioridad ${idx + 1})`; }
+            else if (item.val > 10) { desc = "Exceso Fuerte"; color = "var(--indigo)"; prioridad = "No Aplicar / Reducir"; }
+            else if (item.val > 2) { desc = "Exceso Ligero"; color = "#00796B"; prioridad = "No Aplicar"; }
+
+            const row = `<tr>
+                <td><strong>${nombres[item.nut] || item.nut}</strong></td>
+                <td style="font-weight:bold; color:${item.val < 0 ? 'var(--danger)' : 'var(--success)'}">${item.val.toFixed(1)}</td>
+                <td style="color:${color}; font-weight:600;">${desc}</td>
+                <td><strong>${prioridad}</strong></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+        document.getElementById("dris-generic-ibn").textContent = ibn.toFixed(1);
     }
 
     // ============================================================
