@@ -1655,11 +1655,20 @@
             "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 }
         };
 
-        // Catálogo de productos foliares/correctores. Vacío de fábrica salvo lo que el usuario defina
-        // (botón "Definir Producto Foliar Nuevo") — no se han incluido composiciones de productos
-        // comerciales reales (p.ej. Nitrofoska Foliar) sin la ficha técnica/PDS que las confirme, para
-        // no fabricar datos agronómicos. % expresados sobre el producto tal como viene en su etiqueta.
-        const foliaresDB = {};
+        // Catálogo de productos foliares/correctores. Los dos productos reales incluidos de fábrica
+        // están tomados literalmente de sus fichas de datos (PDS) oficiales EuroChem Agro Iberia S.L.
+        // (EU) 2019/1009, rev. 1.03 de 23-sep-2025. El resto del catálogo lo completa el usuario con el
+        // botón "Definir Producto Foliar Nuevo" — no se fabrican composiciones sin ficha técnica real.
+        const foliaresDB = {
+            // PDS código 444289-5317098. Abono NPK(Mg+S) con micros 10-5-33(2+12.8). No mezclar con
+            // fuentes de calcio; fertilizante de reacción ácida. Recomendado en olivo y leñosos/hortícolas,
+            // sobre todo en crecimiento y maduración del fruto. Dosis de etiqueta: 0.5-2% en cuba.
+            "Nitrofoska Foliar 10-5-33": { n: 10.3, p: 5, k: 33, mg: 2, ca: 0, s: 12.8, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 2, mo: 0.001 },
+            // PDS código 444034-5317098. Abono NPK(Mg+S) con micros 24-8-20(2+5). No mezclar con fuentes
+            // de calcio; fertilizante de reacción ácida. Recomendado en olivo y leñosos, sobre todo en
+            // crecimiento vegetativo, producción y post-cosecha. Dosis de etiqueta: 0.5-2% en cuba.
+            "Nitrofoska Foliar 24-8-20": { n: 24, p: 8, k: 20, mg: 2, ca: 0, s: 4.1, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 0.2, mo: 0.001 }
+        };
         const FOLIARES_CUSTOM_KEY = "fertirrigacion_foliares_custom_v1";
         function cargarFoliaresPersonalizados() {
             try {

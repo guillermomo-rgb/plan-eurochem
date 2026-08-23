@@ -1300,9 +1300,17 @@
     // programa_fertirrigacion.html (N,P,K,Mg,Ca,S en % + Fe,Mn,Zn,Cu,B,Mo en %) para poder copiar/pegar
     // definiciones entre los dos programas — no comparten localStorage al ser archivos HTML distintos
     // (cada file:// es un origen distinto en el navegador), así que cada producto debe darse de alta
-    // una vez en cada archivo. Vacío de fábrica: no se fabrican composiciones de productos comerciales
-    // reales (p.ej. Nitrofoska Foliar) sin su ficha técnica/PDS.
-    const foliaresDB = {};
+    // una vez en cada archivo. Los dos productos reales incluidos de fábrica están tomados literalmente
+    // de sus fichas de datos (PDS) oficiales EuroChem Agro Iberia S.L. (EU) 2019/1009, rev. 1.03 de
+    // 23-sep-2025. El resto lo completa el usuario — no se fabrican composiciones sin ficha técnica real.
+    const foliaresDB = {
+        // PDS código 444289-5317098. No mezclar con fuentes de calcio; reacción ácida. Recomendado en
+        // olivo y leñosos/hortícolas, sobre todo en crecimiento y maduración del fruto.
+        "Nitrofoska Foliar 10-5-33": { n: 10.3, p: 5, k: 33, mg: 2, ca: 0, s: 12.8, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 2, mo: 0.001 },
+        // PDS código 444034-5317098. No mezclar con fuentes de calcio; reacción ácida. Recomendado en
+        // olivo y leñosos, sobre todo en crecimiento vegetativo, producción y post-cosecha.
+        "Nitrofoska Foliar 24-8-20": { n: 24, p: 8, k: 20, mg: 2, ca: 0, s: 4.1, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 0.2, mo: 0.001 }
+    };
     const FOLIARES_CUSTOM_KEY_PF = "plan_abonado_foliares_custom_v1";
     function cargarFoliaresPersonalizadosPF() {
         try {
