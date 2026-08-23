@@ -805,6 +805,111 @@
                     <span style="font-weight: bold; color: #555;">R.A.S. Sódico (Potasio inc.):</span>
                     <span id="water-ras-val" style="font-weight: bold; color: var(--warning-color);">0.00</span>
                 </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">pH del Agua:</span>
+                    <input type="number" id="water-ph" value="7.6" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Boro (B, mg/L):</span>
+                    <input type="number" id="water-mg-b" value="0.10" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Hierro (Fe, mg/L):</span>
+                    <input type="number" id="water-mg-fe" value="0.05" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico Ampliado del Agua (Riesgo de Infiltración FAO, Dureza, Toxicidad, Obturación, Cloración) -->
+        <div class="config-grid" style="margin-top: 15px;">
+            <div class="config-card">
+                <h3>Parámetros Físicos y Riesgos Agronómicos</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sólidos Totales Disueltos (STD):</td>
+                            <td id="water-std" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Presión Osmótica (Po):</td>
+                            <td id="water-po" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Dureza Total (Grados Franceses):</td>
+                            <td id="water-dureza" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Riesgo de Infiltración (FAO-29):</td>
+                            <td id="water-infiltracion" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Riesgo de Obturación Calcárea:</td>
+                            <td id="water-obturacion" class="diag-badge diag-ok">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 10.5px; color: #888; margin-top: 8px;">
+                    * Riesgo de infiltración según Ayers &amp; Westcot (1985, FAO-29). El de obturación es un indicador simplificado (pH + HCO₃⁻ + Ca), no un índice de Langelier/Ryznar completo (requeriría temperatura).
+                </div>
+            </div>
+
+            <div class="config-card">
+                <h3>Toxicidad de Iones Específicos</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Ion</th><th>Valor</th><th>Riesgo</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Cloruro (Cl⁻)</td>
+                            <td id="water-cl-val">-</td>
+                            <td id="water-cl-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sodio (Na⁺)</td>
+                            <td id="water-na-val">-</td>
+                            <td id="water-na-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Boro (B)</td>
+                            <td id="water-b-val">-</td>
+                            <td id="water-b-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="config-grid" style="margin-top: 15px;">
+            <div class="config-card">
+                <h3>Caja de Ahorros de Nutrientes Gratuitos del Agua (kg/ha·año)</h3>
+                <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+                    Calculado sobre el volumen de riego anual introducido en los 12 meses (Puntos 5-7): <span id="water-vol-anual" style="font-weight:bold;">0</span> m³/ha·año.
+                    Estos kilos ya entran con el agua — <strong>revíselos antes de completar la compra de fertilizante</strong>; esta tabla es solo informativa, no se descuenta automáticamente de las dosis calculadas en los demás puntos.
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Nutriente</th><th>Aporte del Agua (kg/ha·año)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="text-align:left; font-weight:bold;">Nitrógeno (N-NO₃⁻)</td><td id="water-ahorro-n">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Calcio (como CaO)</td><td id="water-ahorro-ca">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Magnesio (como MgO)</td><td id="water-ahorro-mg">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Potasio (como K₂O)</td><td id="water-ahorro-k">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Azufre (como SO₃)</td><td id="water-ahorro-s">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-card">
+                <h3>Plan de Cloración y Desinfección</h3>
+                <div style="font-size: 12.5px; line-height:1.5;">
+                    <p><strong>Mantenimiento preventivo (algas/biofilm):</strong> inyectar entre <span id="water-cloro-min" style="font-weight:bold;">-</span> y <span id="water-cloro-max" style="font-weight:bold;">-</span> litros/año de Hipoclorito Sódico (10% cloro activo) al final del riego, sobre el volumen anual indicado arriba.</p>
+                    <p><strong>Oxidación de Hierro disuelto:</strong> mantener una dosis constante de cloro libre en la entrada de filtros de <span id="water-cloro-fe" style="font-weight:bold;">-</span> ppm (mg/L).</p>
+                    <div class="alert-box warn" style="margin-top:10px; font-size:11px;">
+                        ⚠️ <strong>Nunca mezclar</strong> ácidos comerciales con hipoclorito sódico en el mismo recipiente o tanque concentrado: la reacción genera gas de cloro, letal para el operario.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1970,6 +2075,92 @@
                 ras_val = (meq_na + meq_k) / Math.sqrt((meq_ca + meq_mg) / 2);
             }
             document.getElementById("water-ras-val").textContent = ras_val.toFixed(2);
+
+            // 1b. Diagnóstico ampliado del agua: STD, presión osmótica, dureza, riesgos e iones tóxicos.
+            const water_ph = parseFloat(document.getElementById("water-ph").value) || 0;
+            const water_b_mg = parseFloat(document.getElementById("water-mg-b").value) || 0;
+            const water_fe_mg = parseFloat(document.getElementById("water-mg-fe").value) || 0;
+
+            const std_gl = water_ec * 0.64;
+            const po_atm = water_ec * 0.36;
+            const dureza_gf = (ca_mg_l * 2.5 + mg_mg_l * 4.12) / 10;
+
+            document.getElementById("water-std").textContent = `${std_gl.toFixed(2)} g/L`;
+            document.getElementById("water-po").textContent = `${po_atm.toFixed(2)} atm`;
+            document.getElementById("water-dureza").textContent = `${dureza_gf.toFixed(1)} °F`;
+
+            // Riesgo de Infiltración (Ayers & Westcot, 1985, FAO-29, Tabla 1). Reutiliza el mismo RAS
+            // (Sódico con Potasio incluido) ya calculado arriba para este programa.
+            const bandasInfiltracionFAO = [
+                { rasMax: 3,  ninguna: 0.7, severa: 0.2 },
+                { rasMax: 6,  ninguna: 1.2, severa: 0.3 },
+                { rasMax: 12, ninguna: 1.9, severa: 0.5 },
+                { rasMax: 20, ninguna: 2.9, severa: 1.3 },
+                { rasMax: 40, ninguna: 5.0, severa: 2.9 }
+            ];
+            const bandaInf = bandasInfiltracionFAO.find(b => ras_val <= b.rasMax) || bandasInfiltracionFAO[bandasInfiltracionFAO.length - 1];
+            const bInf = document.getElementById("water-infiltracion");
+            if (water_ec < bandaInf.severa) {
+                bInf.textContent = "Restricción Severa"; bInf.className = "diag-badge diag-danger";
+            } else if (water_ec < bandaInf.ninguna) {
+                bInf.textContent = "Restricción Ligera-Moderada"; bInf.className = "diag-badge diag-warn";
+            } else {
+                bInf.textContent = "Sin restricción"; bInf.className = "diag-badge diag-ok";
+            }
+
+            // Riesgo de Obturación Calcárea: indicador simplificado (pH + HCO3 + Ca disponible).
+            const bObt = document.getElementById("water-obturacion");
+            if (water_ph > 7.5 && meq_hco3 > 2.0 && meq_ca > 3.0) {
+                bObt.textContent = "Riesgo Importante"; bObt.className = "diag-badge diag-danger";
+            } else if (water_ph > 7.5 && meq_hco3 > 2.0) {
+                bObt.textContent = "Riesgo Moderado"; bObt.className = "diag-badge diag-warn";
+            } else {
+                bObt.textContent = "Riesgo Bajo"; bObt.className = "diag-badge diag-ok";
+            }
+
+            // Toxicidad de iones específicos
+            document.getElementById("water-cl-val").textContent = `${meq_cl.toFixed(2)} meq/L`;
+            const bCl = document.getElementById("water-cl-badge");
+            if (meq_cl < 4) { bCl.textContent = "Excelente"; bCl.className = "diag-badge diag-ok"; }
+            else if (meq_cl <= 10) { bCl.textContent = "Moderado"; bCl.className = "diag-badge diag-warn"; }
+            else { bCl.textContent = "Peligroso"; bCl.className = "diag-badge diag-danger"; }
+
+            document.getElementById("water-na-val").textContent = `${meq_na.toFixed(2)} meq/L`;
+            const bNa = document.getElementById("water-na-badge");
+            if (meq_na < 3) { bNa.textContent = "Sin riesgo"; bNa.className = "diag-badge diag-ok"; }
+            else if (meq_na <= 9) { bNa.textContent = "Moderado"; bNa.className = "diag-badge diag-warn"; }
+            else { bNa.textContent = "Grave"; bNa.className = "diag-badge diag-danger"; }
+
+            document.getElementById("water-b-val").textContent = `${water_b_mg.toFixed(2)} mg/L`;
+            const bB = document.getElementById("water-b-badge");
+            if (water_b_mg < 0.7) { bB.textContent = "Sin riesgo"; bB.className = "diag-badge diag-ok"; }
+            else if (water_b_mg <= 3.0) { bB.textContent = "Precaución"; bB.className = "diag-badge diag-warn"; }
+            else { bB.textContent = "Tóxico"; bB.className = "diag-badge diag-danger"; }
+
+            // Volumen de riego anual = suma de los 12 meses (m³/ha·año), ya introducido en Puntos 5-7.
+            const volAnual = Object.keys(monthlyData).reduce((s, m) => s + (monthlyData[m].water || 0), 0);
+            document.getElementById("water-vol-anual").textContent = volAnual.toFixed(0);
+
+            // Caja de ahorros de nutrientes gratuitos del agua (informativo, no se resta de las dosis).
+            const ahorroN = (no3_mg_l * (14.0 / 62.0) * volAnual) / 1000.0;
+            const ahorroCaO = (ca_mg_l * volAnual / 1000.0) * 1.399;
+            const ahorroMgO = (mg_mg_l * volAnual / 1000.0) * 1.658;
+            const ahorroK2O = (k_mg_l * volAnual / 1000.0) * 1.205;
+            const ahorroSO3 = (so4_mg_l * (32.06 / 96.06) * volAnual / 1000.0) * 2.497;
+
+            document.getElementById("water-ahorro-n").textContent = `${ahorroN.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-ca").textContent = `${ahorroCaO.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-mg").textContent = `${ahorroMgO.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-k").textContent = `${ahorroK2O.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-s").textContent = `${ahorroSO3.toFixed(1)} kg/ha`;
+
+            // Plan de cloración: dosis objetivo 15-20 ppm de cloro activo sobre el volumen anual,
+            // convertida a litros de producto comercial al 10% de cloro activo (10% p/v = 0.10 kg Cl/L).
+            const kgClMin = (15.0 * volAnual) / 1000.0;
+            const kgClMax = (20.0 * volAnual) / 1000.0;
+            document.getElementById("water-cloro-min").textContent = (kgClMin / 0.10).toFixed(0);
+            document.getElementById("water-cloro-max").textContent = (kgClMax / 0.10).toFixed(0);
+            document.getElementById("water-cloro-fe").textContent = (0.65 * water_fe_mg).toFixed(3);
 
             // 2. Cálculos de Ácido y Neutralización (Punto 3)
             document.getElementById("acid-base-hco3").textContent = meq_hco3.toFixed(2);
