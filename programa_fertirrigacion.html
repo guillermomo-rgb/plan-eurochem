@@ -1186,6 +1186,58 @@
                 * La CE (Punto 5) es un buen control global de sales, pero no indica qué nutriente concreto falta o sobra: una CE correcta puede coexistir con un desequilibrio de K, Ca, Mg o N. Usa siempre esta tabla de ratios como complemento a la CE, no como sustituto.
             </div>
         </div>
+
+        <!-- Soluciones Nutritivas de Referencia (Hidroponía) - SOLO COMPARATIVO -->
+        <div class="config-card" style="margin-top: 15px; border-color: #d1c4e9; background-color: #fbfaff;">
+            <h3 style="color: var(--primary-color);">📚 Soluciones Nutritivas Clásicas de Hidroponía (Solo Referencia)</h3>
+            <div style="font-size: 11px; color: #555; text-align: left; padding: 0 5px 8px;">
+                <strong>Aviso importante:</strong> Steiner, Hoagland &amp; Arnon I/II, Long Ashton–Hewitt y Knop son fórmulas
+                clásicas desarrolladas para <strong>cultivo sin suelo</strong> (hidroponía / sustrato inerte), donde el 100% de la
+                nutrición procede de la solución. <strong>No son directamente aplicables a la fertirrigación en suelo</strong> de este
+                programa, ya que en suelo el propio terreno aporta y amortigua nutrientes (CIC, materia orgánica, fertilidad
+                residual). Se muestran aquí únicamente como <strong>referencia comparativa del equilibrio iónico</strong> (macros en
+                meq/L, micros en ppm), para que puedas ver cuánto se parece o se aleja tu solución calculada de estos patrones
+                clásicos — no sustituyen el cálculo de necesidades en kg/ha de este programa.
+            </div>
+            <div style="overflow-x:auto;">
+            <table class="data-table" style="font-size: 11px;">
+                <thead>
+                    <tr>
+                        <th>Solución</th>
+                        <th>N-NH₄⁺<br>meq/L</th>
+                        <th>N-NO₃⁻<br>meq/L</th>
+                        <th>P-H₂PO₄⁻<br>meq/L</th>
+                        <th>S-SO₄²⁻<br>meq/L</th>
+                        <th>K⁺<br>meq/L</th>
+                        <th>Ca²⁺<br>meq/L</th>
+                        <th>Mg²⁺<br>meq/L</th>
+                        <th>Fe<br>ppm</th>
+                        <th>Mn<br>ppm</th>
+                        <th>Zn<br>ppm</th>
+                        <th>B<br>ppm</th>
+                        <th>Cu<br>ppm</th>
+                        <th>Mo<br>ppm</th>
+                    </tr>
+                </thead>
+                <tbody id="ref-hidroponia-tbody">
+                    <!-- filas generadas por JS a partir de SOLUCIONES_REFERENCIA_HIDROPONIA -->
+                </tbody>
+                <tbody>
+                    <tr style="background-color: #ede7f6; font-weight:bold;">
+                        <td style="text-align:left;">➡ Tu solución calculada (gotero, este mes/fase)</td>
+                        <td id="ref-mi-nh4">0.00</td>
+                        <td id="ref-mi-no3">0.00</td>
+                        <td id="ref-mi-p">0.00</td>
+                        <td id="ref-mi-s">0.00</td>
+                        <td id="ref-mi-k">0.00</td>
+                        <td id="ref-mi-ca">0.00</td>
+                        <td id="ref-mi-mg">0.00</td>
+                        <td colspan="6" style="font-weight:normal; font-style:italic; color:#888;">Micros no calculados en este punto</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
     </div>
 
     <!-- PUNTO 8: DICTAMEN AGRONÓMICO DE RIESGOS (PREVENTIVO) -->
@@ -1271,6 +1323,44 @@
             precosecha: { label: "Pre-cosecha", prioridad: "Según extracción y análisis", tendencia: "Evitar exceso de CE y de N", objetivo: "No forzar crecimiento vegetativo" }
         };
 
+        // Soluciones nutritivas clásicas de hidroponía / cultivo sin suelo (Punto 7).
+        // SOLO REFERENCIA COMPARATIVA: no aplicables directamente a fertirrigación en suelo.
+        // Macros en meq/L, micros en ppm. Fuente: fórmulas estándar publicadas (Steiner;
+        // Hoagland & Arnon I/II; Long Ashton-Hewitt; Knop).
+        const SOLUCIONES_REFERENCIA_HIDROPONIA = [
+            { nombre: "Steiner 100%", nh4: 0, no3: 12, p: 1, s: 7, k: 7, ca: 9, mg: 4, fe: 1.33, mn: 0.62, zn: 0.11, b: 0.05, cu: 0.02, mo: 0.04 },
+            { nombre: "Hoagland & Arnon I", nh4: 0, no3: 15, p: 1, s: 4, k: 6, ca: 10, mg: 4, fe: 1, mn: 0.5, zn: 0.05, b: 0.5, cu: 0.02, mo: 0.048 },
+            { nombre: "Hoagland & Arnon II", nh4: 1, no3: 14, p: 1, s: 4, k: 6, ca: 8, mg: 4, fe: 1, mn: 0.5, zn: 0.05, b: 0.5, cu: 0.02, mo: 0.011 },
+            { nombre: "Long Ashton – Hewitt", nh4: 0, no3: 12, p: 1.32, s: 3, k: 4, ca: 8, mg: 3, fe: 2.8, mn: 0.55, zn: 0.065, b: 0.54, cu: 0.064, mo: 0.048 },
+            { nombre: "Knop", nh4: 0, no3: 14.66, p: 1.84, s: 2.03, k: 4.31, ca: 12.19, mg: 2.03, fe: 0, mn: 0, zn: 0, b: 0, cu: 0, mo: 0 }
+        ];
+
+        function renderSolucionesReferenciaHidroponia() {
+            const tbody = document.getElementById("ref-hidroponia-tbody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            SOLUCIONES_REFERENCIA_HIDROPONIA.forEach(sol => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold;">${sol.nombre}</td>
+                    <td>${sol.nh4.toFixed(2)}</td>
+                    <td>${sol.no3.toFixed(2)}</td>
+                    <td>${sol.p.toFixed(2)}</td>
+                    <td>${sol.s.toFixed(2)}</td>
+                    <td>${sol.k.toFixed(2)}</td>
+                    <td>${sol.ca.toFixed(2)}</td>
+                    <td>${sol.mg.toFixed(2)}</td>
+                    <td>${sol.fe}</td>
+                    <td>${sol.mn}</td>
+                    <td>${sol.zn}</td>
+                    <td>${sol.b}</td>
+                    <td>${sol.cu}</td>
+                    <td>${sol.mo}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         // Complejos Granulados de Fondo (Punto 4)
         const granuladosDB = {
             "ENTEC Nitrofoska Especial 12-12-17": { n: 12, p: 12, k: 17, mg: 3, ca: 0, s: 20 },
@@ -1347,6 +1437,7 @@
 
         // Inicialización al cargar la página
         window.addEventListener("DOMContentLoaded", () => {
+            renderSolucionesReferenciaHidroponia();
             // Cargar selector de cultivos
             const cropSel = document.getElementById("crop-selector");
             cropSel.innerHTML = "";
@@ -2421,6 +2512,15 @@
                 got_neutral_ratio = Math.abs(total_cat_got - total_ani_got) / ((total_cat_got + total_ani_got) / 2) * 100;
             }
             document.getElementById("gotero-electroneutralidad").textContent = `${got_neutral_ratio.toFixed(1)}%`;
+
+            // Fila comparativa en la tabla de soluciones de referencia de hidroponía (solo visual)
+            document.getElementById("ref-mi-nh4").textContent = got_nh4.toFixed(2);
+            document.getElementById("ref-mi-no3").textContent = got_no3.toFixed(2);
+            document.getElementById("ref-mi-p").textContent = got_p.toFixed(2);
+            document.getElementById("ref-mi-s").textContent = got_s.toFixed(2);
+            document.getElementById("ref-mi-k").textContent = got_k.toFixed(2);
+            document.getElementById("ref-mi-ca").textContent = got_ca.toFixed(2);
+            document.getElementById("ref-mi-mg").textContent = got_mg.toFixed(2);
 
             // Relaciones molares Sonneveld
             let r_k_ca_mg = 0;
