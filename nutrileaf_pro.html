@@ -768,7 +768,11 @@
                     <button class="tab-btn" id="btn-tab-equilibrio" onclick="switchTab('equilibrio-tab')">Ratios de Equilibrio</button>
                     <button class="tab-btn" id="btn-tab-dris" onclick="switchTab('dris-tab')" style="display:none;">Sistema DRIS Olivar</button>
                     <button class="tab-btn" id="btn-tab-correccion" onclick="switchTab('correccion-tab')">Plan de Abonado y Corrección</button>
+                    <button class="tab-btn" id="btn-tab-historico" onclick="switchTab('historico-tab')">Histórico Multi-Año</button>
                 </div>
+                <button class="btn btn-secondary" id="btn-guardar-historico" onclick="guardarEnHistorico()" style="width: auto; margin: 5px 5px 5px 0; padding: 8px 16px; display: inline-flex; align-items: center; gap: 8px;">
+                    💾 Guardar en Histórico
+                </button>
                 <button class="btn" id="btn-print" onclick="window.print()" style="width: auto; margin: 5px 0; padding: 8px 16px; background-color: var(--accent); display: inline-flex; align-items: center; gap: 8px;">
                     🖨️ Guardar PDF / Imprimir
                 </button>
@@ -874,6 +878,66 @@
                     </ul>
                 </div>
                 <div id="recomendaciones-abonado-list"></div>
+            </div>
+
+            <!-- TAB 5: HISTÓRICO MULTI-AÑO -->
+            <div id="historico-tab" class="tab-content">
+                <h2>Evolución Histórica de Analíticas Foliares</h2>
+                <div class="alert-box alert-info">
+                    <strong>Cómo funciona:</strong> cada vez que pulses "💾 Guardar en Histórico" se archiva la analítica actual
+                    (finca, fecha, cultivo y valores) en el navegador. Aquí puedes revisar todas las analíticas guardadas de una
+                    finca y ver la evolución de cada nutriente a lo largo de los años.
+                    <br><strong>⚠️ Importante:</strong> el histórico se guarda localmente en <em>este navegador y este dispositivo</em>
+                    (localStorage) — no se sincroniza entre ordenadores ni se sube a ningún servidor. Usa "Exportar CSV" periódicamente
+                    para tener una copia de seguridad de tus datos.
+                </div>
+
+                <div class="form-grid" style="margin-bottom:15px;">
+                    <div class="form-group">
+                        <label for="hist-finca-selector">Finca:</label>
+                        <select id="hist-finca-selector" onchange="renderHistorico()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hist-cultivo-selector">Cultivo (para gráfico de evolución):</label>
+                        <select id="hist-cultivo-selector" onchange="renderHistorico()"></select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <button class="btn btn-secondary" style="width:auto; display:inline-block; padding:6px 14px;" onclick="exportarHistoricoCSV()">⬇️ Exportar CSV</button>
+                </div>
+
+                <h3 style="font-size:15px;">Registros Guardados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cultivo</th>
+                            <th>Asesor</th>
+                            <th>N %</th>
+                            <th>P %</th>
+                            <th>K %</th>
+                            <th>Ca %</th>
+                            <th>Mg %</th>
+                            <th>Fe</th>
+                            <th>Mn</th>
+                            <th>Zn</th>
+                            <th>Cu</th>
+                            <th>B</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historico-body"></tbody>
+                </table>
+                <div id="historico-vacio-msg" style="display:none; padding:15px; text-align:center; color:#627D98;">
+                    Todavía no hay analíticas guardadas para esta finca. Calcula un diagnóstico y pulsa "💾 Guardar en Histórico".
+                </div>
+
+                <h3 style="font-size:15px; margin-top:25px;">📈 Evolución por Nutriente (mismo cultivo, ordenado por fecha)</h3>
+                <div id="historico-sparklines-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:15px;"></div>
+                <div id="historico-sparklines-vacio" style="display:none; padding:15px; text-align:center; color:#627D98;">
+                    Se necesitan al menos 2 analíticas guardadas del mismo cultivo en esta finca para dibujar una evolución.
+                </div>
             </div>
         </div>
 
@@ -1242,6 +1306,7 @@
         if (tabId === 'equilibrio-tab') document.getElementById('btn-tab-equilibrio').classList.add('active');
         if (tabId === 'dris-tab') document.getElementById('btn-tab-dris').classList.add('active');
         if (tabId === 'correccion-tab') document.getElementById('btn-tab-correccion').classList.add('active');
+        if (tabId === 'historico-tab') { document.getElementById('btn-tab-historico').classList.add('active'); renderHistorico(); }
     }
 
     function procesarAnalisisFoliar() {
@@ -1827,8 +1892,271 @@
         }
     }
 
+    // ============================================================
+    // HISTÓRICO MULTI-AÑO DE ANALÍTICAS FOLIARES (localStorage)
+    // ============================================================
+    const HIST_STORAGE_KEY = "nutrileaf_historico_v1";
+    const HIST_NUTRIENTES = ['N', 'P', 'K', 'Ca', 'Mg', 'Fe', 'Mn', 'Zn', 'Cu', 'B'];
+
+    function leerHistoricoStorage() {
+        try {
+            const raw = localStorage.getItem(HIST_STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            console.warn("No se pudo leer el histórico de localStorage:", e);
+            return [];
+        }
+    }
+
+    function guardarHistoricoStorage(lista) {
+        try {
+            localStorage.setItem(HIST_STORAGE_KEY, JSON.stringify(lista));
+        } catch (e) {
+            alert("No se pudo guardar en el histórico (almacenamiento local lleno o bloqueado por el navegador).");
+        }
+    }
+
+    function guardarEnHistorico() {
+        const finca = (document.getElementById("finca_nombre").value || "").trim() || "No Especificada";
+        const fecha = document.getElementById("finca_fecha").value;
+        if (!fecha) {
+            alert("Introduce la fecha de muestreo antes de guardar en el histórico.");
+            return;
+        }
+        const cultivo = document.getElementById("cultivo").value;
+        const cultivoTexto = document.getElementById("cultivo").options[document.getElementById("cultivo").selectedIndex].text;
+        const asesor = (document.getElementById("asesor_nombre").value || "").trim() || "No Especificado";
+
+        const valores = {};
+        HIST_NUTRIENTES.forEach(el => {
+            const v = parseFloat(document.getElementById("val_" + el).value);
+            if (!isNaN(v)) valores[el] = v;
+        });
+        if (cultivo === "aguacate") {
+            const vCl = parseFloat(document.getElementById("val_Cl").value);
+            if (!isNaN(vCl)) valores.Cl = vCl;
+        }
+        if (Object.keys(valores).length === 0) {
+            alert("No hay valores analíticos introducidos todavía. Rellena el formulario y calcula el diagnóstico antes de guardar.");
+            return;
+        }
+
+        const id = `${finca}|||${fecha}|||${cultivo}`;
+        let historico = leerHistoricoStorage();
+        historico = historico.filter(r => r.id !== id); // si ya existe la misma finca+fecha+cultivo, se sobrescribe
+        historico.push({ id, finca, fecha, cultivo, cultivoTexto, asesor, valores });
+        guardarHistoricoStorage(historico);
+
+        poblarSelectoresHistorico(finca, cultivo);
+        renderHistorico();
+        alert(`Analítica de "${finca}" (${fecha}) guardada en el histórico.`);
+    }
+
+    function borrarDeHistorico(id) {
+        if (!confirm("¿Borrar esta analítica del histórico? Esta acción no se puede deshacer.")) return;
+        let historico = leerHistoricoStorage();
+        historico = historico.filter(r => r.id !== id);
+        guardarHistoricoStorage(historico);
+        renderHistorico();
+    }
+
+    function poblarSelectoresHistorico(preferirFinca, preferirCultivo) {
+        const historico = leerHistoricoStorage();
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const cultivoSel = document.getElementById("hist-cultivo-selector");
+        if (!fincaSel || !cultivoSel) return;
+
+        const fincasPrevia = fincaSel.value;
+        const fincas = [...new Set(historico.map(r => r.finca))].sort();
+        fincaSel.innerHTML = "";
+        if (fincas.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "(sin analíticas guardadas)";
+            fincaSel.appendChild(opt);
+        } else {
+            fincas.forEach(f => {
+                const opt = document.createElement("option");
+                opt.value = f;
+                opt.textContent = f;
+                fincaSel.appendChild(opt);
+            });
+            if (preferirFinca && fincas.includes(preferirFinca)) fincaSel.value = preferirFinca;
+            else if (fincas.includes(fincasPrevia)) fincaSel.value = fincasPrevia;
+        }
+
+        const fincaActiva = fincaSel.value;
+        const cultivosPrevio = cultivoSel.value;
+        const cultivosDisponibles = [...new Set(historico.filter(r => r.finca === fincaActiva).map(r => r.cultivo))];
+        cultivoSel.innerHTML = "";
+        cultivosDisponibles.forEach(c => {
+            const registroEjemplo = historico.find(r => r.finca === fincaActiva && r.cultivo === c);
+            const opt = document.createElement("option");
+            opt.value = c;
+            opt.textContent = registroEjemplo ? registroEjemplo.cultivoTexto : c;
+            cultivoSel.appendChild(opt);
+        });
+        if (preferirCultivo && cultivosDisponibles.includes(preferirCultivo)) cultivoSel.value = preferirCultivo;
+        else if (cultivosDisponibles.includes(cultivosPrevio)) cultivoSel.value = cultivosPrevio;
+    }
+
+    const HIST_ESTADO_ABREV = { "MUY BAJO": "MB", "BAJO": "B", "ÓPTIMO": "OK", "ALTO": "A", "MUY ALTO / EXCESO": "MA" };
+
+    function celdaHistNutriente(registro, el) {
+        const val = registro.valores[el];
+        if (val === undefined || val === null) return `<td style="color:#B0BEC5;">—</td>`;
+        const ref = BASE_DE_DATOS_CULTIVOS[registro.cultivo] ? BASE_DE_DATOS_CULTIVOS[registro.cultivo][el] : null;
+        const clasif = ref ? clasificarValor(val, ref) : null;
+        if (!clasif) return `<td>${val}</td>`;
+        const abrev = HIST_ESTADO_ABREV[clasif.estado] || clasif.estado;
+        return `<td>${val} <span class="badge ${clasif.badgeClass}" style="font-size:9px; padding:1px 4px;" title="${clasif.estado}">${abrev}</span></td>`;
+    }
+
+    function renderHistorico() {
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const cultivoSel = document.getElementById("hist-cultivo-selector");
+        if (!fincaSel || !cultivoSel) return;
+        if (fincaSel.options.length === 0) poblarSelectoresHistorico();
+
+        const finca = fincaSel.value;
+        const historico = leerHistoricoStorage().filter(r => r.finca === finca);
+        historico.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        const tbody = document.getElementById("tabla-historico-body");
+        const msgVacio = document.getElementById("historico-vacio-msg");
+        tbody.innerHTML = "";
+        if (historico.length === 0) {
+            msgVacio.style.display = "block";
+        } else {
+            msgVacio.style.display = "none";
+            historico.forEach(r => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${r.fecha}</td>
+                    <td>${r.cultivoTexto}</td>
+                    <td>${r.asesor}</td>
+                    ${celdaHistNutriente(r, 'N')}
+                    ${celdaHistNutriente(r, 'P')}
+                    ${celdaHistNutriente(r, 'K')}
+                    ${celdaHistNutriente(r, 'Ca')}
+                    ${celdaHistNutriente(r, 'Mg')}
+                    ${celdaHistNutriente(r, 'Fe')}
+                    ${celdaHistNutriente(r, 'Mn')}
+                    ${celdaHistNutriente(r, 'Zn')}
+                    ${celdaHistNutriente(r, 'Cu')}
+                    ${celdaHistNutriente(r, 'B')}
+                    <td><button class="btn" style="width:auto; padding:3px 8px; font-size:11px; background-color:var(--danger);" onclick="borrarDeHistorico('${r.id.replace(/'/g, "\\'")}')">Borrar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        dibujarSparklinesHistorico(finca, cultivoSel.value);
+    }
+
+    function dibujarSparklinesHistorico(finca, cultivo) {
+        const grid = document.getElementById("historico-sparklines-grid");
+        const msgVacio = document.getElementById("historico-sparklines-vacio");
+        grid.innerHTML = "";
+
+        const serie = leerHistoricoStorage()
+            .filter(r => r.finca === finca && r.cultivo === cultivo)
+            .sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        if (serie.length < 2) {
+            msgVacio.style.display = "block";
+            return;
+        }
+        msgVacio.style.display = "none";
+
+        const ref = BASE_DE_DATOS_CULTIVOS[cultivo];
+        const macros = ['N', 'P', 'K', 'Ca', 'Mg'];
+        macros.forEach(el => {
+            const puntos = serie.filter(r => r.valores[el] !== undefined).map(r => ({ fecha: r.fecha, valor: r.valores[el] }));
+            if (puntos.length < 2) return;
+            grid.appendChild(crearTarjetaSparkline(el, puntos, ref ? ref[el] : null));
+        });
+    }
+
+    function crearTarjetaSparkline(elemento, puntos, ref) {
+        const W = 240, H = 90, PAD = 8;
+        const valores = puntos.map(p => p.valor);
+        let minV = Math.min(...valores), maxV = Math.max(...valores);
+        if (ref && ref.o_min !== undefined && ref.o_max !== undefined) {
+            minV = Math.min(minV, ref.o_min);
+            maxV = Math.max(maxV, ref.o_max);
+        }
+        if (minV === maxV) { minV -= 1; maxV += 1; }
+        const rangoV = maxV - minV;
+
+        const escalaX = i => PAD + (i / (puntos.length - 1)) * (W - 2 * PAD);
+        const escalaY = v => H - PAD - ((v - minV) / rangoV) * (H - 2 * PAD);
+
+        let bandaOptima = "";
+        if (ref && ref.o_min !== undefined && ref.o_max !== undefined) {
+            const yTop = escalaY(ref.o_max), yBot = escalaY(ref.o_min);
+            bandaOptima = `<rect x="${PAD}" y="${yTop}" width="${W - 2 * PAD}" height="${Math.max(1, yBot - yTop)}" fill="#2E7D32" opacity="0.12"></rect>`;
+        }
+
+        const puntosLinea = puntos.map((p, i) => `${escalaX(i)},${escalaY(p.valor)}`).join(" ");
+        const circulos = puntos.map((p, i) => `<circle cx="${escalaX(i)}" cy="${escalaY(p.valor)}" r="3" fill="#1565C0"></circle>`).join("");
+
+        const tendenciaInicial = puntos[0].valor;
+        const tendenciaFinal = puntos[puntos.length - 1].valor;
+        const diff = tendenciaFinal - tendenciaInicial;
+        const flecha = diff > 0 ? "▲" : (diff < 0 ? "▼" : "→");
+        const colorFlecha = diff > 0 ? "var(--success)" : (diff < 0 ? "var(--danger)" : "#627D98");
+
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "12px";
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <strong style="font-size:13px;">${elemento}</strong>
+                <span style="font-size:12px; color:${colorFlecha}; font-weight:bold;">${flecha} ${tendenciaInicial.toFixed(2)} → ${tendenciaFinal.toFixed(2)}</span>
+            </div>
+            <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; display:block;">
+                ${bandaOptima}
+                <polyline points="${puntosLinea}" fill="none" stroke="#1565C0" stroke-width="2"></polyline>
+                ${circulos}
+            </svg>
+            <div style="font-size:10px; color:#888; margin-top:3px;">
+                ${puntos.map(p => p.fecha).join(" · ")}${ref ? ` &nbsp;|&nbsp; banda verde = rango óptimo (${ref.o_min}-${ref.o_max} ${ref.unit})` : ""}
+            </div>
+        `;
+        return div;
+    }
+
+    function exportarHistoricoCSV() {
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const finca = fincaSel.value;
+        const historico = leerHistoricoStorage().filter(r => r.finca === finca).sort((a, b) => a.fecha.localeCompare(b.fecha));
+        if (historico.length === 0) {
+            alert("No hay analíticas guardadas para esta finca todavía.");
+            return;
+        }
+        const cabecera = ["Finca", "Fecha", "Cultivo", "Asesor", ...HIST_NUTRIENTES, "Cl"];
+        const filas = historico.map(r => [
+            r.finca, r.fecha, r.cultivoTexto, r.asesor,
+            ...HIST_NUTRIENTES.map(el => r.valores[el] !== undefined ? r.valores[el] : ""),
+            r.valores.Cl !== undefined ? r.valores.Cl : ""
+        ]);
+        const csv = [cabecera, ...filas].map(fila => fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\n");
+        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `historico_foliar_${finca.replace(/[^a-z0-9]+/gi, "_")}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     window.onload = function() {
         actualizarNormasUI();
+        poblarSelectoresHistorico();
+        renderHistorico();
     };
 </script>
 
