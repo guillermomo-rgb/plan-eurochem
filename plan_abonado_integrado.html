@@ -1099,6 +1099,12 @@
                             </div>
                             <div>• <strong>Fósforo (P₂O₅)</strong> Balance: <span id="p_balance_plan" style="font-weight: bold;">0</span> UF | Aportado: <span id="p_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
                             <div>• <strong>Potasio (K₂O)</strong> Balance: <span id="k_balance_plan" style="font-weight: bold;">0</span> UF | Aportado: <span id="k_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div>• <strong>Magnesio (MgO)</strong> Aportado (fondo+cobertera+foliar): <span id="mg_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div>• <strong>Calcio (CaO)</strong> Aportado (fondo+cobertera+foliar): <span id="ca_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div>• <strong>Azufre (SO₃)</strong> Aportado (fondo+cobertera+foliar): <span id="s_aportado_plan" style="color: var(--success-green); font-weight:bold;">0</span> UF</div>
+                            <div style="padding-left: 15px; font-size: 0.85rem; color: #475569;">
+                                • <strong>Micronutrientes vía foliar (g/ha):</strong> Fe: <span id="fe_aportado_foliar" style="font-weight:bold;">0</span> | Mn: <span id="mn_aportado_foliar" style="font-weight:bold;">0</span> | Zn: <span id="zn_aportado_foliar" style="font-weight:bold;">0</span> | Cu: <span id="cu_aportado_foliar" style="font-weight:bold;">0</span> | B: <span id="b_aportado_foliar" style="font-weight:bold;">0</span> | Mo: <span id="mo_aportado_foliar" style="font-weight:bold;">0</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1109,6 +1115,52 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- 4. APLICACIÓN FOLIAR (Correctores y Foliares Eurochem) -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border);">
+                <label style="font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 12px; color: var(--eurochem-blue);">4. Aplicación Foliar (Correctores y Foliares)</label>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <select id="pf_foliar_selector" style="flex: 1; min-width: 200px; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px;"></select>
+                    <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        <input type="number" id="pf_foliar_dosis" value="2" step="0.1" style="width: 80px; padding: 6px; font-size: 1.05rem; text-align: center;">
+                        <span style="font-size: 0.95rem; font-weight: bold; color: #475569;">kg-L/ha</span>
+                    </div>
+                    <button onclick="pfAddFoliar()" style="padding: 10px 16px; background: var(--success-green); color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">➕ Añadir</button>
+                    <button onclick="pfToggleNuevoFoliar()" style="padding: 10px 16px; background: #0d9488; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📋 Definir Producto Nuevo</button>
+                </div>
+
+                <div id="pf_nuevo_foliar_form" style="display:none; margin-top:15px; padding:15px; background:#f8fafc; border-radius:8px; border:1px solid #cbd5e1;">
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                        <div><label style="font-size:0.85rem;">Nombre:</label><input type="text" id="pf_nf_nombre" style="width:100%; padding:6px;" placeholder="Ej. Nitrofoska Foliar"></div>
+                        <div><label style="font-size:0.85rem;">N (%):</label><input type="number" id="pf_nf_n" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">P₂O₅ (%):</label><input type="number" id="pf_nf_p" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">K₂O (%):</label><input type="number" id="pf_nf_k" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">MgO (%):</label><input type="number" id="pf_nf_mg" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">CaO (%):</label><input type="number" id="pf_nf_ca" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">SO₃ (%):</label><input type="number" id="pf_nf_s" step="0.01" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">Fe (%):</label><input type="number" id="pf_nf_fe" step="0.001" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">Mn (%):</label><input type="number" id="pf_nf_mn" step="0.001" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">Zn (%):</label><input type="number" id="pf_nf_zn" step="0.001" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">Cu (%):</label><input type="number" id="pf_nf_cu" step="0.001" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">B (%):</label><input type="number" id="pf_nf_b" step="0.001" value="0" style="width:100%; padding:6px;"></div>
+                        <div><label style="font-size:0.85rem;">Mo (%):</label><input type="number" id="pf_nf_mo" step="0.0001" value="0" style="width:100%; padding:6px;"></div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button onclick="pfGuardarFoliarNuevo()" style="padding: 8px 14px; background: var(--success-green); color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💾 Guardar</button>
+                        <button onclick="pfToggleNuevoFoliar()" style="padding: 8px 14px; background: #94a3b8; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Cancelar</button>
+                    </div>
+                    <div style="font-size:0.8rem; color:#64748b; margin-top:8px;">Introduzca los % de la ficha técnica real del producto. No se incluye de fábrica ningún producto foliar comercial con nombre (p.ej. Nitrofoska Foliar) sin su ficha técnica real que confirme su composición.</div>
+                </div>
+
+                <table style="width:100%; font-size:0.85rem; margin-top:15px; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#f1f5f9;">
+                            <th style="padding:6px; text-align:left;">Producto</th><th>Dosis</th><th>N</th><th>P₂O₅</th><th>K₂O</th><th>MgO</th><th>CaO</th><th>SO₃</th><th>Fe(g)</th><th>Mn(g)</th><th>Zn(g)</th><th>Cu(g)</th><th>B(g)</th><th>Mo(g)</th><th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="pf_foliar_table_body"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1220,21 +1272,131 @@
     };
 
     // Catálogo de Riqueza de Fertilizantes Eurochem (N - P2O5 - K2O)
+    // mg/ca/s añadidos a partir de lo que ya indicaban las propias etiquetas de este archivo
+    // (FERT_KEY_TO_PF_NAME, más abajo), que hasta ahora no se usaban en el cálculo del balance.
+    // AVISO: al comparar contra el catálogo granuladosDB de programa_fertirrigacion.html se han
+    // encontrado discrepancias para el mismo producto entre ambos archivos (p.ej. entec_13_10_20:
+    // 12,5% SO3 aquí vs 7,5% allí; entec_evo_27s/24: aquí sin CaO, allí con 9,2%/12,3% CaO). No se ha
+    // "corregido" un archivo con los datos del otro sin una ficha técnica real que lo confirme — ver
+    // aviso en la conversación con el usuario. entec_25_15 y entec_12_20_12 no tienen MgO/SO3/CaO
+    // indicado en ninguna etiqueta propia de este archivo, se dejan en 0 hasta confirmarlo.
     const fertData = {
-        '0': { n: 0, p: 0, k: 0, label: "Ninguno" },
-        'entec_12_12_17': { n: 12, p: 12, k: 17, label: "ENTEC NITROFOSKA ESPECIAL (12-12-17)" },
-        'entec_20_10_10': { n: 20, p: 10, k: 10, label: "ENTEC 20 10 10" },
-        'perfect_15_5_20': { n: 15, p: 5, k: 20, label: "NITROFOSKA PERFECT (15-5-20)" },
-        'super_20_5_10': { n: 20, p: 5, k: 10, label: "NITROFOSKA SUPER (20-5-10)" },
-        'entec_20_8_10': { n: 20, p: 8, k: 10, label: "ENTEC 20 8 10" },
-        'entec_25_15': { n: 25, p: 15, k: 0, label: "ENTEC 25 15" },
-        'entec_15_13_13': { n: 15, p: 13, k: 13, label: "ENTEC 15 13 13" },
-        'entec_12_20_12': { n: 12, p: 20, k: 12, label: "ENTEC 12 20 12" },
-        'entec_13_10_20': { n: 13, p: 10, k: 20, label: "ENTEC 13 10 20" },
-        'nplus_22_5_5': { n: 22, p: 5, k: 5, label: "NITROFOSKA NPLUS (22-5-5)" },
-        'entec_evo_27s': { n: 27, p: 0, k: 0, label: "ENTEC EVO 27S (27% N)" },
-        'entec_evo_24': { n: 24, p: 0, k: 0, label: "ENTEC EVO 24 (24% N)" }
+        '0': { n: 0, p: 0, k: 0, mg: 0, ca: 0, s: 0, label: "Ninguno" },
+        'entec_12_12_17': { n: 12, p: 12, k: 17, mg: 2, ca: 0, s: 20, label: "ENTEC NITROFOSKA ESPECIAL (12-12-17)" },
+        'entec_20_10_10': { n: 20, p: 10, k: 10, mg: 0, ca: 0, s: 7.5, label: "ENTEC 20 10 10" },
+        'perfect_15_5_20': { n: 15, p: 5, k: 20, mg: 2, ca: 0, s: 22.5, label: "NITROFOSKA PERFECT (15-5-20)" },
+        'super_20_5_10': { n: 20, p: 5, k: 10, mg: 3, ca: 0, s: 12.5, label: "NITROFOSKA SUPER (20-5-10)" },
+        'entec_20_8_10': { n: 20, p: 8, k: 10, mg: 2, ca: 0, s: 7.5, label: "ENTEC 20 8 10" },
+        'entec_25_15': { n: 25, p: 15, k: 0, mg: 0, ca: 0, s: 0, label: "ENTEC 25 15" },
+        'entec_15_13_13': { n: 15, p: 13, k: 13, mg: 0, ca: 0, s: 12.5, label: "ENTEC 15 13 13" },
+        'entec_12_20_12': { n: 12, p: 20, k: 12, mg: 0, ca: 0, s: 0, label: "ENTEC 12 20 12" },
+        'entec_13_10_20': { n: 13, p: 10, k: 20, mg: 0, ca: 0, s: 12.5, label: "ENTEC 13 10 20" },
+        'nplus_22_5_5': { n: 22, p: 5, k: 5, mg: 2, ca: 0, s: 7.5, label: "NITROFOSKA NPLUS (22-5-5)" },
+        'entec_evo_27s': { n: 27, p: 0, k: 0, mg: 0, ca: 0, s: 10, label: "ENTEC EVO 27S (27% N)" },
+        'entec_evo_24': { n: 24, p: 0, k: 0, mg: 0, ca: 0, s: 15, label: "ENTEC EVO 24 (24% N)" }
     };
+
+    // Catálogo de productos foliares/correctores para el Plan Balanceado. Mismo esquema que
+    // programa_fertirrigacion.html (N,P,K,Mg,Ca,S en % + Fe,Mn,Zn,Cu,B,Mo en %) para poder copiar/pegar
+    // definiciones entre los dos programas — no comparten localStorage al ser archivos HTML distintos
+    // (cada file:// es un origen distinto en el navegador), así que cada producto debe darse de alta
+    // una vez en cada archivo. Vacío de fábrica: no se fabrican composiciones de productos comerciales
+    // reales (p.ej. Nitrofoska Foliar) sin su ficha técnica/PDS.
+    const foliaresDB = {};
+    const FOLIARES_CUSTOM_KEY_PF = "plan_abonado_foliares_custom_v1";
+    function cargarFoliaresPersonalizadosPF() {
+        try {
+            const guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY_PF) || "{}");
+            Object.assign(foliaresDB, guardados);
+        } catch (e) { console.warn("No se pudieron cargar los foliares personalizados:", e); }
+    }
+    cargarFoliaresPersonalizadosPF();
+    let pfFoliarItems = [];
+
+    function pfPoblarFoliarSelector(preferido) {
+        const sel = document.getElementById('pf_foliar_selector');
+        if (!sel) return;
+        const previo = preferido || sel.value;
+        sel.innerHTML = "";
+        Object.keys(foliaresDB).forEach(nombre => {
+            const opt = document.createElement("option");
+            opt.value = nombre;
+            opt.textContent = nombre;
+            sel.appendChild(opt);
+        });
+        if (Object.keys(foliaresDB).length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "(sin productos — defina uno nuevo)";
+            sel.appendChild(opt);
+        } else if (Array.from(sel.options).some(o => o.value === previo)) {
+            sel.value = previo;
+        }
+    }
+
+    function pfToggleNuevoFoliar() {
+        const div = document.getElementById('pf_nuevo_foliar_form');
+        div.style.display = (div.style.display === "none") ? "block" : "none";
+    }
+
+    function pfGuardarFoliarNuevo() {
+        const nombre = document.getElementById('pf_nf_nombre').value.trim();
+        if (!nombre) { alert("Introduce un nombre para el producto foliar."); return; }
+        if (foliaresDB[nombre] && !confirm(`Ya existe "${nombre}". ¿Sobrescribir su composición?`)) return;
+        const g = id => parseFloat(document.getElementById(id).value) || 0;
+        const comp = { n: g('pf_nf_n'), p: g('pf_nf_p'), k: g('pf_nf_k'), mg: g('pf_nf_mg'), ca: g('pf_nf_ca'), s: g('pf_nf_s'),
+            fe: g('pf_nf_fe'), mn: g('pf_nf_mn'), zn: g('pf_nf_zn'), cu: g('pf_nf_cu'), b: g('pf_nf_b'), mo: g('pf_nf_mo') };
+        foliaresDB[nombre] = comp;
+        let guardados = {};
+        try { guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY_PF) || "{}"); } catch (e) { guardados = {}; }
+        guardados[nombre] = comp;
+        localStorage.setItem(FOLIARES_CUSTOM_KEY_PF, JSON.stringify(guardados));
+        pfPoblarFoliarSelector(nombre);
+        pfToggleNuevoFoliar();
+        runCalculations();
+        alert(`Producto foliar "${nombre}" guardado.`);
+    }
+
+    function pfAddFoliar() {
+        const name = document.getElementById('pf_foliar_selector').value;
+        const dosis = parseFloat(document.getElementById('pf_foliar_dosis').value) || 0;
+        if (!name || dosis <= 0 || !foliaresDB[name]) return;
+        pfFoliarItems.push({ name, dosis });
+        runCalculations();
+    }
+
+    function pfRemoveFoliarItem(index) {
+        pfFoliarItems.splice(index, 1);
+        runCalculations();
+    }
+
+    function pfUpdateFoliarItemDosis(index, newDosis) {
+        pfFoliarItems[index].dosis = parseFloat(newDosis) || 0;
+        runCalculations();
+    }
+
+    function pfRenderFoliarTable() {
+        const tbody = document.getElementById('pf_foliar_table_body');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        pfFoliarItems.forEach((item, idx) => {
+            const p = foliaresDB[item.name];
+            if (!p) return;
+            const n = item.dosis * p.n / 100, p2 = item.dosis * p.p / 100, k = item.dosis * p.k / 100;
+            const mg = item.dosis * p.mg / 100, ca = item.dosis * p.ca / 100, s = item.dosis * p.s / 100;
+            const fe = item.dosis * p.fe * 10, mn = item.dosis * p.mn * 10, zn = item.dosis * p.zn * 10;
+            const cu = item.dosis * p.cu * 10, b = item.dosis * p.b * 10, mo = item.dosis * p.mo * 10;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td style="padding:4px; text-align:left; font-weight:bold;">${item.name}</td>
+                <td><input type="number" value="${item.dosis}" step="0.1" style="width:55px;" oninput="pfUpdateFoliarItemDosis(${idx}, this.value)"></td>
+                <td>${n.toFixed(2)}</td><td>${p2.toFixed(2)}</td><td>${k.toFixed(2)}</td>
+                <td>${mg.toFixed(2)}</td><td>${ca.toFixed(2)}</td><td>${s.toFixed(2)}</td>
+                <td>${fe.toFixed(1)}</td><td>${mn.toFixed(1)}</td><td>${zn.toFixed(1)}</td>
+                <td>${cu.toFixed(1)}</td><td>${b.toFixed(1)}</td><td>${mo.toFixed(2)}</td>
+                <td><button onclick="pfRemoveFoliarItem(${idx})" style="color:#dc2626; border:none; background:none; cursor:pointer; font-weight:bold;">🗑️</button></td>`;
+            tbody.appendChild(tr);
+        });
+    }
 
     // Conversiones bidireccionales de bases cambiables
     const bidir = ['ca_ppm', 'ca_meq', 'mg_ppm', 'mg_meq', 'k_ppm', 'k_meq', 'na_ppm', 'na_meq'];
@@ -1801,22 +1963,64 @@
         const nAportadoFondo = (dataFondo.n * dosisFondo) / 100;
         const pAportadoFondo = (dataFondo.p * dosisFondo) / 100;
         const kAportadoFondo = (dataFondo.k * dosisFondo) / 100;
+        const mgAportadoFondo = ((dataFondo.mg || 0) * dosisFondo) / 100;
+        const caAportadoFondo = ((dataFondo.ca || 0) * dosisFondo) / 100;
+        const sAportadoFondo = ((dataFondo.s || 0) * dosisFondo) / 100;
 
         const nAportadoCob1 = (dataCob1.n * dosisCob1) / 100;
         const pAportadoCob1 = (dataCob1.p * dosisCob1) / 100;
         const kAportadoCob1 = (dataCob1.k * dosisCob1) / 100;
+        const mgAportadoCob1 = ((dataCob1.mg || 0) * dosisCob1) / 100;
+        const caAportadoCob1 = ((dataCob1.ca || 0) * dosisCob1) / 100;
+        const sAportadoCob1 = ((dataCob1.s || 0) * dosisCob1) / 100;
 
         const nAportadoCob2 = (dataCob2.n * dosisCob2) / 100;
         const pAportadoCob2 = (dataCob2.p * dosisCob2) / 100;
         const kAportadoCob2 = (dataCob2.k * dosisCob2) / 100;
+        const mgAportadoCob2 = ((dataCob2.mg || 0) * dosisCob2) / 100;
+        const caAportadoCob2 = ((dataCob2.ca || 0) * dosisCob2) / 100;
+        const sAportadoCob2 = ((dataCob2.s || 0) * dosisCob2) / 100;
 
-        const nAportadoTotalPlan = nAportadoFondo + nAportadoCob1 + nAportadoCob2;
-        const pAportadoTotalPlan = pAportadoFondo + pAportadoCob1 + pAportadoCob2;
-        const kAportadoTotalPlan = kAportadoFondo + kAportadoCob1 + kAportadoCob2;
+        // --- APORTE FOLIAR (Correctores y Foliares) ---
+        pfRenderFoliarTable();
+        let nAportadoFoliar = 0, pAportadoFoliar = 0, kAportadoFoliar = 0, mgAportadoFoliar = 0, caAportadoFoliar = 0, sAportadoFoliar = 0;
+        let feAportadoFoliar = 0, mnAportadoFoliar = 0, znAportadoFoliar = 0, cuAportadoFoliar = 0, bAportadoFoliar = 0, moAportadoFoliar = 0;
+        pfFoliarItems.forEach(item => {
+            const p = foliaresDB[item.name];
+            if (!p) return;
+            nAportadoFoliar += (item.dosis * p.n) / 100;
+            pAportadoFoliar += (item.dosis * p.p) / 100;
+            kAportadoFoliar += (item.dosis * p.k) / 100;
+            mgAportadoFoliar += (item.dosis * p.mg) / 100;
+            caAportadoFoliar += (item.dosis * p.ca) / 100;
+            sAportadoFoliar += (item.dosis * p.s) / 100;
+            feAportadoFoliar += item.dosis * p.fe * 10;
+            mnAportadoFoliar += item.dosis * p.mn * 10;
+            znAportadoFoliar += item.dosis * p.zn * 10;
+            cuAportadoFoliar += item.dosis * p.cu * 10;
+            bAportadoFoliar += item.dosis * p.b * 10;
+            moAportadoFoliar += item.dosis * p.mo * 10;
+        });
+
+        const nAportadoTotalPlan = nAportadoFondo + nAportadoCob1 + nAportadoCob2 + nAportadoFoliar;
+        const pAportadoTotalPlan = pAportadoFondo + pAportadoCob1 + pAportadoCob2 + pAportadoFoliar;
+        const kAportadoTotalPlan = kAportadoFondo + kAportadoCob1 + kAportadoCob2 + kAportadoFoliar;
+        const mgAportadoTotalPlan = mgAportadoFondo + mgAportadoCob1 + mgAportadoCob2 + mgAportadoFoliar;
+        const caAportadoTotalPlan = caAportadoFondo + caAportadoCob1 + caAportadoCob2 + caAportadoFoliar;
+        const sAportadoTotalPlan = sAportadoFondo + sAportadoCob1 + sAportadoCob2 + sAportadoFoliar;
 
         setT('n_aportado_plan', nAportadoTotalPlan.toFixed(1));
         setT('p_aportado_plan', pAportadoTotalPlan.toFixed(1));
         setT('k_aportado_plan', kAportadoTotalPlan.toFixed(1));
+        setT('mg_aportado_plan', mgAportadoTotalPlan.toFixed(1));
+        setT('ca_aportado_plan', caAportadoTotalPlan.toFixed(1));
+        setT('s_aportado_plan', sAportadoTotalPlan.toFixed(1));
+        setT('fe_aportado_foliar', feAportadoFoliar.toFixed(1));
+        setT('mn_aportado_foliar', mnAportadoFoliar.toFixed(1));
+        setT('zn_aportado_foliar', znAportadoFoliar.toFixed(1));
+        setT('cu_aportado_foliar', cuAportadoFoliar.toFixed(1));
+        setT('b_aportado_foliar', bAportadoFoliar.toFixed(1));
+        setT('mo_aportado_foliar', moAportadoFoliar.toFixed(2));
 
         let pctFondo = 0, pctCob1 = 0, pctCob2 = 0;
         if (nAportadoTotalPlan > 0) {
@@ -1964,9 +2168,10 @@
         });
     }
 
-    window.addEventListener('DOMContentLoaded', () => { 
-        loadFromLocalStorage(); 
-        
+    window.addEventListener('DOMContentLoaded', () => {
+        loadFromLocalStorage();
+        pfPoblarFoliarSelector();
+
         // Inicializar fecha
         const dateInput = document.getElementById('analisis_date');
         if (dateInput) {
