@@ -1,6 +1,7 @@
 """Utilidades de interfaz compartidas por las 4 páginas: tema visual de marca,
 cabecera con atribución y botón de impresión/PDF (via impresión del navegador)."""
 import streamlit as st
+import streamlit.components.v1 as components
 
 AUTOR = "G. Morales"
 EMPRESA = "Eurochem Agro Iberia S.L."
@@ -134,13 +135,21 @@ def render_print_button(label: str = "🖨️ Imprimir / Guardar como PDF") -> N
         """,
         unsafe_allow_html=True,
     )
-    st.markdown(
+    # st.markdown(unsafe_allow_html=True) pasa por el renderizador React de
+    # Streamlit, que trata `onclick="..."` como si fuera la prop `onClick` de
+    # React (que exige una función, no una cadena) y lo descarta con un error
+    # silencioso — el botón se ve pero el clic no hace nada. components.html
+    # renderiza en un <iframe> aislado con HTML/JS real, donde el onclick sí
+    # funciona; llama a window.parent.print() para imprimir la página
+    # completa (no solo el iframe).
+    components.html(
         f"""
-        <button onclick="window.print()" style="
+        <button onclick="window.parent.print()" style="
             background-color:{AZUL_MARINO}; color:white; border:none; border-radius:8px;
-            padding:8px 16px; font-size:0.95rem; cursor:pointer; font-weight:600;">
+            padding:8px 16px; font-size:0.95rem; cursor:pointer; font-weight:600;
+            font-family:inherit;">
             {label}
         </button>
         """,
-        unsafe_allow_html=True,
+        height=45,
     )
