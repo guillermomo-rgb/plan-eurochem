@@ -8,7 +8,7 @@ from fertirrigacion_calc import (
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, generar_dictamen_experto,
-    creditos_acido_mes, creditos_agua_mes, calcular_reparto_anual,
+    creditos_acido_mes, creditos_agua_mes, calcular_reparto_anual, calcular_resumen_anual,
 )
 from fertirrigacion_data import monthly_data_por_defecto, CULTIVO_EXTRACCIONES
 
@@ -228,6 +228,40 @@ def test_reparto_anual_recorre_12_meses_y_coincide_con_fase_mensual():
     enero = filas[0]
     assert enero.mes == "Enero"
     assert all(math.isclose(v, 0.0) for v in enero.kg.values())
+
+
+def test_resumen_anual_suma_las_4_fuentes_frente_a_la_necesidad():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrofoska Solub 18-18-18", "dosis": 50.0}]
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    acido = calcular_acido(meq_hco3=4.0, target_hco3=1.5, purity=60.0, density=1.37, eq_wt=63.0)
+    creditos = calcular_creditos_anuales(
+        monthly_data=monthly, water_composition=water_comp,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=acido.neut_hco3_meq_l,
+    )
+    fondo = calcular_fondo([{"name": "ENTEC Evo 24", "dosis": 200.0}])  # N: 48 kg/ha
+    balance = calcular_balance_anual(
+        yield_val=10.0, coeffs=CULTIVO_EXTRACCIONES["Caqui (Kaki)"], fondo=fondo,
+        creditos=creditos, extra={},
+    )
+    filas = calcular_resumen_anual(base=balance.base, fondo=fondo, creditos=creditos)
+    fila_n = next(f for f in filas if f.nutriente == "N")
+
+    assert math.isclose(fila_n.granulado, fondo.n)
+    assert math.isclose(fila_n.acido, creditos.acid["n"])
+    assert math.isclose(fila_n.agua, creditos.water["n"])
+    assert math.isclose(fila_n.soluble, creditos.solub["n"])
+    esperado_total = fondo.n + creditos.acid["n"] + creditos.water["n"] + creditos.solub["n"]
+    assert math.isclose(fila_n.total_aportado, esperado_total, rel_tol=1e-9)
+    assert math.isclose(fila_n.necesidad_base, balance.base["n"])
+    assert math.isclose(fila_n.balance, esperado_total - balance.base["n"], rel_tol=1e-9)
+    assert math.isclose(fila_n.pct_cubierto, esperado_total / balance.base["n"] * 100, rel_tol=1e-9)
+
+    # K no recibe crédito de ácido en este modelo (solo N, P y S) — debe quedar en 0
+    fila_k = next(f for f in filas if f.nutriente == "K₂O")
+    assert fila_k.acido == 0.0
 
 
 if __name__ == "__main__":

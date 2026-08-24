@@ -15,7 +15,7 @@ from shared.fertirrigacion_calc import (  # noqa: E402
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, sugerencias_fase,
-    generar_dictamen_experto, calcular_reparto_anual, ACIDOS_PRESETS,
+    generar_dictamen_experto, calcular_reparto_anual, calcular_resumen_anual, ACIDOS_PRESETS,
 )
 from shared.ui_common import render_header, render_print_button  # noqa: E402
 
@@ -309,6 +309,7 @@ balance = calcular_balance_anual(
         mg=st.session_state.extra_mg, ca=st.session_state.extra_ca, s=st.session_state.extra_s,
     ),
 )
+resumen_anual = calcular_resumen_anual(base=balance.base, fondo=fondo, creditos=creditos)
 meses_conflicto = meses_con_conflicto_tanque(monthly_data=monthly_data)
 umbral_salino = st.session_state.custom_limites.get(st.session_state.crop, LIMITES_SALINOS.get(st.session_state.crop, 1.5))
 
@@ -365,6 +366,32 @@ with balance_placeholder.container():
     cc = st.columns(6)
     for i, (key, label) in enumerate(cols.items()):
         cc[i].metric(f"Cobertura fondo {label}", f"{balance.cobertura_fondo_pct[key]:.1f}%")
+
+    st.markdown("---")
+    st.subheader("📋 Resumen final: granulado + ácido + agua + solubles frente al objetivo")
+    df_resumen = pd.DataFrame([{
+        "Nutriente": f.nutriente, "Granulado (fondo)": f.granulado, "Ácido": f.acido,
+        "Agua": f.agua, "Solubles (fertirrigación)": f.soluble, "Total aportado": f.total_aportado,
+        "Necesidad total": f.necesidad_base, "Balance (falta/excede)": f.balance,
+        "% cubierto": f.pct_cubierto,
+    } for f in resumen_anual])
+    cols_numericas_resumen = [c for c in df_resumen.columns if c != "Nutriente"]
+    st.dataframe(
+        df_resumen.style.format({c: "{:.1f}" for c in cols_numericas_resumen}),
+        use_container_width=True, hide_index=True,
+    )
+    for f in resumen_anual:
+        if abs(f.pct_cubierto - 100) <= 10:
+            st.success(f"✅ {f.nutriente}: cubierto ({f.pct_cubierto:.0f}% del objetivo, balance {f.balance:+.1f} kg/ha).")
+        elif f.balance < 0:
+            st.warning(f"⚠️ {f.nutriente}: faltan {abs(f.balance):.1f} kg/ha ({f.pct_cubierto:.0f}% del objetivo cubierto).")
+        else:
+            st.warning(f"⚠️ {f.nutriente}: excede en {f.balance:.1f} kg/ha ({f.pct_cubierto:.0f}% del objetivo).")
+    st.caption(
+        "Ácido = crédito de N/P₂O₅/SO₃ que aporta el ácido regulador al neutralizar bicarbonatos "
+        "(no aporta a K₂O/MgO/CaO). No incluye ni el foliar (F) ni la compensación extra (E), que "
+        "quedan reflejados en la tabla de arriba."
+    )
 
 # ---------------------------------------------------------------- Render Punto 2 (agua)
 with agua_placeholder.container():

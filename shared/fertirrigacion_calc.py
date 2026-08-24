@@ -326,6 +326,42 @@ def calcular_balance_anual(*, yield_val: float, coeffs: dict, fondo: ResultadoFo
 
 
 @dataclass
+class FilaResumenAnual:
+    nutriente: str
+    granulado: float = 0.0  # abonado de fondo
+    acido: float = 0.0  # crédito del ácido regulador (N, P₂O₅, SO₃ — no aporta a K/Mg/Ca)
+    agua: float = 0.0  # crédito del agua de riego
+    soluble: float = 0.0  # fertirrigación (total anual aplicado vía solubles)
+    total_aportado: float = 0.0
+    necesidad_base: float = 0.0
+    balance: float = 0.0  # total_aportado - necesidad_base (>0 excede, <0 falta)
+    pct_cubierto: float = 0.0
+
+
+def calcular_resumen_anual(*, base: dict, fondo: ResultadoFondo, creditos: CreditosAnuales) -> list[FilaResumenAnual]:
+    """Junta en una sola fila por nutriente lo aportado por cada una de las 4 fuentes anuales
+    (granulado de fondo, ácido regulador, agua de riego, fertirrigación soluble) frente a la
+    necesidad total del cultivo — para ver de un vistazo si el conjunto del programa cubre,
+    falta o excede el objetivo final, sin tener que sumar a mano las filas de calcular_balance_anual()."""
+    etiquetas = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    filas = []
+    for key, label in etiquetas.items():
+        granulado = fondo.__dict__[key]
+        acido = creditos.acid.get(key, 0.0)
+        agua = creditos.water.get(key, 0.0)
+        soluble = creditos.solub.get(key, 0.0)
+        total = granulado + acido + agua + soluble
+        necesidad = base[key]
+        balance = total - necesidad
+        pct = (total / necesidad * 100) if necesidad > 0 else 0.0
+        filas.append(FilaResumenAnual(
+            nutriente=label, granulado=granulado, acido=acido, agua=agua, soluble=soluble,
+            total_aportado=total, necesidad_base=necesidad, balance=balance, pct_cubierto=pct,
+        ))
+    return filas
+
+
+@dataclass
 class ResultadoFase:
     sol_sum: dict
     water_credit: dict
