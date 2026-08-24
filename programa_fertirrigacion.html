@@ -1639,29 +1639,45 @@
             });
         }
 
-        // Complejos Granulados de Fondo (Punto 4)
+        // Complejos Granulados de Fondo (Punto 4). Catálogo completo de 23 fórmulas EuroChem, tomado
+        // literalmente de la tabla oficial "Formulaciones granuladas Eurochem completas" (N total,
+        // N nítrico, N amoniacal, P2O5, K2O, SO3, MgO, CaO). nh4/no3 en % absoluto del producto
+        // (mismo convenio que solublesDB), no en % del N — nh4+no3 = n en cada fila.
+        // Origen del K e inhibidor de nitrificación (informativo, no usado en el cálculo numérico):
+        // Nitrofoska Especiales/MOP-Nitrofos = sin inhibidor; ENTEC/ENTEC Nitrofoska = DMPP;
+        // ENTEC EVO = DMPSA. El origen del K (sulfato potásico vs MOP/cloruro potásico) también consta
+        // en la tabla original si se necesita para decisiones de cultivos sensibles al cloro.
         const granuladosDB = {
-            "ENTEC Nitrofoska Especial 12-12-17": { n: 12, p: 12, k: 17, mg: 3, ca: 0, s: 20 },
-            "ENTEC 20-10-10": { n: 20, p: 10, k: 10, mg: 0, ca: 0, s: 7.5 },
-            "Nitrofoska Perfect 15-5-20": { n: 15, p: 5, k: 20, mg: 2, ca: 0, s: 20 },
-            "Nitrofoska Super 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 12.5 },
-            "ENTEC 20-8-10": { n: 20, p: 8, k: 10, mg: 2, ca: 0, s: 7.5 },
-            "ENTEC 25-15": { n: 25, p: 15, k: 0, mg: 0, ca: 0, s: 5 },
-            "ENTEC 15-13-13": { n: 15, p: 13, k: 13, mg: 0, ca: 0, s: 12.5 },
-            "ENTEC Nitrofoska 14": { n: 14, p: 7, k: 17, mg: 2, ca: 0, s: 22.5 },
-            "ENTEC 13-10-20": { n: 13, p: 10, k: 20, mg: 0, ca: 0, s: 7.5 },
-            "Nitrofoska NPlus 22-5-5": { n: 22, p: 5, k: 5, mg: 2, ca: 0, s: 5 },
-            // Verificado contra las fichas técnicas (PDS) reales:
-            // - "ENTEC EVO 27 (10 SO3)", código 445005-8300355, rev 1.02 (12-ago-2025): abono N(Ca+S)
-            //   con inhibidor DMPSA 27(9.2+10) — N 27% (13.5 nítrico + 13.5 amoniacal), CaO 9.2% total
-            //   (8.7% soluble), SO3 10% total (9% soluble). Confirma el valor ca:9.2 ya existente.
-            // - "ENTEC Evo 24 (+6S)": N 24% (12 nítrico + 12 amoniacal), CaO 12.3% total (10.4% soluble),
-            //   SO3 15% total (11% soluble). Confirma el valor ca:12.3 ya existente.
-            // Importante: existe un producto EuroChem distinto y sin "Evo" en el nombre, "ENTEC 27 S
-            // (+10 SO3)" (nitrato amónico N(S) 27(+10) con DMPSA), que NO lleva calcio — no confundir
-            // con "ENTEC Evo 27" al añadir productos a este catálogo.
-            "ENTEC Evo 27S": { n: 27, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
-            "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 }
+            // --- Nitrofoska Especiales (sin inhibidor, K de sulfato potásico) ---
+            "Nitrofoska Special 12-12-17": { n: 12, no3: 4.8, nh4: 7.2, p: 12, k: 17, mg: 2, ca: 0, s: 20 },
+            "Nitrofoska Perfect 15-5-20": { n: 15, no3: 7, nh4: 8, p: 5, k: 20, mg: 2, ca: 0, s: 22.5 },
+            "Nitrofoska Super 20-5-10": { n: 20, no3: 9.5, nh4: 10.5, p: 5, k: 10, mg: 3, ca: 0, s: 12.5 },
+            // --- Nitrofoska MOP/Nitrofos (sin inhibidor, K de MOP/cloruro potásico) ---
+            "Nitrofoska MOP 12-20-12": { n: 12, no3: 4.5, nh4: 7.5, p: 20, k: 12, mg: 0, ca: 0, s: 0 },
+            "Nitrofoska MOP 15-15-15": { n: 15, no3: 6, nh4: 9, p: 15, k: 15, mg: 0, ca: 0, s: 5 },
+            "Nitrofoska MOP 22-8-10": { n: 22, no3: 10.2, nh4: 11.8, p: 8, k: 10, mg: 0, ca: 0, s: 2.5 },
+            "Nitrofoska Nitrofos 20-20": { n: 20, no3: 8.2, nh4: 11.8, p: 20, k: 0, mg: 0, ca: 0, s: 5 },
+            "Nitrofoska N Plus 22-5-5": { n: 22, no3: 10, nh4: 12, p: 5, k: 5, mg: 2, ca: 0, s: 7.5 },
+            // --- ENTEC (inhibidor DMPP) ---
+            "ENTEC 12-20-12": { n: 12, no3: 3.9, nh4: 8.1, p: 20, k: 12, mg: 0, ca: 0, s: 5 },
+            "ENTEC 13-9-16": { n: 13, no3: 3.6, nh4: 9.4, p: 9, k: 16, mg: 4, ca: 0, s: 20 },
+            "ENTEC 13-10-20": { n: 13, no3: 3.7, nh4: 9.3, p: 10, k: 20, mg: 0, ca: 0, s: 12.5 },
+            "ENTEC 15-13-13": { n: 15, no3: 5, nh4: 10, p: 13, k: 13, mg: 0, ca: 0, s: 12.5 },
+            "ENTEC 20-8-10": { n: 20, no3: 8.8, nh4: 11.2, p: 8, k: 10, mg: 2, ca: 0, s: 7.5 },
+            "ENTEC 20-10-10": { n: 20, no3: 8.6, nh4: 11.4, p: 10, k: 10, mg: 0, ca: 0, s: 7.5 },
+            "ENTEC 24-8-7": { n: 24, no3: 10.8, nh4: 13.3, p: 8, k: 7, mg: 0, ca: 0, s: 5 },
+            "ENTEC 25-15": { n: 25, no3: 11, nh4: 14, p: 15, k: 0, mg: 0, ca: 0, s: 2.5 },
+            // --- ENTEC Nitrofoska (inhibidor DMPP, K de sulfato potásico) ---
+            // Nombre "Especial" (no "Special") y sin desglose NPK en la clave, conservados tal cual
+            // para no romper la referencia por defecto en fondoItems.
+            "ENTEC Nitrofoska Especial 12-12-17": { n: 12, no3: 4.8, nh4: 7.2, p: 12, k: 17, mg: 2, ca: 0, s: 20 },
+            "ENTEC Nitrofoska 14-7-17": { n: 14, no3: 6.1, nh4: 7.9, p: 7, k: 17, mg: 2, ca: 0, s: 22.5 },
+            "ENTEC Nitrofoska 21-8-11": { n: 21, no3: 9.7, nh4: 11.3, p: 8, k: 11, mg: 0, ca: 0, s: 10 },
+            // --- ENTEC EVO (inhibidor DMPSA, base cálcica sin K ni P) ---
+            "ENTEC Evo 24": { n: 24, no3: 12, nh4: 12, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 },
+            "ENTEC Evo 27": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 0, s: 0 },
+            "ENTEC Evo 27S": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
+            "ENTEC Evo 27 Carbon Light": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 0, s: 0 }
         };
 
         // Catálogo de productos foliares/correctores. Los dos productos reales incluidos de fábrica
