@@ -1,0 +1,331 @@
+"""Catálogos de datos de NutriLeaf Pro (diagnóstico foliar). Puerto literal de
+las constantes JS de nutrileaf_pro.html.
+"""
+
+BASE_DE_DATOS_CULTIVOS = {
+    "olivo": {
+        "label": "Olivo",
+        "fuenteCultivo": "MAPA, Guía Práctica de la Fertilización Racional de los Cultivos en España; Fernández-Escobar et al. (Universidad de Córdoba)",
+        "ventanaMuestreo": {"meses": [7], "texto": "Julio (parada vegetativa estival)"},
+        "N": {"mb": 1.30, "o_min": 1.50, "o_max": 2.00, "alto_max": 2.50, "unit": "%"},
+        "P": {"mb": 0.08, "o_min": 0.10, "o_max": 0.14, "alto_max": 0.30, "unit": "%"},
+        "K": {"mb": 0.40, "o_min": 0.70, "o_max": 1.00, "alto_max": 1.50, "unit": "%"},
+        "Ca": {"mb": 0.40, "o_min": 1.00, "o_max": 2.50, "alto_max": 3.50, "unit": "%"},
+        "Mg": {"mb": 0.08, "o_min": 0.10, "o_max": 0.15, "alto_max": 0.40, "unit": "%"},
+        "Fe": {"mb": 40, "o_min": 60, "o_max": 200, "alto_max": None, "unit": "mg/kg"},
+        "Mn": {"mb": 20, "o_min": 20, "o_max": 50, "alto_max": None, "unit": "mg/kg", "nota": "Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido."},
+        "Zn": {"mb": 10, "o_min": 10, "o_max": 30, "alto_max": None, "unit": "mg/kg", "nota": "Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido."},
+        "Cu": {"mb": 4, "o_min": 4, "o_max": 10, "alto_max": None, "unit": "mg/kg", "nota": "Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido."},
+        "B": {"mb": 14, "o_min": 20, "o_max": 100, "alto_max": 150, "unit": "mg/kg"},
+    },
+    "viña": {
+        "label": "Viña",
+        "fuenteCultivo": "Eurofins CSR Agro Testing — Informe de laboratorio acreditado (AN-ROEC/24/073), Valores de Referencia CSR (mayo 2025). Etapa: Limbos en Floración (W17-W23).",
+        "ventanaMuestreo": {"meses": [5, 6], "texto": "Floración (mayo-junio), limbos foliares W17-W23"},
+        "N": {"mb": 2.50, "o_min": 2.90, "o_max": 3.90, "alto_max": 4.50, "unit": "%"},
+        "P": {"mb": 0.25, "o_min": 0.30, "o_max": 0.45, "alto_max": 0.60, "unit": "%"},
+        "K": {"mb": 0.60, "o_min": 0.90, "o_max": 1.50, "alto_max": 1.90, "unit": "%"},
+        "Ca": {"mb": 0.90, "o_min": 1.20, "o_max": 2.00, "alto_max": 2.40, "unit": "%"},
+        "Mg": {"mb": 0.20, "o_min": 0.25, "o_max": 0.30, "alto_max": 0.35, "unit": "%"},
+        "Fe": {"mb": 90, "o_min": 115, "o_max": 160, "alto_max": 190, "unit": "mg/kg"},
+        "Mn": {"mb": 25, "o_min": 35, "o_max": 120, "alto_max": 160, "unit": "mg/kg"},
+        "Cu": {"mb": 1, "o_min": 3, "o_max": 20, "alto_max": 40, "unit": "mg/kg"},
+        "Zn": {"mb": 20, "o_min": 30, "o_max": 50, "alto_max": 70, "unit": "mg/kg"},
+        "B": {"mb": 25, "o_min": 35, "o_max": 75, "alto_max": 100, "unit": "mg/kg"},
+    },
+    "almendro_generico": {
+        "label": "Almendro (variedad genérica)",
+        "fuenteCultivo": "Arquero, O. et al. (IFAPA); UC Agriculture and Natural Resources, Almond Nutrients & Fertilization; MAPA",
+        "ventanaMuestreo": {"meses": [6, 7], "texto": "Finales de junio a mediados de julio"},
+        "N": {"mb": 1.80, "o_min": 2.20, "o_max": 2.50, "alto_max": 3.00, "unit": "%"},
+        "P": {"mb": 0.08, "o_min": 0.11, "o_max": 0.20, "alto_max": 0.40, "unit": "%"},
+        "K": {"mb": 0.90, "o_min": 1.40, "o_max": 2.00, "alto_max": 3.00, "unit": "%"},
+        "Ca": {"mb": 1.50, "o_min": 2.00, "o_max": 4.50, "alto_max": 5.50, "unit": "%"},
+        "Mg": {"mb": 0.20, "o_min": 0.30, "o_max": 0.60, "alto_max": 1.00, "unit": "%"},
+        "B": {"mb": 25, "o_min": 35, "o_max": 80, "alto_max": 150, "unit": "mg/kg"},
+        "Zn": {"mb": 12, "o_min": 18, "o_max": 40, "alto_max": None, "unit": "mg/kg"},
+        "Fe": {"mb": None, "o_min": None, "o_max": None, "alto_max": None, "unit": "mg/kg", "nota": "UC ANR: sin valor crítico establecido para Fe en almendro; no se aplica clasificación por umbral."},
+        "Mn": {"mb": 20, "o_min": 30, "o_max": 80, "alto_max": None, "unit": "mg/kg", "nota": "UC ANR; sin techo de exceso establecido."},
+        "Cu": {"mb": 4, "o_min": 6, "o_max": 10, "alto_max": None, "unit": "mg/kg", "nota": "UC ANR; sin techo de exceso establecido."},
+    },
+    # Rangos de normalidad (Tabla 2) de Ferrández-Cámara et al. (2021), Horticulturae 7, 481.
+    "almendro_ferraduel": {
+        "label": "Almendro (Ferraduel)",
+        "fuenteCultivo": "Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio",
+        "ventanaMuestreo": {"meses": [7], "texto": "Julio"},
+        "N": {"mb": 1.45, "o_min": 1.83, "o_max": 2.63, "alto_max": 3.01, "unit": "%"},
+        "P": {"mb": 0.01, "o_min": 0.07, "o_max": 0.21, "alto_max": 0.27, "unit": "%"},
+        "K": {"mb": 0.34, "o_min": 0.68, "o_max": 1.39, "alto_max": 1.74, "unit": "%"},
+        "Ca": {"mb": 2.39, "o_min": 3.26, "o_max": 5.04, "alto_max": 5.92, "unit": "%"},
+        "Mg": {"mb": 0.47, "o_min": 0.63, "o_max": 0.97, "alto_max": 1.14, "unit": "%"},
+    },
+    "almendro_ferragnes": {
+        "label": "Almendro (Ferragnès)",
+        "fuenteCultivo": "Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio",
+        "ventanaMuestreo": {"meses": [7], "texto": "Julio"},
+        "N": {"mb": 1.44, "o_min": 1.82, "o_max": 2.61, "alto_max": 3.00, "unit": "%"},
+        "P": {"mb": 0.01, "o_min": 0.06, "o_max": 0.19, "alto_max": 0.25, "unit": "%"},
+        "K": {"mb": 0.298, "o_min": 0.64, "o_max": 1.39, "alto_max": 1.76, "unit": "%"},
+        "Ca": {"mb": 2.32, "o_min": 3.25, "o_max": 5.15, "alto_max": 6.09, "unit": "%"},
+        "Mg": {"mb": 0.50, "o_min": 0.68, "o_max": 1.07, "alto_max": 1.26, "unit": "%"},
+    },
+    "almendro_garrigues": {
+        "label": "Almendro (Garrigues)",
+        "fuenteCultivo": "Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Jumilla (Murcia), riego localizado, muestreo de julio",
+        "ventanaMuestreo": {"meses": [7], "texto": "Julio"},
+        "N": {"mb": 1.00, "o_min": 1.42, "o_max": 2.23, "alto_max": 2.73, "unit": "%"},
+        "P": {"mb": 0.03, "o_min": 0.05, "o_max": 0.12, "alto_max": 0.15, "unit": "%"},
+        "K": {"mb": 0.33, "o_min": 0.33, "o_max": 1.02, "alto_max": 1.36, "unit": "%", "nota": 'Banda "Bajo" no reconstruible: la publicación original (Tabla 2) da un rango invertido (0.33–0.32) para Garrigues-K, posible errata. Umbrales mb/óptimo/alto tomados tal cual del resto de la tabla.'},
+        "Ca": {"mb": 2.54, "o_min": 3.17, "o_max": 4.46, "alto_max": 5.10, "unit": "%"},
+        "Mg": {"mb": 0.63, "o_min": 0.80, "o_max": 1.17, "alto_max": 1.35, "unit": "%"},
+    },
+    # NOR fase Fruit Enlargement de Morales et al. (2022), Agronomy 12, 1269. PDO Kaki Ribera del
+    # Xúquer, cv. Rojo Brillante, población de alto rendimiento.
+    "caqui": {
+        "label": "Caqui 'Rojo Brillante'",
+        "fuenteCultivo": "Morales et al. (2022), Agronomy 12, 1269 — PDO Kaki Ribera del Xúquer, cv. 'Rojo Brillante'",
+        "ventanaMuestreo": {"meses": [7], "texto": "Engorde de fruto (Fruit Enlargement, ~julio en la Comunidad Valenciana)"},
+        "N": {"mb": 1.723, "o_min": 1.826, "o_max": 2.033, "alto_max": 2.136, "unit": "%"},
+        "P": {"mb": 0.094, "o_min": 0.099, "o_max": 0.109, "alto_max": 0.114, "unit": "%"},
+        "K": {"mb": 1.198, "o_min": 1.318, "o_max": 1.559, "alto_max": 1.679, "unit": "%"},
+        "Ca": {"mb": 1.437, "o_min": 1.595, "o_max": 1.911, "alto_max": 2.069, "unit": "%"},
+        "Mg": {"mb": 0.418, "o_min": 0.480, "o_max": 0.604, "alto_max": 0.666, "unit": "%"},
+        "Na": {"mb": 0.008, "o_min": 0.010, "o_max": 0.017, "alto_max": 0.020, "unit": "%", "nota": "Indicador de salinidad más que de suficiencia nutricional."},
+        "S": {"mb": 0.187, "o_min": 0.214, "o_max": 0.269, "alto_max": 0.296, "unit": "%"},
+        "Cl": {"mb": 0.543, "o_min": 0.630, "o_max": 0.805, "alto_max": 0.892, "unit": "%", "nota": "Indicador de salinidad más que de suficiencia nutricional; caqui es sensible a la salinidad."},
+        "B": {"mb": 15.97, "o_min": 24.38, "o_max": 41.23, "alto_max": 49.65, "unit": "mg/kg"},
+        "Cu": {"mb": 1.65, "o_min": 2.72, "o_max": 4.86, "alto_max": 5.93, "unit": "mg/kg"},
+        "Fe": {"mb": 31.97, "o_min": 41.07, "o_max": 59.30, "alto_max": 68.41, "unit": "mg/kg"},
+        "Mn": {"mb": 0.00, "o_min": 44.67, "o_max": 207.42, "alto_max": 288.79, "unit": "mg/kg"},
+        "Zn": {"mb": 20.81, "o_min": 29.73, "o_max": 47.59, "alto_max": 56.52, "unit": "mg/kg"},
+    },
+    "citricos": {
+        "label": "Cítricos",
+        "fuenteCultivo": "Legaz, F. et al. (IVIA); UF/IFAS, Nutrition of Florida Citrus Trees; MAPA",
+        "ventanaMuestreo": {"meses": [9, 10], "texto": "Otoño (septiembre a octubre)"},
+        "N": {"mb": 2.20, "o_min": 2.40, "o_max": 2.80, "alto_max": 3.00, "unit": "%"},
+        "P": {"mb": 0.09, "o_min": 0.12, "o_max": 0.18, "alto_max": 0.30, "unit": "%"},
+        "K": {"mb": 0.70, "o_min": 1.00, "o_max": 1.70, "alto_max": 2.40, "unit": "%"},
+        "Ca": {"mb": 2.50, "o_min": 3.00, "o_max": 5.50, "alto_max": 7.00, "unit": "%"},
+        "Mg": {"mb": 0.16, "o_min": 0.26, "o_max": 0.60, "alto_max": 1.00, "unit": "%"},
+        "Fe": {"mb": 35, "o_min": 60, "o_max": 120, "alto_max": 250, "unit": "mg/kg"},
+        "Mn": {"mb": 16, "o_min": 25, "o_max": 100, "alto_max": 200, "unit": "mg/kg"},
+        "Zn": {"mb": 16, "o_min": 25, "o_max": 100, "alto_max": 200, "unit": "mg/kg"},
+        "Cu": {"mb": 3, "o_min": 5, "o_max": 16, "alto_max": 20, "unit": "mg/kg"},
+        "B": {"mb": 20, "o_min": 36, "o_max": 100, "alto_max": 200, "unit": "mg/kg"},
+    },
+    "aguacate": {
+        "label": "Aguacate",
+        "fuenteCultivo": "UC Agriculture and Natural Resources, Avocado Leaf Analysis Guide; UC IPM; MAPA",
+        "ventanaMuestreo": {"meses": [10, 11], "texto": "Otoño (octubre a noviembre)"},
+        "N": {"mb": 1.40, "o_min": 1.60, "o_max": 2.00, "alto_max": 2.40, "unit": "%"},
+        "P": {"mb": 0.08, "o_min": 0.10, "o_max": 0.20, "alto_max": 0.30, "unit": "%"},
+        "K": {"mb": 0.65, "o_min": 0.85, "o_max": 1.80, "alto_max": 2.80, "unit": "%"},
+        "Ca": {"mb": 0.80, "o_min": 1.20, "o_max": 2.50, "alto_max": 4.00, "unit": "%"},
+        "Mg": {"mb": 0.20, "o_min": 0.30, "o_max": 0.70, "alto_max": 1.10, "unit": "%"},
+        "Fe": {"mb": 20, "o_min": 50, "o_max": 200, "alto_max": None, "unit": "mg/kg", "nota": "UC ANR; zona objetivo más ajustada citada en bibliografía: > 80 ppm."},
+        "Mn": {"mb": 15, "o_min": 30, "o_max": 500, "alto_max": 1000, "unit": "mg/kg", "nota": "UC ANR: rango de suficiencia muy amplio (30–500 ppm); zona objetivo más ajustada citada: 180–250 ppm."},
+        "Zn": {"mb": 20, "o_min": 30, "o_max": 150, "alto_max": 300, "unit": "mg/kg", "nota": "UC ANR; zona objetivo más ajustada citada en bibliografía: 45–55 ppm."},
+        "Cu": {"mb": 3, "o_min": 5, "o_max": 15, "alto_max": 25, "unit": "mg/kg", "nota": "UC ANR; zona objetivo más ajustada citada en bibliografía: 7–9 ppm."},
+        "B": {"mb": 20, "o_min": 20, "o_max": 100, "alto_max": 250, "unit": "mg/kg", "nota": "UC ANR; zona objetivo más ajustada citada en bibliografía: 40–60 ppm."},
+        "Cl": {"esToxicidad": True, "mb": None, "o_min": None, "o_max": 0.22, "alto_max": 0.50, "unit": "%", "nota": "UC ANR: > 0.50% supone riesgo extremo de toxicidad por cloruros en aguacate."},
+    },
+    "tomate": {
+        "label": "Tomate",
+        "fuenteCultivo": "University of Massachusetts / Oregon State University, Organic Greenhouse Tomato Nutrition; NCDA; MAPA",
+        "ventanaMuestreo": {"meses": [], "texto": "Inicio de floración / desarrollo del 4º-5º ramillete (no ligado a mes fijo)"},
+        "N": {"mb": 2.50, "o_min": 3.50, "o_max": 5.00, "alto_max": 5.50, "unit": "%"},
+        "P": {"mb": 0.20, "o_min": 0.35, "o_max": 0.60, "alto_max": 0.85, "unit": "%"},
+        "K": {"mb": 2.20, "o_min": 3.00, "o_max": 4.50, "alto_max": 5.50, "unit": "%"},
+        "Ca": {"mb": 1.00, "o_min": 1.50, "o_max": 3.50, "alto_max": 4.50, "unit": "%"},
+        "Mg": {"mb": 0.25, "o_min": 0.40, "o_max": 0.80, "alto_max": 1.20, "unit": "%"},
+        "Fe": {"mb": 50, "o_min": 50, "o_max": 200, "alto_max": None, "unit": "mg/kg", "nota": 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.'},
+        "Mn": {"mb": 50, "o_min": 50, "o_max": 125, "alto_max": None, "unit": "mg/kg", "nota": 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.'},
+        "Zn": {"mb": 25, "o_min": 25, "o_max": 60, "alto_max": None, "unit": "mg/kg", "nota": 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.'},
+        "Cu": {"mb": 8, "o_min": 8, "o_max": 20, "alto_max": None, "unit": "mg/kg", "nota": 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.'},
+        "B": {"mb": 35, "o_min": 35, "o_max": 60, "alto_max": None, "unit": "mg/kg", "nota": 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.'},
+    },
+    "melocoton": {
+        "label": "Melocotón",
+        "fuenteCultivo": "MAPA, Guía Práctica de la Fertilización Racional de los Cultivos en España",
+        "ventanaMuestreo": {"meses": [7], "texto": "Julio (80-100 días tras plena floración)"},
+        "N": {"mb": 2.00, "o_min": 2.40, "o_max": 3.30, "alto_max": 3.80, "unit": "%"},
+        "P": {"mb": 0.10, "o_min": 0.14, "o_max": 0.25, "alto_max": 0.40, "unit": "%"},
+        "K": {"mb": 1.20, "o_min": 1.80, "o_max": 2.80, "alto_max": 3.50, "unit": "%"},
+        "Ca": {"mb": 1.30, "o_min": 1.80, "o_max": 3.00, "alto_max": 4.50, "unit": "%"},
+        "Mg": {"mb": 0.22, "o_min": 0.30, "o_max": 0.60, "alto_max": 0.90, "unit": "%"},
+        "Fe": {"mb": 50, "o_min": 80, "o_max": 150, "alto_max": None, "unit": "mg/kg"},
+    },
+    "pistacho": {
+        "label": "Pistacho",
+        "fuenteCultivo": "Arquero, O. et al. (IFAPA); MAPA",
+        "ventanaMuestreo": {"meses": [7, 8], "texto": "Finales de julio a agosto (estabilización foliar estival)"},
+        "N": {"mb": 1.60, "o_min": 1.80, "o_max": 2.50, "alto_max": 2.90, "unit": "%"},
+        "P": {"mb": 0.07, "o_min": 0.09, "o_max": 0.15, "alto_max": 0.25, "unit": "%"},
+        "K": {"mb": 0.80, "o_min": 1.20, "o_max": 2.00, "alto_max": 2.50, "unit": "%"},
+        "Ca": {"mb": 1.00, "o_min": 1.30, "o_max": 2.20, "alto_max": 3.00, "unit": "%"},
+        "Mg": {"mb": 0.15, "o_min": 0.25, "o_max": 0.45, "alto_max": 0.75, "unit": "%"},
+        "B": {"mb": 40, "o_min": 90, "o_max": 250, "alto_max": 350, "unit": "mg/kg"},
+        "Zn": {"mb": 7, "o_min": 12, "o_max": 25, "alto_max": None, "unit": "mg/kg"},
+    },
+}
+
+# Ratios nutricionales específicos por cultivo, validados contra fuente real de laboratorio.
+# Si un cultivo no aparece aquí, se usan los umbrales genéricos universales.
+RATIOS_ESPECIFICOS_CULTIVO = {
+    "viña": {
+        "fuente": "Eurofins CSR Agro Testing — Valores de Referencia CSR (mayo 2025), Vid limbos floración W17-W23",
+        "ratios": [
+            {"name": "Ca/Mg", "calc": lambda v: v["Ca"] / v["Mg"], "max": 6.0, "labelAlto": "Bajo Mg (exceso relativo de Calcio)"},
+            {"name": "K/Mg", "calc": lambda v: v["K"] / v["Mg"], "min": 3.0, "max": 5.8, "labelBajo": "Bajo K", "labelAlto": "Bajo Mg"},
+            {"name": "Ca/K", "calc": lambda v: v["Ca"] / v["K"], "max": 1.5, "labelAlto": "Bajo K (exceso relativo de Calcio)"},
+            {"name": "K/P", "calc": lambda v: v["K"] / v["P"], "max": 3.0, "labelAlto": "Bajo P (exceso relativo de Potasio)"},
+            {"name": "N/K", "calc": lambda v: v["N"] / v["K"], "max": 3.0, "labelAlto": "Bajo K (exceso relativo de Nitrógeno)"},
+            {"name": "Ca+Mg+K (suma catiónica)", "calc": lambda v: v["Ca"] + v["Mg"] + v["K"], "min": 2.5, "max": 3.5, "labelBajo": "Desnutrición", "labelAlto": "Exceso"},
+            {"name": "N+P+K (suma NPK)", "calc": lambda v: v["N"] + v["P"] + v["K"], "min": 4.3, "max": 5.5, "labelBajo": "Desnutrición", "labelAlto": "Exceso"},
+        ],
+    },
+}
+
+RATIOS_GENERICOS = [
+    {"name": "N/P", "calc": lambda v: v["N"] / v["P"], "min": 20, "max": 24},
+    {"name": "N/K", "calc": lambda v: v["N"] / v["K"], "min": 2, "max": 4},
+    {"name": "K/P", "calc": lambda v: v["K"] / v["P"], "min": 5, "max": 8},
+    {"name": "Ca/K", "calc": lambda v: v["Ca"] / v["K"], "min": 2, "max": 3},
+    {"name": "K/Mg", "calc": lambda v: v["K"] / v["Mg"], "min": 3, "max": 4},
+    {"name": "Ca/Mg", "calc": lambda v: v["Ca"] / v["Mg"], "min": 6, "max": 7},
+]
+
+TEXTOS_RATIOS_GENERICOS = {
+    "N/P": {"bajo": "Desbalanceado (Bajo). Posible deficiencia de Nitrógeno o exceso relativo de Fósforo.", "alto": "Desbalanceado (Alto). Posible exceso de Nitrógeno o deficiencia relativa de Fósforo."},
+    "N/K": {"bajo": "Desbalanceado (Bajo). Posible deficiencia de Nitrógeno o exceso relativo de Potasio.", "alto": "Desbalanceado (Alto). Posible exceso de Nitrógeno o deficiencia relativa de Potasio."},
+    "K/P": {"bajo": "Desbalanceado (Bajo). Posible deficiencia de Potasio o exceso relativo de Fósforo.", "alto": "Desbalanceado (Alto). Posible exceso de Potasio o deficiencia relativa de Fósforo."},
+    "Ca/K": {"bajo": "Desbalanceado (Bajo). Posible deficiencia de Calcio o exceso relativo de Potasio.", "alto": "Desbalanceado (Alto). El exceso de Calcio bloquea de forma competitiva la absorción de Potasio."},
+    "K/Mg": {"bajo": "Desbalanceado (Bajo). Antagonismo catiónico: deficiencia de Potasio o exceso de Magnesio.", "alto": "Desbalanceado (Alto). El exceso de Potasio bloquea de forma competitiva la absorción de Magnesio."},
+    "Ca/Mg": {"bajo": "Desbalanceado (Bajo). Posible deficiencia de Calcio o exceso relativo de Magnesio.", "alto": "Desbalanceado (Alto). El exceso de Calcio bloquea de forma competitiva la absorción de Magnesio."},
+}
+
+# Catálogo de recomendación de abonado con factor de corrección (Punto 5 del HTML).
+FERTILIZANTE_CATALOG = {
+    "N": {"type": "macro", "fertilizer": "Abonado de Suelo / Fertirrigación con Urea de bajo biuret (<0.5%) al 1.0% o similar"},
+    "P": {"type": "macro", "fertilizer": "Abonado de Suelo / Fertirrigación con Fosfato Monopotásico al 0.8%-1.0% o similar"},
+    "K": {"type": "macro", "fertilizer": "Abonado de Suelo / Fertirrigación con Nitrato de Potasio soluble al 1.5% o similar"},
+    "Ca": {"type": "secondary", "fertilizer": "Quelato de Calcio (Ca-EDTA) soluble al 1.0%"},
+    "Mg": {"type": "secondary", "fertilizer": "Quelato de Magnesio (Mg-EDTA) al 1.0% o Sulfato de Magnesio soluble al 1.5%"},
+    "Fe": {"type": "micro", "fertilizer": "Quelato de Hierro (Fe-EDTA/DTPA) al 0.15%"},
+    "Mn": {"type": "micro", "fertilizer": "Quelato de Manganeso (Mn-EDTA) al 0.15%"},
+    "Zn": {"type": "micro", "fertilizer": "Quelato de Zinc (Zn-EDTA) al 0.10%"},
+    "Cu": {"type": "micro", "fertilizer": "Quelato de Cobre (Cu-EDTA) soluble al 0.05%"},
+    "B": {"type": "micro", "fertilizer": "Boro Soluble (Ácido Bórico o Borato Sódico) al 0.15%"},
+}
+
+NOMBRES_NUTRIENTES = {
+    "N": "Nitrógeno", "P": "Fósforo", "K": "Potasio", "Ca": "Calcio", "Mg": "Magnesio",
+    "Na": "Sodio", "S": "Azufre", "Cl": "Cloruro", "B": "Boro", "Cu": "Cobre",
+    "Fe": "Hierro", "Mn": "Manganeso", "Zn": "Zinc",
+}
+
+# --- DRIS Olivo (UCO / Beaufils 3-punto por sistema de manejo, y CSR/Jones 10-punto) ---
+NORMAS_DRIS_OLIVO_3P = {
+    "secano": {"NP": {"mean": 14.50, "sd": 1.85}, "NK": {"mean": 2.10, "sd": 0.35}, "KP": {"mean": 6.90, "sd": 0.95}},
+    "regadio": {"NP": {"mean": 15.20, "sd": 1.40}, "NK": {"mean": 1.85, "sd": 0.25}, "KP": {"mean": 8.20, "sd": 0.80}},
+    "superintensivo": {"NP": {"mean": 13.80, "sd": 1.10}, "NK": {"mean": 1.65, "sd": 0.20}, "KP": {"mean": 8.35, "sd": 0.75}},
+}
+
+NORMAS_DRIS_OLIVO_10P = {
+    "NP": {"mean": 14.85, "cv": 16.50}, "NK": {"mean": 1.95, "cv": 18.20}, "NCa": {"mean": 1.52, "cv": 21.10},
+    "NMg": {"mean": 11.40, "cv": 19.80}, "NB": {"mean": 0.045, "cv": 23.50}, "KP": {"mean": 7.62, "cv": 17.40},
+    "KCa": {"mean": 0.78, "cv": 22.60}, "KMg": {"mean": 5.85, "cv": 20.30}, "KB": {"mean": 0.023, "cv": 25.80},
+    "PCa": {"mean": 0.102, "cv": 24.10}, "PMg": {"mean": 0.768, "cv": 21.50}, "CaMg": {"mean": 7.50, "cv": 18.90},
+    "FeMn": {"mean": 1.65, "cv": 22.10}, "FeZn": {"mean": 5.20, "cv": 26.40}, "FeCu": {"mean": 9.80, "cv": 24.70},
+    "ZnCu": {"mean": 1.88, "cv": 28.20}, "MnZn": {"mean": 3.15, "cv": 25.10},
+}
+
+# --- DRIS Almendro (Ferrández-Cámara et al. 2021, Horticulturae 7, 481) ---
+# Cada variedad: 10 normas tipo 'ratio' (num/den) o 'product' (a×b), mean/sd/cv de la Tabla 4 del artículo.
+NORMAS_ALMENDRO_DRIS = {
+    "ferraduel": [
+        {"type": "ratio", "num": "N", "den": "P", "mean": 17.05, "sd": 4.06, "cv": 23.84},
+        {"type": "ratio", "num": "N", "den": "K", "mean": 2.30, "sd": 0.58, "cv": 25.19},
+        {"type": "product", "a": "N", "b": "Ca", "mean": 9.13, "sd": 1.88, "cv": 20.63},
+        {"type": "ratio", "num": "N", "den": "Mg", "mean": 1.76, "sd": 0.32, "cv": 18.28},
+        {"type": "ratio", "num": "K", "den": "P", "mean": 7.74, "sd": 2.31, "cv": 29.89},
+        {"type": "product", "a": "K", "b": "Mg", "mean": 0.80, "sd": 0.19, "cv": 23.77},
+        {"type": "product", "a": "P", "b": "Ca", "mean": 0.57, "sd": 0.18, "cv": 31.01},
+        {"type": "product", "a": "P", "b": "Mg", "mean": 0.11, "sd": 0.03, "cv": 25.40},
+        {"type": "product", "a": "K", "b": "Ca", "mean": 4.14, "sd": 1.10, "cv": 26.52},
+        {"type": "ratio", "num": "Ca", "den": "Mg", "mean": 5.27, "sd": 1.11, "cv": 21.07},
+    ],
+    "ferragnes": [
+        {"type": "ratio", "num": "N", "den": "P", "mean": 17.71, "sd": 4.04, "cv": 22.81},
+        {"type": "ratio", "num": "N", "den": "K", "mean": 2.33, "sd": 0.57, "cv": 24.62},
+        {"type": "product", "a": "N", "b": "Ca", "mean": 9.13, "sd": 1.71, "cv": 18.71},
+        {"type": "product", "a": "N", "b": "Mg", "mean": 1.91, "sd": 0.36, "cv": 18.71},
+        {"type": "ratio", "num": "P", "den": "K", "mean": 0.14, "sd": 0.05, "cv": 33.63},
+        {"type": "product", "a": "K", "b": "Mg", "mean": 0.86, "sd": 0.22, "cv": 25.21},
+        {"type": "product", "a": "P", "b": "Ca", "mean": 0.54, "sd": 0.16, "cv": 28.92},
+        {"type": "product", "a": "P", "b": "Mg", "mean": 0.11, "sd": 0.02, "cv": 20.57},
+        {"type": "product", "a": "K", "b": "Ca", "mean": 4.12, "sd": 1.09, "cv": 26.43},
+        {"type": "ratio", "num": "Ca", "den": "Mg", "mean": 4.84, "sd": 0.79, "cv": 16.30},
+    ],
+    # Se corrigen 3 probables erratas de etiquetado de la Tabla 4 original para Garrigues, detectadas
+    # al contrastar cada media publicada contra las concentraciones foliares medias reales de Garrigues
+    # (Tabla 1: N=2.00, P=0.09, K=0.67, Ca=4.05, Mg=0.99). Ver nota detallada en el HTML de origen.
+    "garrigues": [
+        {"type": "ratio", "num": "N", "den": "P", "mean": 21.03, "sd": 2.70, "cv": 12.85},
+        {"type": "ratio", "num": "N", "den": "K", "mean": 3.25, "sd": 1.27, "cv": 39.20},
+        {"type": "product", "a": "N", "b": "Ca", "mean": 7.01, "sd": 1.49, "cv": 21.28},
+        {"type": "ratio", "num": "Mg", "den": "N", "mean": 0.56, "sd": 0.15, "cv": 27.33},
+        {"type": "ratio", "num": "K", "den": "P", "mean": 7.45, "sd": 2.92, "cv": 39.24},
+        {"type": "product", "a": "K", "b": "Mg", "mean": 0.63, "sd": 0.28, "cv": 43.82},
+        {"type": "product", "a": "P", "b": "Ca", "mean": 0.34, "sd": 0.08, "cv": 24.67},
+        {"type": "ratio", "num": "Mg", "den": "P", "mean": 11.75, "sd": 3.60, "cv": 30.65},
+        {"type": "product", "a": "K", "b": "Ca", "mean": 2.47, "sd": 1.15, "cv": 46.70},
+        {"type": "ratio", "num": "Ca", "den": "Mg", "mean": 3.92, "sd": 0.66, "cv": 16.74},
+    ],
+}
+
+# --- DRIS Caqui 'Rojo Brillante' (Morales et al. 2022, Agronomy 12, 1269) ---
+# 78 normas tipo ratio puro, cubriendo cada par entre los 13 elementos exactamente una vez (Tabla 1).
+NUTRIENTES_CAQUI = ["N", "P", "K", "Ca", "Mg", "Na", "S", "Cl", "B", "Cu", "Fe", "Mn", "Zn"]
+NORMS_DRIS_CAQUI = [
+    {"num": "N", "den": "Na", "mean": 149.086, "sd": 69.8038}, {"num": "N", "den": "S", "mean": 8.468, "sd": 1.891},
+    {"num": "N", "den": "Cl", "mean": 3.169, "sd": 2.322}, {"num": "N", "den": "B", "mean": 0.060, "sd": 0.046},
+    {"num": "N", "den": "Cu", "mean": 0.495, "sd": 0.210}, {"num": "N", "den": "Fe", "mean": 0.039, "sd": 0.015},
+    {"num": "N", "den": "Zn", "mean": 0.057, "sd": 0.024}, {"num": "Ca", "den": "N", "mean": 1.060, "sd": 0.573},
+    {"num": "K", "den": "N", "mean": 0.765, "sd": 0.169}, {"num": "Mg", "den": "N", "mean": 0.303, "sd": 0.132},
+    {"num": "P", "den": "N", "mean": 0.058, "sd": 0.009}, {"num": "Mn", "den": "N", "mean": 80.440, "sd": 63.845},
+    {"num": "P", "den": "Ca", "mean": 0.078, "sd": 0.061}, {"num": "P", "den": "Mg", "mean": 0.231, "sd": 0.124},
+    {"num": "P", "den": "S", "mean": 0.489, "sd": 0.096}, {"num": "P", "den": "Cl", "mean": 0.184, "sd": 0.161},
+    {"num": "P", "den": "B", "mean": 0.003, "sd": 0.003}, {"num": "P", "den": "Cu", "mean": 0.028, "sd": 0.012},
+    {"num": "P", "den": "Fe", "mean": 0.002, "sd": 0.001}, {"num": "K", "den": "P", "mean": 13.252, "sd": 2.485},
+    {"num": "Na", "den": "P", "mean": 0.133, "sd": 0.052}, {"num": "Mn", "den": "P", "mean": 1689.810, "sd": 1398.100},
+    {"num": "Zn", "den": "P", "mean": 353.202, "sd": 147.619}, {"num": "K", "den": "Ca", "mean": 1.009, "sd": 0.665},
+    {"num": "K", "den": "Mg", "mean": 3.117, "sd": 1.571}, {"num": "K", "den": "Na", "mean": 115.132, "sd": 51.830},
+    {"num": "K", "den": "S", "mean": 6.478, "sd": 1.720}, {"num": "K", "den": "Cl", "mean": 2.467, "sd": 1.977},
+    {"num": "K", "den": "B", "mean": 0.044, "sd": 0.035}, {"num": "K", "den": "Cu", "mean": 0.370, "sd": 0.165},
+    {"num": "K", "den": "Zn", "mean": 0.045, "sd": 0.023}, {"num": "Fe", "den": "K", "mean": 39.738, "sd": 15.495},
+    {"num": "Mn", "den": "K", "mean": 135.820, "sd": 122.740}, {"num": "Ca", "den": "Mg", "mean": 3.344, "sd": 0.834},
+    {"num": "Ca", "den": "Cl", "mean": 2.387, "sd": 0.762}, {"num": "Ca", "den": "B", "mean": 0.046, "sd": 0.026},
+    {"num": "Ca", "den": "Cu", "mean": 0.510, "sd": 0.339}, {"num": "Na", "den": "Ca", "mean": 0.009, "sd": 0.005},
+    {"num": "S", "den": "Ca", "mean": 0.157, "sd": 0.098}, {"num": "Fe", "den": "Ca", "mean": 34.013, "sd": 17.862},
+    {"num": "Mn", "den": "Ca", "mean": 95.052, "sd": 71.053}, {"num": "Zn", "den": "Ca", "mean": 23.796, "sd": 15.013},
+    {"num": "Mg", "den": "Na", "mean": 41.094, "sd": 16.650}, {"num": "Mg", "den": "S", "mean": 2.424, "sd": 0.836},
+    {"num": "Mg", "den": "Cl", "mean": 0.768, "sd": 0.337}, {"num": "Mg", "den": "B", "mean": 0.015, "sd": 0.009},
+    {"num": "Mg", "den": "Cu", "mean": 0.145, "sd": 0.085}, {"num": "Mg", "den": "Zn", "mean": 0.017, "sd": 0.009},
+    {"num": "Fe", "den": "Mg", "mean": 106.796, "sd": 40.603}, {"num": "Mn", "den": "Mg", "mean": 321.806, "sd": 245.416},
+    {"num": "Na", "den": "S", "mean": 0.063, "sd": 0.025}, {"num": "Na", "den": "Cl", "mean": 0.022, "sd": 0.015},
+    {"num": "Na", "den": "B", "mean": 0.0004, "sd": 0.0002}, {"num": "Na", "den": "Cu", "mean": 0.004, "sd": 0.002},
+    {"num": "Na", "den": "Mn", "mean": 0.0001, "sd": 0.0001}, {"num": "Na", "den": "Zn", "mean": 0.0004, "sd": 0.0002},
+    {"num": "Fe", "den": "Na", "mean": 4104.840, "sd": 1700.294}, {"num": "S", "den": "Cl", "mean": 0.364, "sd": 0.233},
+    {"num": "S", "den": "B", "mean": 0.007, "sd": 0.006}, {"num": "S", "den": "Cu", "mean": 0.059, "sd": 0.028},
+    {"num": "S", "den": "Fe", "mean": 0.005, "sd": 0.002}, {"num": "S", "den": "Zn", "mean": 0.007, "sd": 0.003},
+    {"num": "Mn", "den": "S", "mean": 821.265, "sd": 717.909}, {"num": "Cl", "den": "B", "mean": 0.020, "sd": 0.012},
+    {"num": "Cl", "den": "Cu", "mean": 0.232, "sd": 0.177}, {"num": "Cl", "den": "Mn", "mean": 0.008, "sd": 0.007},
+    {"num": "Fe", "den": "Cl", "mean": 82.127, "sd": 49.408}, {"num": "Zn", "den": "Cl", "mean": 54.806, "sd": 37.647},
+    {"num": "B", "den": "Cu", "mean": 12.442, "sd": 8.851}, {"num": "B", "den": "Zn", "mean": 1.461, "sd": 1.061},
+    {"num": "Fe", "den": "B", "mean": 1.453, "sd": 0.915}, {"num": "Mn", "den": "B", "mean": 3.824, "sd": 2.735},
+    {"num": "Fe", "den": "Cu", "mean": 15.117, "sd": 7.301}, {"num": "Mn", "den": "Cu", "mean": 46.064, "sd": 42.338},
+    {"num": "Zn", "den": "Cu", "mean": 9.448, "sd": 5.431}, {"num": "Fe", "den": "Mn", "mean": 0.487, "sd": 0.354},
+    {"num": "Fe", "den": "Zn", "mean": 1.727, "sd": 0.788}, {"num": "Mn", "den": "Zn", "mean": 4.455, "sd": 3.675},
+]
