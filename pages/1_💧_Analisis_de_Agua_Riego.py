@@ -8,6 +8,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from shared.water_quality import analizar_agua, EJEMPLOS  # noqa: E402
+from shared.ui_common import render_header, render_print_button  # noqa: E402
 
 st.set_page_config(page_title="Análisis de Agua de Riego", page_icon="💧", layout="wide")
 
@@ -27,7 +28,8 @@ def _cargar_ejemplo(nombre: str) -> None:
         st.session_state[k] = float(v) if isinstance(v, (int, float)) else v
 
 
-st.title("💧 Análisis de Agua de Riego")
+render_header("Análisis de Agua de Riego", "💧")
+render_print_button()
 st.caption(
     "Criterios FAO-29 (Ayers & Westcot, 1985) para infiltración y toxicidad iónica. "
     "Indicador de obturación calcárea simplificado (no sustituye un índice de "

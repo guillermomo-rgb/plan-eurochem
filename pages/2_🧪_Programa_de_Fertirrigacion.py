@@ -17,9 +17,11 @@ from shared.fertirrigacion_calc import (  # noqa: E402
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, sugerencias_fase,
     generar_dictamen_experto, ACIDOS_PRESETS,
 )
+from shared.ui_common import render_header, render_print_button  # noqa: E402
 
 st.set_page_config(page_title="Programa de Fertirrigación", page_icon="🧪", layout="wide")
-st.title("🧪 Programa de Fertirrigación")
+render_header("Programa de Fertirrigación", "🧪")
+render_print_button()
 
 # ---------------------------------------------------------------- Estado inicial
 DEFAULTS = dict(
@@ -36,6 +38,8 @@ DEFAULTS = dict(
 )
 for k, v in DEFAULTS.items():
     st.session_state.setdefault(k, v)
+st.session_state.setdefault("custom_crops", {})
+st.session_state.setdefault("custom_limites", {})
 if "coeffs" not in st.session_state:
     st.session_state.coeffs = dict(CULTIVO_EXTRACCIONES[st.session_state.crop])
 if "monthly_data" not in st.session_state:
@@ -46,7 +50,7 @@ if "acid_density" not in st.session_state or "acid_purity" not in st.session_sta
     st.session_state.acid_purity = preset["purity"]
     st.session_state.acid_eq_wt = preset["eq_wt"]
 
-crops_disponibles = list(CULTIVO_EXTRACCIONES.keys())
+crops_disponibles = list(CULTIVO_EXTRACCIONES.keys()) + list(st.session_state.custom_crops.keys())
 NIVEL_ICONO = {"ok": "✅", "moderado": "⚠️", "severo": "❌"}
 NIVEL_ICONO_DICTAMEN = {"ok": "✅", "warn": "⚠️", "danger": "❌"}
 
@@ -60,18 +64,48 @@ with tabs[0]:
     st.subheader("Cultivo y rendimiento esperado")
     c1, c2 = st.columns(2)
     with c1:
-        nuevo_crop = st.selectbox("Cultivo", crops_disponibles, index=crops_disponibles.index(st.session_state.crop))
+        nuevo_crop = st.selectbox(
+            "Cultivo", crops_disponibles, index=crops_disponibles.index(st.session_state.crop),
+            format_func=lambda c: f"{c} (personalizado)" if c in st.session_state.custom_crops else c,
+        )
         if nuevo_crop != st.session_state.crop:
             st.session_state.crop = nuevo_crop
-            st.session_state.coeffs = dict(CULTIVO_EXTRACCIONES[nuevo_crop])
+            st.session_state.coeffs = dict(st.session_state.custom_crops.get(nuevo_crop) or CULTIVO_EXTRACCIONES[nuevo_crop])
     with c2:
         st.session_state.yield_val = st.number_input("Rendimiento esperado (t/ha)", value=st.session_state.yield_val, step=1.0)
 
+    with st.expander("➕ Añadir Cultivo Nuevo"):
+        nc1, nc2 = st.columns(2)
+        nc_nombre = nc1.text_input("Nombre del cultivo", key="nc_nombre")
+        nc_salino = nc2.number_input("Límite de salinidad de la gota (dS/m)", value=2.0, step=0.1, key="nc_salino")
+        ncc = st.columns(6)
+        nc_n = ncc[0].number_input("N (Nitrógeno)", value=0.0, step=0.1, key="nc_n")
+        nc_p = ncc[1].number_input("P₂O₅", value=0.0, step=0.1, key="nc_p")
+        nc_k = ncc[2].number_input("K₂O", value=0.0, step=0.1, key="nc_k")
+        nc_mg = ncc[3].number_input("MgO", value=0.0, step=0.1, key="nc_mg")
+        nc_ca = ncc[4].number_input("CaO", value=0.0, step=0.1, key="nc_ca")
+        nc_s = ncc[5].number_input("SO₃", value=0.0, step=0.1, key="nc_s")
+        if st.button("💾 Guardar cultivo nuevo"):
+            if not nc_nombre.strip():
+                st.error("Introduce un nombre para el cultivo.")
+            else:
+                nombre = nc_nombre.strip()
+                st.session_state.custom_crops[nombre] = {"n": nc_n, "p": nc_p, "k": nc_k, "mg": nc_mg, "ca": nc_ca, "s": nc_s}
+                st.session_state.custom_limites[nombre] = nc_salino
+                st.session_state.crop = nombre
+                st.session_state.coeffs = dict(st.session_state.custom_crops[nombre])
+                st.success(f'Cultivo "{nombre}" guardado. Ya está seleccionado arriba.')
+                st.rerun()
+
     with st.expander("✏️ Editar coeficientes de extracción (kg/t)"):
         cc = st.columns(6)
-        labels = [("n", "N"), ("p", "P₂O₅"), ("k", "K₂O"), ("mg", "MgO"), ("ca", "CaO"), ("s", "SO₃")]
+        labels = [("n", "N (Nitrógeno)"), ("p", "P₂O₅"), ("k", "K₂O"), ("mg", "MgO"), ("ca", "CaO"), ("s", "SO₃")]
         for i, (key, label) in enumerate(labels):
-            st.session_state.coeffs[key] = cc[i].number_input(label, value=float(st.session_state.coeffs[key]), step=0.1, key=f"coeff_{key}")
+            # Sin `key=`: el valor mostrado debe reflejar siempre st.session_state.coeffs,
+            # que cambia al elegir otro cultivo. Con un `key` fijo por nutriente, Streamlit
+            # ignoraría el nuevo `value=` tras el primer render (mismo bug que el selector de
+            # mes en el Punto 5), y los coeficientes se quedarían congelados en el primer cultivo.
+            st.session_state.coeffs[key] = cc[i].number_input(label, value=float(st.session_state.coeffs[key]), step=0.1)
 
     with st.expander("➕ Compensación / margen de seguridad extra (E)"):
         ce = st.columns(6)
@@ -133,7 +167,7 @@ with tabs[2]:
     if st.session_state.acid_type == "Personalizado":
         st.markdown("**Aporte del ácido personalizado (kg elemento / meq HCO₃⁻ neutralizado / m³)**")
         cc = st.columns(3)
-        st.session_state.acid_custom_n = cc[0].number_input("N", value=st.session_state.acid_custom_n)
+        st.session_state.acid_custom_n = cc[0].number_input("N (Nitrógeno)", value=st.session_state.acid_custom_n)
         st.session_state.acid_custom_p = cc[1].number_input("P₂O₅", value=st.session_state.acid_custom_p)
         st.session_state.acid_custom_s = cc[2].number_input("SO₃", value=st.session_state.acid_custom_s)
 
@@ -276,7 +310,7 @@ balance = calcular_balance_anual(
     ),
 )
 meses_conflicto = meses_con_conflicto_tanque(monthly_data=monthly_data)
-umbral_salino = LIMITES_SALINOS.get(st.session_state.crop, 1.5)
+umbral_salino = st.session_state.custom_limites.get(st.session_state.crop, LIMITES_SALINOS.get(st.session_state.crop, 1.5))
 
 fase_actual = calcular_fase_mensual(
     month=monthly_data[st.session_state.mes_editado if "mes_editado" in st.session_state else 5],
