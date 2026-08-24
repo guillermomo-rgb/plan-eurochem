@@ -15,7 +15,7 @@ from shared.fertirrigacion_calc import (  # noqa: E402
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, sugerencias_fase,
-    generar_dictamen_experto, ACIDOS_PRESETS,
+    generar_dictamen_experto, calcular_reparto_anual, ACIDOS_PRESETS,
 )
 from shared.ui_common import render_header, render_print_button  # noqa: E402
 
@@ -319,6 +319,12 @@ fase_actual = calcular_fase_mensual(
     target=balance.target, umbral_salino=umbral_salino,
 )
 
+reparto_anual = calcular_reparto_anual(
+    monthly_data=monthly_data, water_composition=water_composition, water_ec_ds_m=st.session_state.water_ec,
+    acid_type=st.session_state.acid_type, acid_custom=acid_custom, neut_hco3=acido.neut_hco3_meq_l,
+    target=balance.target, umbral_salino=umbral_salino,
+)
+
 sonneveld = calcular_gotero_sonneveld(
     mes=monthly_data[st.session_state.sonneveld_month], agua=agua,
     acid_type=st.session_state.acid_type, acid_custom=acid_custom, neut_hco3=acido.neut_hco3_meq_l,
@@ -410,6 +416,19 @@ with fondo_placeholder.container():
     st.write(f"**Total: {fondo.total_dosis:.0f} kg/ha — N: {fondo.n:.1f} | P₂O₅: {fondo.p:.1f} | "
              f"K₂O: {fondo.k:.1f} | MgO: {fondo.mg:.1f} | CaO: {fondo.ca:.1f} | SO₃: {fondo.s:.1f} kg/ha**")
 
+    st.markdown("**% de las necesidades totales del cultivo cubierto por el fondo**")
+    cols_nut = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    df_cobertura = pd.DataFrame({
+        "Nutriente": list(cols_nut.values()),
+        "Fondo (kg/ha)": [fondo.__dict__[k] for k in cols_nut],
+        "Necesidad total (kg/ha)": [balance.base[k] for k in cols_nut],
+        "% de la necesidad": [balance.cobertura_fondo_pct[k] for k in cols_nut],
+    })
+    st.dataframe(
+        df_cobertura.style.format({"Fondo (kg/ha)": "{:.1f}", "Necesidad total (kg/ha)": "{:.1f}", "% de la necesidad": "{:.1f}%"}),
+        use_container_width=True, hide_index=True,
+    )
+
 with foliar_placeholder.container():
     st.markdown("**Totales foliares aplicados**")
     df_foliar = pd.DataFrame([{"Producto": i.name, "Dosis": i.dosis, "N": i.n, "P₂O₅": i.p, "K₂O": i.k,
@@ -448,6 +467,30 @@ with fase_placeholder.container():
     if fase_actual.supera_umbral_salino:
         st.warning(f"⚠️ La CE de la gota ({fase_actual.ec_gota:.2f} dS/m) supera el umbral del cultivo ({umbral_salino:.1f} dS/m).")
     st.metric("Bomba inyectora estimada", f"{fase_actual.bomba_l_h:.0f} L/h")
+
+    st.markdown("---")
+    st.markdown(f"**📊 Reparto anual de unidades por mes — vía fertirrigación (% sobre el objetivo, ya con el fondo descontado)**")
+    cols_reparto = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    filas_reparto = []
+    for fila in reparto_anual:
+        registro = {"Mes": fila.mes}
+        for key, label in cols_reparto.items():
+            registro[f"{label} (kg/ha)"] = fila.kg[key]
+            registro[f"{label} (%)"] = fila.pct_objetivo[key]
+        registro["CE gota (dS/m)"] = fila.ec_gota
+        registro["¿Supera CE cultivo?"] = "⚠️ Sí" if fila.supera_umbral_salino else "OK"
+        filas_reparto.append(registro)
+    df_reparto = pd.DataFrame(filas_reparto)
+    cols_numericas_reparto = [c for c in df_reparto.columns if c not in ("Mes", "¿Supera CE cultivo?")]
+    st.dataframe(
+        df_reparto.style.format({c: "{:.1f}" for c in cols_numericas_reparto}),
+        use_container_width=True, hide_index=True,
+    )
+    st.caption(
+        f"El % de cada nutriente es sobre el objetivo en gotero (necesidad total menos lo ya cubierto por el "
+        f"fondo, el agua de riego y el ácido regulador). El umbral de CE de la gota usado es el de "
+        f"{st.session_state.crop}: {umbral_salino:.1f} dS/m."
+    )
 
 # ---------------------------------------------------------------- Render Punto 7 (Sonneveld)
 with sonneveld_placeholder.container():

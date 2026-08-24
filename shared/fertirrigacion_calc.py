@@ -416,6 +416,38 @@ def calcular_fase_mensual(
     )
 
 
+@dataclass
+class FilaReparto:
+    mes: str
+    kg: dict = field(default_factory=dict)  # por nutriente, aportado vía fertirrigación ese mes
+    pct_objetivo: dict = field(default_factory=dict)  # kg / target (ya descuenta fondo y créditos) * 100
+    ec_gota: float = 0.0
+    supera_umbral_salino: bool = False
+
+
+def calcular_reparto_anual(
+    *, monthly_data: dict, water_composition: dict, water_ec_ds_m: float, acid_type: str,
+    acid_custom: dict, neut_hco3: float, target: dict, umbral_salino: float,
+) -> list[FilaReparto]:
+    """Recorre los 12 meses con calcular_fase_mensual() para poder ver de un vistazo el reparto
+    de unidades fertilizantes vía fertirrigación mes a mes (kg y % del objetivo, que ya tiene
+    restado el abonado de fondo) y si la CE de la gota supera el límite de salinidad del cultivo
+    en algún mes."""
+    filas = []
+    for m in range(1, 13):
+        month = monthly_data[m]
+        fase = calcular_fase_mensual(
+            month=month, water_composition=water_composition, water_ec_ds_m=water_ec_ds_m,
+            acid_type=acid_type, acid_custom=acid_custom, neut_hco3=neut_hco3,
+            target=target, umbral_salino=umbral_salino,
+        )
+        filas.append(FilaReparto(
+            mes=month["name"], kg=dict(fase.suma_total), pct_objetivo=dict(fase.pct_objetivo),
+            ec_gota=fase.ec_gota, supera_umbral_salino=fase.supera_umbral_salino,
+        ))
+    return filas
+
+
 def meses_con_conflicto_tanque(*, monthly_data: dict) -> list[str]:
     meses = []
     for m in range(1, 13):

@@ -8,7 +8,7 @@ from fertirrigacion_calc import (
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, generar_dictamen_experto,
-    creditos_acido_mes, creditos_agua_mes,
+    creditos_acido_mes, creditos_agua_mes, calcular_reparto_anual,
 )
 from fertirrigacion_data import monthly_data_por_defecto, CULTIVO_EXTRACCIONES
 
@@ -151,6 +151,50 @@ def test_dictamen_alerta_salinidad_y_tanque():
     assert niveles[0] == "danger"  # salinidad superada
     assert niveles[-1] == "danger"  # conflicto de tanque
     assert "Julio" in alertas[-1].mensaje
+
+
+def test_cobertura_fondo_pct_relativa_a_necesidad_base():
+    monthly = monthly_data_por_defecto()
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    acido = calcular_acido(meq_hco3=0.0, target_hco3=1.5, purity=60.0, density=1.37, eq_wt=63.0)
+    creditos = calcular_creditos_anuales(
+        monthly_data=monthly, water_composition=water_comp,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=acido.neut_hco3_meq_l,
+    )
+    fondo = calcular_fondo([{"name": "ENTEC Evo 24", "dosis": 200.0}])  # 24% N de 200 kg = 48 kg/ha
+    balance = calcular_balance_anual(
+        yield_val=10.0, coeffs=CULTIVO_EXTRACCIONES["Caqui (Kaki)"], fondo=fondo,
+        creditos=creditos, extra={},
+    )
+    base_n = 10.0 * CULTIVO_EXTRACCIONES["Caqui (Kaki)"]["n"]  # 40.0 kg/ha
+    assert math.isclose(balance.cobertura_fondo_pct["n"], 48.0 / base_n * 100, rel_tol=1e-9)
+
+
+def test_reparto_anual_recorre_12_meses_y_coincide_con_fase_mensual():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrofoska Solub 18-18-18", "dosis": 50.0}]
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    kwargs = dict(
+        water_composition=water_comp, water_ec_ds_m=0.95, acid_type="Nítrico (60%)",
+        acid_custom={}, neut_hco3=0.0, target={"n": 10, "p": 10, "k": 10, "mg": 10, "ca": 10, "s": 10},
+        umbral_salino=1.5,
+    )
+    esperado_mayo = calcular_fase_mensual(month=monthly[5], **kwargs)
+    filas = calcular_reparto_anual(monthly_data=monthly, **kwargs)
+
+    assert len(filas) == 12
+    mayo = filas[4]  # índice 4 = mes 5 = Mayo
+    assert mayo.mes == "Mayo"
+    assert math.isclose(mayo.kg["n"], esperado_mayo.suma_total["n"], rel_tol=1e-9)
+    assert math.isclose(mayo.pct_objetivo["n"], esperado_mayo.pct_objetivo["n"], rel_tol=1e-9)
+    assert mayo.ec_gota == esperado_mayo.ec_gota
+
+    enero = filas[0]
+    assert enero.mes == "Enero"
+    assert all(math.isclose(v, 0.0) for v in enero.kg.values())
 
 
 if __name__ == "__main__":
