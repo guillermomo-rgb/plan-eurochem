@@ -1651,8 +1651,16 @@
             "ENTEC Nitrofoska 14": { n: 14, p: 7, k: 17, mg: 2, ca: 0, s: 22.5 },
             "ENTEC 13-10-20": { n: 13, p: 10, k: 20, mg: 0, ca: 0, s: 7.5 },
             "Nitrofoska NPlus 22-5-5": { n: 22, p: 5, k: 5, mg: 2, ca: 0, s: 5 },
-            "ENTEC Evo 27S": { n: 27, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
-            "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 }
+            // Corregido contra la ficha técnica real (PDS): ENTEC 27 S (+10 SO3) es nitrato amónico N(S)
+            // 27(+10) con inhibidor DMPSA — N 27% (13.5 nítrico + 13.5 amoniacal), SO3 10% total. Sin
+            // CaO (no se menciona en la ficha). El valor ca:9.2 anterior no está respaldado por ninguna
+            // fuente y ya no coincide con la ficha; corregido a 0 y ya coincide con plan_abonado_integrado.html.
+            "ENTEC Evo 27S": { n: 27, p: 0, k: 0, mg: 0, ca: 0, s: 10 },
+            // ENTEC Evo 24: mismo tipo de producto (línea ENTEC N-S con inhibidor), pero todavía sin
+            // ficha técnica que confirme si lleva o no CaO. Se deja el valor ca:12.3 heredado marcado
+            // como pendiente de verificar — muy probablemente también sea 0 por analogía con el Evo 27S,
+            // pero no se cambia sin la ficha real (pedido al usuario).
+            "ENTEC Evo 24": { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 } /* PENDIENTE DE VERIFICAR CON PDS */
         };
 
         // Catálogo de productos foliares/correctores. Los dos productos reales incluidos de fábrica

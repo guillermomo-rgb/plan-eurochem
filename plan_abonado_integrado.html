@@ -1274,12 +1274,14 @@
     // Catálogo de Riqueza de Fertilizantes Eurochem (N - P2O5 - K2O)
     // mg/ca/s añadidos a partir de lo que ya indicaban las propias etiquetas de este archivo
     // (FERT_KEY_TO_PF_NAME, más abajo), que hasta ahora no se usaban en el cálculo del balance.
-    // AVISO: al comparar contra el catálogo granuladosDB de programa_fertirrigacion.html se han
-    // encontrado discrepancias para el mismo producto entre ambos archivos (p.ej. entec_13_10_20:
-    // 12,5% SO3 aquí vs 7,5% allí; entec_evo_27s/24: aquí sin CaO, allí con 9,2%/12,3% CaO). No se ha
-    // "corregido" un archivo con los datos del otro sin una ficha técnica real que lo confirme — ver
-    // aviso en la conversación con el usuario. entec_25_15 y entec_12_20_12 no tienen MgO/SO3/CaO
-    // indicado en ninguna etiqueta propia de este archivo, se dejan en 0 hasta confirmarlo.
+    // AVISO: al comparar contra el catálogo granuladosDB de programa_fertirrigacion.html se encontraron
+    // discrepancias para el mismo producto entre ambos archivos. entec_evo_27s: RESUELTO — la ficha
+    // técnica real (PDS "ENTEC 27 S (+10 SO3)") confirma N 27% y SO3 10% total, SIN CaO; el ca:0 de este
+    // archivo era el correcto, y se ha corregido el ca:9.2 del otro archivo a 0. entec_evo_24: aún sin
+    // ficha técnica que lo confirme — este archivo ya tenía ca:0, pero programa_fertirrigacion.html
+    // todavía tiene ca:12.3 marcado como pendiente de verificar. Sigue pendiente también: entec_13_10_20
+    // (12,5% SO3 aquí vs 7,5% allí). entec_25_15 y entec_12_20_12 no tienen MgO/SO3/CaO indicado en
+    // ninguna etiqueta propia de este archivo, se dejan en 0 hasta confirmarlo.
     const fertData = {
         '0': { n: 0, p: 0, k: 0, mg: 0, ca: 0, s: 0, label: "Ninguno" },
         'entec_12_12_17': { n: 12, p: 12, k: 17, mg: 2, ca: 0, s: 20, label: "ENTEC NITROFOSKA ESPECIAL (12-12-17)" },
