@@ -1275,13 +1275,13 @@
     // mg/ca/s añadidos a partir de lo que ya indicaban las propias etiquetas de este archivo
     // (FERT_KEY_TO_PF_NAME, más abajo), que hasta ahora no se usaban en el cálculo del balance.
     // AVISO: al comparar contra el catálogo granuladosDB de programa_fertirrigacion.html se encontraron
-    // discrepancias para el mismo producto entre ambos archivos. entec_evo_27s: RESUELTO — la ficha
-    // técnica real (PDS "ENTEC 27 S (+10 SO3)") confirma N 27% y SO3 10% total, SIN CaO; el ca:0 de este
-    // archivo era el correcto, y se ha corregido el ca:9.2 del otro archivo a 0. entec_evo_24: aún sin
-    // ficha técnica que lo confirme — este archivo ya tenía ca:0, pero programa_fertirrigacion.html
-    // todavía tiene ca:12.3 marcado como pendiente de verificar. Sigue pendiente también: entec_13_10_20
-    // (12,5% SO3 aquí vs 7,5% allí). entec_25_15 y entec_12_20_12 no tienen MgO/SO3/CaO indicado en
-    // ninguna etiqueta propia de este archivo, se dejan en 0 hasta confirmarlo.
+    // discrepancias para el mismo producto entre ambos archivos. entec_evo_27s / entec_evo_24: RESUELTO
+    // — las fichas técnicas reales ("ENTEC EVO 27 (10 SO3)", código 445005-8300355, rev 1.02; y "ENTEC
+    // Evo 24 (+6S)") confirman CaO 9.2% y 12.3% respectivamente. El ca:0 que tenía este archivo era el
+    // incorrecto (posible confusión con "ENTEC 27 S" sin Evo, que sí existe como producto distinto y sin
+    // calcio) — corregido a los valores reales, que ya coinciden con programa_fertirrigacion.html. Sigue
+    // pendiente: entec_13_10_20 (12,5% SO3 aquí vs 7,5% allí). entec_25_15 y entec_12_20_12 no tienen
+    // MgO/SO3/CaO indicado en ninguna etiqueta propia de este archivo, se dejan en 0 hasta confirmarlo.
     const fertData = {
         '0': { n: 0, p: 0, k: 0, mg: 0, ca: 0, s: 0, label: "Ninguno" },
         'entec_12_12_17': { n: 12, p: 12, k: 17, mg: 2, ca: 0, s: 20, label: "ENTEC NITROFOSKA ESPECIAL (12-12-17)" },
@@ -1294,8 +1294,8 @@
         'entec_12_20_12': { n: 12, p: 20, k: 12, mg: 0, ca: 0, s: 0, label: "ENTEC 12 20 12" },
         'entec_13_10_20': { n: 13, p: 10, k: 20, mg: 0, ca: 0, s: 12.5, label: "ENTEC 13 10 20" },
         'nplus_22_5_5': { n: 22, p: 5, k: 5, mg: 2, ca: 0, s: 7.5, label: "NITROFOSKA NPLUS (22-5-5)" },
-        'entec_evo_27s': { n: 27, p: 0, k: 0, mg: 0, ca: 0, s: 10, label: "ENTEC EVO 27S (27% N)" },
-        'entec_evo_24': { n: 24, p: 0, k: 0, mg: 0, ca: 0, s: 15, label: "ENTEC EVO 24 (24% N)" }
+        'entec_evo_27s': { n: 27, p: 0, k: 0, mg: 0, ca: 9.2, s: 10, label: "ENTEC EVO 27S (27% N)" },
+        'entec_evo_24': { n: 24, p: 0, k: 0, mg: 0, ca: 12.3, s: 15, label: "ENTEC EVO 24 (24% N)" }
     };
 
     // Catálogo de productos foliares/correctores para el Plan Balanceado. Mismo esquema que
