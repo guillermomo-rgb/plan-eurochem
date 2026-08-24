@@ -16,13 +16,14 @@ st.markdown("---")
 st.subheader("Disponibles")
 st.markdown(
     "- **💧 Análisis de Agua de Riego** — calidad del agua, riesgos FAO-29 de "
-    "infiltración y toxicidad, dosificación de ácidos y plan de cloración."
+    "infiltración y toxicidad, dosificación de ácidos y plan de cloración.\n"
+    "- **🧪 Programa de Fertirrigación** — balance anual NPK+Mg+Ca+S, agua de riego, "
+    "neutralización de ácidos, fondo granulado y foliares, plan mensual por fases, "
+    "gotero de Sonneveld y dictamen agronómico experto."
 )
 
 st.subheader("Pendientes de convertir")
 st.markdown(
-    "- 🧪 Programa de Fertirrigación (balance NPK+Mg+Ca+S, agua, ácidos, fondo "
-    "granulado, foliares, plan mensual)\n"
     "- 📊 Plan de Abonado Integrado (balance NPK Eurochem, comparador de planes)\n"
     "- 🌿 NutriLeaf Pro (diagnóstico foliar DRIS)\n"
 )
