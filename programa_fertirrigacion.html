@@ -1,0 +1,3338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Plan Fertirrigación Experto - G. Morales & Eurochem Agro Iberia</title>
+    <style>
+        :root {
+            --primary-color: #0055a5;
+            --secondary-color: #f4f7f6;
+            --accent-color: #e0f2f1;
+            --text-color: #333;
+            --border-color: #ddd;
+            --success-color: #2e7d32;
+            --warning-color: #ef6c00;
+            --danger-color: #c62828;
+            --dark-blue: #0b2c5a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .no-print {
+            display: block;
+        }
+
+        /* Cabecera Estilo v66/v67/v68 */
+        .pdf-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .logo-placeholder-box {
+            width: 45%;
+            border: 2px dashed var(--primary-color);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background: #fafcff;
+            text-align: center;
+        }
+
+        .logo-placeholder-box h3 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo-placeholder-box p {
+            margin: 0;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .meta-info-box {
+            width: 50%;
+        }
+
+        .meta-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            height: 100%;
+        }
+
+        .meta-info-table td {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .meta-info-table td.label-td {
+            background-color: var(--secondary-color);
+            font-weight: bold;
+            color: var(--dark-blue);
+            width: 35%;
+        }
+
+        .meta-info-table input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .meta-info-table input::placeholder {
+            font-weight: normal;
+            color: #aaa;
+        }
+
+        /* Navegación por Pestañas Principales (v67/v69) */
+        .main-nav-tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 3px solid var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 0;
+        }
+
+        .punto-tab-btn {
+            background-color: #e1e7f0;
+            color: var(--dark-blue);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .punto-tab-btn:hover {
+            background-color: #cbd5e1;
+        }
+
+        .punto-tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            padding-bottom: 11px;
+            margin-bottom: -3px;
+        }
+
+        .main-tab-content {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .main-tab-content.active {
+            display: block;
+        }
+
+        /* Sección de Título */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: var(--dark-blue);
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        /* Tablas */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: var(--secondary-color);
+            color: var(--dark-blue);
+            font-weight: bold;
+        }
+
+        .data-table td input {
+            width: 80px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* Paneles */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .config-card {
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .config-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* Inputs y Botones */
+        .form-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 13px;
+        }
+
+        .btn-action {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-action:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Diag Badges */
+        .diag-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .diag-ok {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .diag-warn {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        .diag-danger {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+
+        /* Pestañas de meses (Punto 5) */
+        .month-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 5px;
+        }
+
+        .month-tab-btn {
+            background-color: #f1f5f9;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #475569;
+            transition: all 0.15s ease;
+        }
+
+        .month-tab-btn:hover {
+            background-color: #cbd5e1;
+        }
+
+        .month-tab-btn.active {
+            background-color: var(--dark-blue);
+            color: white;
+            border-color: var(--dark-blue);
+        }
+
+        /* Adder Panel */
+        .adder-panel {
+            background: #f0f4f8;
+            border: 1px solid #cbd5e1;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Previsualización de UF */
+        .preview-uf-card {
+            background-color: #e0f2f1;
+            border: 1px solid #b2dfdb;
+            color: #004d40;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Lab Card */
+        .lab-card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .lab-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .lab-item:last-child {
+            border-bottom: none;
+        }
+
+        .lab-val {
+            font-weight: bold;
+        }
+
+        /* Gotero Sonneveld (Punto 7) */
+        .triad-bar {
+            display: flex;
+            height: 22px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid #cbd5e1;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            line-height: 22px;
+        }
+
+        .triad-k { background-color: #2b6cb0; }
+        .triad-ca { background-color: #2f855a; }
+        .triad-mg { background-color: #c05621; }
+
+        /* Dictamen Alerts (Punto 8) */
+        .alert-box {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-box.ok {
+            background-color: #e8f5e9;
+            border-left: 5px solid var(--success-color);
+            color: #1b5e20;
+        }
+
+        .alert-box.warn {
+            background-color: #fff3e0;
+            border-left: 5px solid var(--warning-color);
+            color: #e65100;
+        }
+
+        .alert-box.danger {
+            background-color: #ffebee;
+            border-left: 5px solid var(--danger-color);
+            color: #b71c1c;
+        }
+
+        /* Banner de alerta de gota final (Punto 5) */
+        .gota-alert-banner {
+            background-color: #ffebee;
+            color: #b71c1c;
+            border: 1px solid #ffcdd2;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer-credits {
+            text-align: center;
+            font-size: 11px;
+            color: #777;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            margin-top: 40px;
+        }
+
+        /* PRINT STYLES (v65 / v69 / v71) */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .main-tab-content {
+                display: block !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 35px !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            /* Desplegar todos los meses activos uno detrás de otro de corrido */
+            .month-panel {
+                display: none !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 30px !important;
+                border-top: 2px solid var(--primary-color) !important;
+                padding-top: 15px !important;
+            }
+
+            .month-panel.active-print {
+                display: block !important;
+            }
+
+            .print-phase-title {
+                display: block !important;
+                font-size: 16px !important;
+                font-weight: bold !important;
+                color: var(--primary-color) !important;
+                margin-bottom: 10px !important;
+                text-transform: uppercase !important;
+                border-bottom: 1px solid #ddd !important;
+                padding-bottom: 4px !important;
+            }
+
+            input, select {
+                border: none !important;
+                background: transparent !important;
+                font-weight: bold !important;
+                color: black !important;
+                appearance: none !important;
+                -webkit-appearance: none !important;
+            }
+
+            /* Ocultar filas de abonos cuya dosis sea cero */
+            tr.zero-dose-row {
+                display: none !important;
+            }
+
+            .pdf-header-container {
+                box-shadow: none !important;
+                border: 1px solid #aaa !important;
+            }
+
+            .logo-placeholder-box {
+                border: 2px dashed #444 !important;
+            }
+        }
+
+        .print-phase-title {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA PROFESIONAL CON LOGO, ASESOR, FINCA Y AUTORÍA -->
+    <div class="pdf-header-container">
+        <div class="logo-placeholder-box">
+            <h3>Espacio para Logo Eurochem</h3>
+            <p>Suministrado por G.Morales Eurochem Agro Iberia</p>
+        </div>
+        <div class="meta-info-box">
+            <table class="meta-info-table">
+                <tbody>
+                    <tr>
+                        <td class="label-td">Asesor Agrónomo:</td>
+                        <td><input type="text" id="meta-asesor" placeholder="G. Morales"></td>
+                    </tr>
+                    <tr>
+                        <td class="label-td">Finca / Productor:</td>
+                        <td><input type="text" id="meta-finca" placeholder="Nombre de la Finca"></td>
+                    </tr>
+                    <tr>
+                        <td class="label-td">Fecha de Emisión:</td>
+                        <td><input type="date" id="meta-fecha"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Título Principal -->
+    <div style="text-align: center; margin-bottom: 25px;">
+        <h1 style="margin: 0; color: var(--dark-blue); font-size: 24px; text-transform: uppercase; letter-spacing: 0.5px;">Plan Fertirrigación Inteligente</h1>
+        <h3 style="margin: 4px 0 0 0; color: var(--primary-color); font-size: 14px; font-weight: bold;">Creado por G. Morales</h3>
+    </div>
+
+    <!-- BOTONES DE IMPRESIÓN SUPERIORES (no-print) -->
+    <div class="no-print" style="text-align: right; margin-bottom: 15px;">
+        <button class="btn-action" onclick="window.print()">🖨️ Guardar o Imprimir en PDF</button>
+    </div>
+
+    <!-- PESTAÑAS PRINCIPALES DE NAVEGACIÓN DE PUNTOS (v67/v69) -->
+    <div class="main-nav-tabs no-print">
+        <button class="punto-tab-btn active" id="pbtn-1" onclick="switchPunto(1)">Punto 1: Balance Anual</button>
+        <button class="punto-tab-btn" id="pbtn-2" onclick="switchPunto(2)">Punto 2: Análisis de Agua</button>
+        <button class="punto-tab-btn" id="pbtn-3" onclick="switchPunto(3)">Punto 3: Neutralización</button>
+        <button class="punto-tab-btn" id="pbtn-4" onclick="switchPunto(4)">Punto 4: Fondo Granulado</button>
+        <button class="punto-tab-btn" id="pbtn-5" onclick="switchPunto(5)">Punto 5: Plan Mensual</button>
+        <button class="punto-tab-btn" id="pbtn-7" onclick="switchPunto(7)">Punto 7: Sonneveld</button>
+        <button class="punto-tab-btn" id="pbtn-8" onclick="switchPunto(8)">Punto 8: Dictamen</button>
+    </div>
+
+    <!-- CONTENEDORES DE CONTENIDO DE CADA PUNTO -->
+
+    <!-- PUNTO 1: BALANCE NUTRICIONAL GLOBAL -->
+    <div class="main-tab-content active" id="punto-1-container">
+        <div class="section-header">
+            <h2>Punto 1: Balance Nutricional Global (Gotero vs Objetivo)</h2>
+            <div class="no-print">
+                <span style="font-weight: bold; font-size: 13px; color: var(--primary-color); margin-right: 8px;">Cultivo:</span>
+                <select id="crop-selector" class="form-select" style="width: 160px; display: inline-block;" onchange="loadSelectedCrop()">
+                    <!-- Se popula dinámicamente -->
+                </select>
+                <span style="font-weight: bold; font-size: 13px; color: var(--primary-color); margin-left: 15px; margin-right: 8px;">Rendimiento (t/ha):</span>
+                <input type="number" id="crop-yield" value="40" style="width: 70px; padding: 4px; text-align: center;" oninput="calculateAll()">
+                <button class="btn-action" style="margin-left: 15px;" onclick="toggleNuevoCultivoForm()">➕ Añadir Cultivo Nuevo</button>
+            </div>
+        </div>
+
+        <div id="nuevo-cultivo-form" class="config-card no-print" style="display:none; margin-bottom: 15px; border-color: var(--primary-color);">
+            <h3>Añadir Cultivo Nuevo (Extracciones kg / t de producción)</h3>
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items:end;">
+                <div><label>Nombre del Cultivo:</label><input type="text" id="nc-nombre" placeholder="Ej. Kiwi"></div>
+                <div><label>N (kg/t):</label><input type="number" id="nc-n" step="0.01" value="0"></div>
+                <div><label>P (kg/t):</label><input type="number" id="nc-p" step="0.01" value="0"></div>
+                <div><label>K (kg/t):</label><input type="number" id="nc-k" step="0.01" value="0"></div>
+                <div><label>Mg (kg/t):</label><input type="number" id="nc-mg" step="0.01" value="0"></div>
+                <div><label>Ca (kg/t):</label><input type="number" id="nc-ca" step="0.01" value="0"></div>
+                <div><label>S (kg/t):</label><input type="number" id="nc-s" step="0.01" value="0"></div>
+                <div><label>Umbral Salino CE Gotero (dS/m):</label><input type="number" id="nc-salino" step="0.1" value="2.0"></div>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn-action" onclick="guardarCultivoNuevo()">💾 Guardar Cultivo</button>
+                <button class="btn-action" style="background-color:#94a3b8;" onclick="toggleNuevoCultivoForm()">Cancelar</button>
+            </div>
+            <div class="note" style="margin-top:8px;">
+                Los cultivos que añada aquí se guardan en este navegador (localStorage) y quedan disponibles en el selector de Cultivo de este programa en próximas visitas. Introduzca las extracciones (kg de nutriente por tonelada de producción) tal como las tenga documentadas para ese cultivo.
+            </div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Conceptos de Balance</th>
+                    <th>N</th>
+                    <th>P₂O₅</th>
+                    <th>K₂O</th>
+                    <th>MgO</th>
+                    <th>CaO</th>
+                    <th>SO₃</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #f8fafc; font-weight: bold; color: var(--dark-blue);">
+                    <td style="text-align:left;">Extracciones Unitarias recomendadas (kg/t):</td>
+                    <td><input type="number" id="coeff-n" value="4.00" step="0.05" oninput="calculateAll()"></td>
+                    <td><input type="number" id="coeff-p" value="1.00" step="0.05" oninput="calculateAll()"></td>
+                    <td><input type="number" id="coeff-k" value="3.50" step="0.05" oninput="calculateAll()"></td>
+                    <td><input type="number" id="coeff-mg" value="0.60" step="0.05" oninput="calculateAll()"></td>
+                    <td><input type="number" id="coeff-ca" value="1.50" step="0.05" oninput="calculateAll()"></td>
+                    <td><input type="number" id="coeff-s" value="0.80" step="0.05" oninput="calculateAll()"></td>
+                </tr>
+                <tr style="font-weight: bold;">
+                    <td style="text-align:left; color: #444;">A) Necesidad Base del Cultivo (kg/ha):</td>
+                    <td id="base-n">0.0</td>
+                    <td id="base-p">0.0</td>
+                    <td id="base-k">0.0</td>
+                    <td id="base-mg">0.0</td>
+                    <td id="base-ca">0.0</td>
+                    <td id="base-s">0.0</td>
+                </tr>
+                <tr style="color: #666;">
+                    <td style="text-align:left;">C) Abonado de Fondo (Suelo) (kg/ha):</td>
+                    <td id="fondo-n">0.0</td>
+                    <td id="fondo-p">0.0</td>
+                    <td id="fondo-k">0.0</td>
+                    <td id="fondo-mg">0.0</td>
+                    <td id="fondo-ca">0.0</td>
+                    <td id="fondo-s">0.0</td>
+                </tr>
+                <tr style="color: #666;">
+                    <td style="text-align:left;">D1) Crédito por Agua de Riego (kg/ha):</td>
+                    <td id="water-credit-n">0.0</td>
+                    <td id="water-credit-p">0.0</td>
+                    <td id="water-credit-k">0.0</td>
+                    <td id="water-credit-mg">0.0</td>
+                    <td id="water-credit-ca">0.0</td>
+                    <td id="water-credit-s">0.0</td>
+                </tr>
+                <tr style="color: #666;">
+                    <td style="text-align:left;">D2) Crédito por Ácido de Regulación (kg/ha):</td>
+                    <td id="acid-credit-n">0.0</td>
+                    <td id="acid-credit-p">0.0</td>
+                    <td id="acid-credit-k">0.0</td>
+                    <td id="acid-credit-mg">0.0</td>
+                    <td id="acid-credit-ca">0.0</td>
+                    <td id="acid-credit-s">0.0</td>
+                </tr>
+                <tr style="background-color: #fffde7;">
+                    <td style="text-align:left; font-weight: bold;">E) Extra o Factor de Eficiencia (kg/ha):</td>
+                    <td><input type="number" id="extra-n" value="0" oninput="calculateAll()"></td>
+                    <td><input type="number" id="extra-p" value="0" oninput="calculateAll()"></td>
+                    <td><input type="number" id="extra-k" value="0" oninput="calculateAll()"></td>
+                    <td><input type="number" id="extra-mg" value="0" oninput="calculateAll()"></td>
+                    <td><input type="number" id="extra-ca" value="0" oninput="calculateAll()"></td>
+                    <td><input type="number" id="extra-s" value="0" oninput="calculateAll()"></td>
+                </tr>
+                <tr style="background-color: #e3f2fd; font-weight: bold; color: var(--primary-color); font-size:14px;">
+                    <td style="text-align:left;">= TOTAL A APLICAR (Gotero) (kg/ha):</td>
+                    <td id="target-n">0.0</td>
+                    <td id="target-p">0.0</td>
+                    <td id="target-k">0.0</td>
+                    <td id="target-mg">0.0</td>
+                    <td id="target-ca">0.0</td>
+                    <td id="target-s">0.0</td>
+                </tr>
+                <tr style="font-weight: bold;">
+                    <td style="text-align:left; color: var(--success-color);">TOTAL APORTADO SOLUBLES (kg/ha):</td>
+                    <td id="total-applied-n">0.0</td>
+                    <td id="total-applied-p">0.0</td>
+                    <td id="total-applied-k">0.0</td>
+                    <td id="total-applied-mg">0.0</td>
+                    <td id="total-applied-ca">0.0</td>
+                    <td id="total-applied-s">0.0</td>
+                </tr>
+                <tr id="balance-row" style="font-weight: bold; font-size: 14px;">
+                    <td style="text-align:left;">Diferencia / Balance (kg/ha):</td>
+                    <td id="diff-n">0.0</td>
+                    <td id="diff-p">0.0</td>
+                    <td id="diff-k">0.0</td>
+                    <td id="diff-mg">0.0</td>
+                    <td id="diff-ca">0.0</td>
+                    <td id="diff-s">0.0</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="font-size: 11px; color: #555; text-align: left; margin-top: 5px;">
+            * Nota de Balance: El total exigido en gotero se calcula estrictamente mediante: <strong>TOTAL = Necesidad Base (A) - Fondo (C) - Crédito Agua (D1) - Crédito Ácido (D2) + Extra (E)</strong>.
+        </div>
+    </div>
+
+    <!-- PUNTO 2: ANÁLISIS QUÍMICO DEL AGUA -->
+    <div class="main-tab-content" id="punto-2-container">
+        <div class="section-header">
+            <h2>Punto 2: Análisis de Agua de Riego</h2>
+        </div>
+        <div class="config-grid">
+            <div class="config-card">
+                <h3>Cationes (Carga Positiva)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ion</th>
+                            <th>mg/L (ppm)</th>
+                            <th>meq/L</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Calcio (Ca²⁺)</td>
+                            <td><input type="number" id="water-mg-ca" value="80" oninput="calculateAll()"></td>
+                            <td id="water-meq-ca" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Magnesio (Mg²⁺)</td>
+                            <td><input type="number" id="water-mg-mg" value="24" oninput="calculateAll()"></td>
+                            <td id="water-meq-mg" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Potasio (K⁺)</td>
+                            <td><input type="number" id="water-mg-k" value="8" oninput="calculateAll()"></td>
+                            <td id="water-meq-k" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sodio (Na⁺)</td>
+                            <td><input type="number" id="water-mg-na" value="46" oninput="calculateAll()"></td>
+                            <td id="water-meq-na" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Amonio (NH₄⁺)</td>
+                            <td><input type="number" id="water-mg-nh4" value="0" oninput="calculateAll()"></td>
+                            <td id="water-meq-nh4" style="font-weight:bold;">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-card">
+                <h3>Aniones (Carga Negativa)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ion</th>
+                            <th>mg/L (ppm)</th>
+                            <th>meq/L</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Nitratos (NO₃⁻)</td>
+                            <td><input type="number" id="water-mg-no3" value="15" oninput="calculateAll()"></td>
+                            <td id="water-meq-no3" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Fosfatos (H₂PO₄⁻)</td>
+                            <td><input type="number" id="water-mg-h2po4" value="0" oninput="calculateAll()"></td>
+                            <td id="water-meq-h2po4" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sulfatos (SO₄²⁻)</td>
+                            <td><input type="number" id="water-mg-so4" value="48" oninput="calculateAll()"></td>
+                            <td id="water-meq-so4" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Cloruros (Cl⁻)</td>
+                            <td><input type="number" id="water-mg-cl" value="71" oninput="calculateAll()"></td>
+                            <td id="water-meq-cl" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Bicarbonatos (HCO₃⁻)</td>
+                            <td><input type="number" id="water-mg-hco3" value="183" oninput="calculateAll()"></td>
+                            <td id="water-meq-hco3" style="font-weight:bold;">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ficha de Diagnóstico de Agua Base -->
+        <div class="config-card" style="margin-top: 15px;">
+            <h3>Diagnóstico Físico-Químico del Agua Base</h3>
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <span style="font-weight: bold; color: #555;">C.E. del Agua Base:</span>
+                    <input type="number" id="water-ec" value="0.95" step="0.05" style="width: 75px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()"> dS/m
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Suma Cationes:</span>
+                    <span id="sum-cationes" style="font-weight: bold; color: var(--primary-color);">0.00</span> meq/L
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Suma Aniones:</span>
+                    <span id="sum-aniones" style="font-weight: bold; color: var(--primary-color);">0.00</span> meq/L
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Desviación / Balance:</span>
+                    <span id="water-balance-ratio" class="diag-badge diag-ok">0.0%</span>
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">R.A.S. Sódico (Potasio inc.):</span>
+                    <span id="water-ras-val" style="font-weight: bold; color: var(--warning-color);">0.00</span>
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">pH del Agua:</span>
+                    <input type="number" id="water-ph" value="7.6" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Boro (B, mg/L):</span>
+                    <input type="number" id="water-mg-b" value="0.10" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Hierro (Fe, mg/L):</span>
+                    <input type="number" id="water-mg-fe" value="0.05" step="0.01" style="width: 65px; padding: 4px; text-align: center; display: inline-block; font-weight: bold;" oninput="calculateAll()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico Ampliado del Agua (Riesgo de Infiltración FAO, Dureza, Toxicidad, Obturación, Cloración) -->
+        <div class="config-grid" style="margin-top: 15px;">
+            <div class="config-card">
+                <h3>Parámetros Físicos y Riesgos Agronómicos</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sólidos Totales Disueltos (STD):</td>
+                            <td id="water-std" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Presión Osmótica (Po):</td>
+                            <td id="water-po" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Dureza Total (Grados Franceses):</td>
+                            <td id="water-dureza" style="font-weight:bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Riesgo de Infiltración (FAO-29):</td>
+                            <td id="water-infiltracion" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Riesgo de Obturación Calcárea:</td>
+                            <td id="water-obturacion" class="diag-badge diag-ok">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 10.5px; color: #888; margin-top: 8px;">
+                    * Riesgo de infiltración según Ayers &amp; Westcot (1985, FAO-29). El de obturación es un indicador simplificado (pH + HCO₃⁻ + Ca), no un índice de Langelier/Ryznar completo (requeriría temperatura).
+                </div>
+            </div>
+
+            <div class="config-card">
+                <h3>Toxicidad de Iones Específicos</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Ion</th><th>Valor</th><th>Riesgo</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Cloruro (Cl⁻)</td>
+                            <td id="water-cl-val">-</td>
+                            <td id="water-cl-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sodio (Na⁺)</td>
+                            <td id="water-na-val">-</td>
+                            <td id="water-na-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Boro (B)</td>
+                            <td id="water-b-val">-</td>
+                            <td id="water-b-badge" class="diag-badge diag-ok">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="config-grid" style="margin-top: 15px;">
+            <div class="config-card">
+                <h3>Caja de Ahorros de Nutrientes Gratuitos del Agua (kg/ha·año)</h3>
+                <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+                    Calculado sobre el volumen de riego anual introducido en los 12 meses (Puntos 5-7): <span id="water-vol-anual" style="font-weight:bold;">0</span> m³/ha·año.
+                    Estos kilos ya entran con el agua — <strong>revíselos antes de completar la compra de fertilizante</strong>; esta tabla es solo informativa, no se descuenta automáticamente de las dosis calculadas en los demás puntos.
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Nutriente</th><th>Aporte del Agua (kg/ha·año)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="text-align:left; font-weight:bold;">Nitrógeno (N-NO₃⁻)</td><td id="water-ahorro-n">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Calcio (como CaO)</td><td id="water-ahorro-ca">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Magnesio (como MgO)</td><td id="water-ahorro-mg">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Potasio (como K₂O)</td><td id="water-ahorro-k">-</td></tr>
+                        <tr><td style="text-align:left; font-weight:bold;">Azufre (como SO₃)</td><td id="water-ahorro-s">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-card">
+                <h3>Plan de Cloración y Desinfección</h3>
+                <div style="font-size: 12.5px; line-height:1.5;">
+                    <p><strong>Mantenimiento preventivo (algas/biofilm):</strong> inyectar entre <span id="water-cloro-min" style="font-weight:bold;">-</span> y <span id="water-cloro-max" style="font-weight:bold;">-</span> litros/año de Hipoclorito Sódico (10% cloro activo) al final del riego, sobre el volumen anual indicado arriba.</p>
+                    <p><strong>Oxidación de Hierro disuelto:</strong> mantener una dosis constante de cloro libre en la entrada de filtros de <span id="water-cloro-fe" style="font-weight:bold;">-</span> ppm (mg/L).</p>
+                    <div class="alert-box warn" style="margin-top:10px; font-size:11px;">
+                        ⚠️ <strong>Nunca mezclar</strong> ácidos comerciales con hipoclorito sódico en el mismo recipiente o tanque concentrado: la reacción genera gas de cloro, letal para el operario.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUNTO 3: NEUTRALIZACIÓN DE BICARBONATOS (ÁCIDO) -->
+    <div class="main-tab-content" id="punto-3-container">
+        <div class="section-header">
+            <h2>Punto 3: Neutralización Estequiométrica de Bicarbonatos</h2>
+        </div>
+        <div class="config-grid">
+            <div class="config-card">
+                <h3>Objetivo y Elección de Ácido</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Bicarbonatos en Agua Base (meq/L):</td>
+                            <td id="acid-base-hco3" style="font-weight:bold;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Bicarbonatos Objetivo en Gotero (meq/L):</td>
+                            <td><input type="number" id="acid-target-hco3" value="0.50" step="0.1" oninput="calculateAll()"></td>
+                        </tr>
+                        <tr style="background-color: #fffde7; font-weight:bold;">
+                            <td style="text-align:left;">Bicarbonatos a Neutralizar (meq/L):</td>
+                            <td id="acid-neut-hco3" style="color: var(--danger-color);">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Ácido Comercial a Emplear:</td>
+                            <td>
+                                <select id="acid-selector" class="form-select" onchange="switchAcidType()">
+                                    <option value="Nítrico (60%)">Ácido Nítrico (60%)</option>
+                                    <option value="Fosfórico (75%)">Ácido Fosfórico (75%)</option>
+                                    <option value="Sulfúrico (98%)">Ácido Sulfúrico (98%)</option>
+                                    <option value="Personalizado">Ácido Personalizado</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-card">
+                <h3>Variables Físicas del Ácido Regulador</h3>
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Densidad Comercial (g/cm³):</td>
+                            <td><input type="number" id="acid-density" value="1.37" step="0.01" oninput="calculateAll()"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Riqueza / Pureza Comercial (% peso):</td>
+                            <td><input type="number" id="acid-purity" value="60.0" step="0.5" oninput="calculateAll()"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Peso Equivalente de Reacción (g/eq):</td>
+                            <td><input type="number" id="acid-eq-wt" value="63.0" step="0.5" oninput="calculateAll()"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Panel para Ácido Personalizado -->
+                <div id="custom-acid-nutrients" style="display:none; border-top: 1px solid var(--border-color); padding-top:10px; margin-top:10px;">
+                    <h4 style="margin: 0 0 8px 0; font-size:12px; color: var(--primary-color);">Aporte Nutricional del Ácido Personalizado</h4>
+                    <div style="display:flex; gap:10px;">
+                        <div>
+                            <span style="font-size:11px; font-weight:bold;">% N:</span>
+                            <input type="number" id="acid-custom-n" value="15" style="width:55px; padding:3px;" oninput="calculateAll()">
+                        </div>
+                        <div>
+                            <span style="font-size:11px; font-weight:bold;">% P₂O₅:</span>
+                            <input type="number" id="acid-custom-p" value="0" style="width:55px; padding:3px;" oninput="calculateAll()">
+                        </div>
+                        <div>
+                            <span style="font-size:11px; font-weight:bold;">% SO₃:</span>
+                            <input type="number" id="acid-custom-s" value="0" style="width:55px; padding:3px;" oninput="calculateAll()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ficha de Dosificación de Ácido Comercial -->
+        <div class="config-card" style="margin-top: 15px; border-color: #ffcdd2; background-color: #fffbfa;">
+            <h3>Dosis de Inyección Estequiométrica</h3>
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <span style="font-weight: bold; color: #555;">Dosis de Ácido Comercial (L / m³):</span>
+                    <span id="acid-dose-l" style="font-weight: bold; color: var(--danger-color); font-size: 16px;">0.000</span>
+                </div>
+                <div>
+                    <span style="font-weight: bold; color: #555;">Dosis de Ácido Comercial (g / m³):</span>
+                    <span id="acid-dose-g" style="font-weight: bold; color: var(--danger-color); font-size: 16px;">0.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUNTO 4: ABONADO DE FONDO SÓLIDO (GRANULADOS) -->
+    <div class="main-tab-content" id="punto-4-container">
+        <div class="section-header">
+            <h2>Punto 4: Planificación de Complejos de Fondo Eurochem</h2>
+        </div>
+
+        <div class="adder-panel no-print">
+            <span style="font-weight:bold; color: var(--dark-blue);">Complejo Sólido:</span>
+            <select id="fondo-selector" class="form-select" style="width: 250px;" onchange="updateFondoPreview()">
+                <!-- Se popula con granulados -->
+            </select>
+            <span style="font-weight:bold; color: var(--dark-blue);">Dosis (kg/ha):</span>
+            <input type="number" id="fondo-dosis" class="form-input" style="width: 80px;" value="300" oninput="updateFondoPreview()">
+            <button class="btn-action" onclick="addFondoAbono()">➕ Añadir al Fondo</button>
+            <div id="fondo-preview" class="preview-uf-card"></div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Complejo Sólido de Fondo</th>
+                    <th>Dosis (kg/ha)</th>
+                    <th>N</th>
+                    <th>P₂O₅</th>
+                    <th>K₂O</th>
+                    <th>MgO</th>
+                    <th>CaO</th>
+                    <th>SO₃</th>
+                    <th class="no-print">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="fondo-table-body">
+                <!-- Se llena dinámicamente -->
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f1f5f9; font-weight: bold; color: var(--dark-blue);">
+                    <td>Total Unidades Aplicadas (Fondo):</td>
+                    <td id="total-fondo-dosis">-</td>
+                    <td id="fondo-total-n">0.0</td>
+                    <td id="fondo-total-p">0.0</td>
+                    <td id="fondo-total-k">0.0</td>
+                    <td id="fondo-total-mg">0.0</td>
+                    <td id="fondo-total-ca">0.0</td>
+                    <td id="fondo-total-s">0.0</td>
+                    <td class="no-print">-</td>
+                </tr>
+                <tr style="background-color: #e0f2f1; font-weight: bold; color: var(--success-color);">
+                    <td>% Cobertura Fondo vs Necesidad Base A:</td>
+                    <td>-</td>
+                    <td id="cober-fondo-n">0.0%</td>
+                    <td id="cober-fondo-p">0.0%</td>
+                    <td id="cober-fondo-k">0.0%</td>
+                    <td id="cober-fondo-mg">0.0%</td>
+                    <td id="cober-fondo-ca">0.0%</td>
+                    <td id="cober-fondo-s">0.0%</td>
+                    <td class="no-print">-</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- APLICACIÓN FOLIAR (macro y micronutrientes vía hoja) -->
+        <div class="section-header" style="margin-top: 30px;">
+            <h2>Aplicación Foliar (Correctores y Foliares Eurochem)</h2>
+        </div>
+
+        <div class="adder-panel no-print">
+            <span style="font-weight:bold; color: var(--dark-blue);">Producto Foliar:</span>
+            <select id="foliar-selector" class="form-select" style="width: 250px;" onchange="updateFoliarPreview()">
+                <!-- Se popula con foliaresDB -->
+            </select>
+            <span style="font-weight:bold; color: var(--dark-blue);">Dosis (kg o L/ha):</span>
+            <input type="number" id="foliar-dosis" class="form-input" style="width: 80px;" value="2" step="0.1" oninput="updateFoliarPreview()">
+            <button class="btn-action" onclick="addFoliarAbono()">➕ Añadir Aplicación Foliar</button>
+            <button class="btn-action" style="background-color:#0d9488;" onclick="toggleNuevoFoliarForm()">📋 Definir Producto Foliar Nuevo</button>
+            <div id="foliar-preview" class="preview-uf-card"></div>
+        </div>
+
+        <div id="nuevo-foliar-form" class="config-card no-print" style="display:none; margin-bottom: 15px; border-color: #0d9488;">
+            <h3>Definir Producto Foliar / Corrector Nuevo (% p/p o p/v según ficha del producto)</h3>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                <div><label>Nombre del Producto:</label><input type="text" id="nf-nombre" placeholder="Ej. Nitrofoska Foliar"></div>
+                <div><label>N (%):</label><input type="number" id="nf-n" step="0.01" value="0"></div>
+                <div><label>P₂O₅ (%):</label><input type="number" id="nf-p" step="0.01" value="0"></div>
+                <div><label>K₂O (%):</label><input type="number" id="nf-k" step="0.01" value="0"></div>
+                <div><label>MgO (%):</label><input type="number" id="nf-mg" step="0.01" value="0"></div>
+                <div><label>CaO (%):</label><input type="number" id="nf-ca" step="0.01" value="0"></div>
+                <div><label>SO₃ (%):</label><input type="number" id="nf-s" step="0.01" value="0"></div>
+                <div><label>Fe (%):</label><input type="number" id="nf-fe" step="0.001" value="0"></div>
+                <div><label>Mn (%):</label><input type="number" id="nf-mn" step="0.001" value="0"></div>
+                <div><label>Zn (%):</label><input type="number" id="nf-zn" step="0.001" value="0"></div>
+                <div><label>Cu (%):</label><input type="number" id="nf-cu" step="0.001" value="0"></div>
+                <div><label>B (%):</label><input type="number" id="nf-b" step="0.001" value="0"></div>
+                <div><label>Mo (%):</label><input type="number" id="nf-mo" step="0.0001" value="0"></div>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn-action" onclick="guardarFoliarNuevo()">💾 Guardar Producto</button>
+                <button class="btn-action" style="background-color:#94a3b8;" onclick="toggleNuevoFoliarForm()">Cancelar</button>
+            </div>
+            <div class="note" style="margin-top:8px;">
+                Introduzca los % de la ficha técnica real del producto (etiqueta/PDS). Los productos definidos aquí se guardan en este navegador y quedan disponibles en el selector de "Producto Foliar" en próximas visitas.
+            </div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Producto Foliar</th>
+                    <th>Dosis</th>
+                    <th>N</th>
+                    <th>P₂O₅</th>
+                    <th>K₂O</th>
+                    <th>MgO</th>
+                    <th>CaO</th>
+                    <th>SO₃</th>
+                    <th>Fe</th>
+                    <th>Mn</th>
+                    <th>Zn</th>
+                    <th>Cu</th>
+                    <th>B</th>
+                    <th>Mo</th>
+                    <th class="no-print">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="foliar-table-body">
+                <!-- Se llena dinámicamente -->
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f1f5f9; font-weight: bold; color: var(--dark-blue);">
+                    <td>Total Aportado por Vía Foliar (kg/ha macros, g/ha micros):</td>
+                    <td id="total-foliar-dosis">-</td>
+                    <td id="foliar-total-n">0.0</td>
+                    <td id="foliar-total-p">0.0</td>
+                    <td id="foliar-total-k">0.0</td>
+                    <td id="foliar-total-mg">0.0</td>
+                    <td id="foliar-total-ca">0.0</td>
+                    <td id="foliar-total-s">0.0</td>
+                    <td id="foliar-total-fe">0.0</td>
+                    <td id="foliar-total-mn">0.0</td>
+                    <td id="foliar-total-zn">0.0</td>
+                    <td id="foliar-total-cu">0.0</td>
+                    <td id="foliar-total-b">0.0</td>
+                    <td id="foliar-total-mo">0.00</td>
+                    <td class="no-print">-</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div style="font-size: 10.5px; color: #888; margin-top: 5px;">
+            * El aporte foliar es complementario al abonado de fondo/fertirrigación (Puntos 4-7): la vía foliar corrige carencias puntuales de forma rápida pero aporta cantidades pequeñas de nutriente en comparación con el aporte radicular, especialmente para macronutrientes móviles como el N-K. No sustituye el plan de fondo/fertirrigación.
+        </div>
+    </div>
+
+    <!-- PUNTO 5: PLANIFICACIÓN MENSUAL (FASES FIJAS v52 CON NAV v61) -->
+    <div class="main-tab-content" id="punto-5-container">
+        <div class="section-header">
+            <h2>Punto 5: Planificación Mensual y Suministro por Fases</h2>
+        </div>
+
+        <!-- 12 PESTAÑAS MENSUALES ESTILO v52 (no-print) -->
+        <div class="month-tabs-container no-print">
+            <button class="month-tab-btn active" id="mbtn-1" onclick="switchMonth(1)">Enero</button>
+            <button class="month-tab-btn" id="mbtn-2" onclick="switchMonth(2)">Febrero</button>
+            <button class="month-tab-btn" id="mbtn-3" onclick="switchMonth(3)">Marzo</button>
+            <button class="month-tab-btn" id="mbtn-4" onclick="switchMonth(4)">Abril</button>
+            <button class="month-tab-btn" id="mbtn-5" onclick="switchMonth(5)">Mayo</button>
+            <button class="month-tab-btn" id="mbtn-6" onclick="switchMonth(6)">Junio</button>
+            <button class="month-tab-btn" id="mbtn-7" onclick="switchMonth(7)">Julio</button>
+            <button class="month-tab-btn" id="mbtn-8" onclick="switchMonth(8)">Agosto</button>
+            <button class="month-tab-btn" id="mbtn-9" onclick="switchMonth(9)">Septiembre</button>
+            <button class="month-tab-btn" id="mbtn-10" onclick="switchMonth(10)">Octubre</button>
+            <button class="month-tab-btn" id="mbtn-11" onclick="switchMonth(11)">Noviembre</button>
+            <button class="month-tab-btn" id="mbtn-12" onclick="switchMonth(12)">Diciembre</button>
+        </div>
+
+        <!-- BLOQUE MENSUAL DE CALCULO (POPULADO DINÁMICAMENTE) -->
+        <div id="monthly-containers-box">
+            <!-- Los 12 paneles residen aquí de forma estática pero se ocultan/muestran por pestaña -->
+        </div>
+    </div>
+
+    <!-- PUNTO 7: EQUILIBRIO DE SONNEVELD EN EMISOR (GOTERO) -->
+    <div class="main-tab-content" id="punto-7-container">
+        <div class="section-header">
+            <h2 id="sonneveld-phase-header">Equilibrio Químico en Gotero</h2>
+            <div class="no-print">
+                <span style="font-weight: bold; font-size: 13px; color: var(--primary-color); margin-right: 8px;">Fase / Mes a Evaluar:</span>
+                <select id="sonneveld-month-selector" class="form-select" style="width: 180px; display: inline-block;" onchange="switchSonneveldMonth()">
+                    <option value="1">1 - Enero</option>
+                    <option value="2">2 - Febrero</option>
+                    <option value="3">3 - Marzo</option>
+                    <option value="4">4 - Abril</option>
+                    <option value="5">5 - Mayo</option>
+                    <option value="6">6 - Junio</option>
+                    <option value="7">7 - Julio</option>
+                    <option value="8">8 - Agosto</option>
+                    <option value="9">9 - Septiembre</option>
+                    <option value="10">10 - Octubre</option>
+                    <option value="11">11 - Noviembre</option>
+                    <option value="12">12 - Diciembre</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Sugerencia Agronómica según Fase Fenológica de la Solución Nutritiva -->
+        <div class="config-card" id="fase-suggestion-card" style="border-color: #b2dfdb; background-color: #fafffe; margin-bottom: 15px;">
+            <h3 style="color: var(--primary-color);">🧭 Orientación de la Solución Nutritiva según la Fase (Punto 5)</h3>
+            <div id="fase-info-box" style="font-size: 12px; margin-bottom: 10px;">
+                <span><strong>Fase seleccionada:</strong> <span id="fase-label">-</span></span> &nbsp;|&nbsp;
+                <span><strong>Prioridad habitual:</strong> <span id="fase-prioridad">-</span></span> &nbsp;|&nbsp;
+                <span><strong>Tendencia esperada:</strong> <span id="fase-tendencia">-</span></span>
+            </div>
+            <div id="fase-suggestions-list"></div>
+            <div style="font-size: 10.5px; color: #888; margin-top: 8px;">
+                * Prioridades orientativas (no receta numérica universal) según guía de fertirrigación con base FAO/Penn State/OSU/UF-IFAS.
+                Las sugerencias combinan esa prioridad con los rangos Sonneveld ya calculados abajo — no sustituyen el análisis foliar ni el criterio agronómico.
+            </div>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-card">
+                <h3>Cationes Resultantes</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ion</th>
+                            <th>meq/L</th>
+                            <th>mg/L (ppm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Calcio (Ca²⁺)</td>
+                            <td id="gotero-meq-ca" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-ca">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Magnesio (Mg²⁺)</td>
+                            <td id="gotero-meq-mg" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-mg">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Potasio (K⁺)</td>
+                            <td id="gotero-meq-k" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-k">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sodio (Na⁺)</td>
+                            <td id="gotero-meq-na" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-na">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Amonio (NH₄⁺)</td>
+                            <td id="gotero-meq-nh4" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-nh4">0.0</td>
+                        </tr>
+                        <tr style="background-color: #f1f5f9; font-weight:bold; color: var(--dark-blue);">
+                            <td style="text-align:left;">Suma Cationes:</td>
+                            <td id="gotero-total-cationes-meq">0.00</td>
+                            <td id="gotero-total-cationes-mg">0.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-card">
+                <h3>Aniones Resultantes</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ion</th>
+                            <th>meq/L</th>
+                            <th>mg/L (ppm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Nitratos (NO₃⁻)</td>
+                            <td id="gotero-meq-no3" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-no3">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Fosfatos (H₂PO₄⁻)</td>
+                            <td id="gotero-meq-h2po4" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-h2po4">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Sulfatos (SO₄²⁻)</td>
+                            <td id="gotero-meq-so4" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-so4">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Cloruros (Cl⁻)</td>
+                            <td id="gotero-meq-cl" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-cl">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; font-weight:bold;">Bicarbonatos (HCO₃⁻)</td>
+                            <td id="gotero-meq-hco3" style="font-weight:bold;">0.00</td>
+                            <td id="gotero-mg-hco3">0.0</td>
+                        </tr>
+                        <tr style="background-color: #f1f5f9; font-weight:bold; color: var(--dark-blue);">
+                            <td style="text-align:left;">Suma Aniones:</td>
+                            <td id="gotero-total-aniones-meq">0.00</td>
+                            <td id="gotero-total-aniones-mg">0.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tríada Catiónica Sonneveld -->
+        <div class="config-card" style="margin-top: 15px;">
+            <h3 style="color: var(--primary-color);">Equilibrio Catiónico de Sonneveld (Distribución K : Ca : Mg %)</h3>
+            <div class="triad-bar">
+                <div id="triad-pct-k" class="triad-k" style="width: 33.3%;">K: 33%</div>
+                <div id="triad-pct-ca" class="triad-ca" style="width: 33.3%;">Ca: 33%</div>
+                <div id="triad-pct-mg" class="triad-mg" style="width: 33.4%;">Mg: 33%</div>
+            </div>
+            <div style="font-size: 11px; color: #555; text-align: center;">
+                * Equilibrio Catiónico Óptimo de Sonneveld: <strong>K (35 - 40%) : Ca (45 - 50%) : Mg (10 - 15%)</strong>.
+            </div>
+        </div>
+
+        <!-- Relaciones Molares Sonneveld en Gotero -->
+        <div class="config-card" style="margin-top: 15px;">
+            <h3>Diagnóstico de Relaciones Molares Clave (Sonneveld)</h3>
+            <table class="data-table">
+    <thead>
+        <tr>
+            <th>Relación Molar Calculada</th>
+            <th>Valor Real</th>
+            <th>Rango Óptimo Sonneveld</th>
+            <th>Diagnóstico / Comentario Técnico</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align:left; font-weight:bold;">K / (Ca + Mg) Molar</td>
+            <td id="ratio-k-ca-mg" style="font-weight:bold;">0.00</td>
+            <td>0.30 - 0.50</td>
+            <td id="comment-k-ca-mg" style="font-weight:bold; font-size:11px; text-align:left;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align:left; font-weight:bold;">Ca / Mg Molar</td>
+            <td id="ratio-ca-mg" style="font-weight:bold;">0.00</td>
+            <td>2.50 - 5.00</td>
+            <td id="comment-ca-mg" style="font-weight:bold; font-size:11px; text-align:left;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align:left; font-weight:bold;">K / Mg Molar</td>
+            <td id="ratio-k-mg" style="font-weight:bold;">0.00</td>
+            <td>1.50 - 3.00</td>
+            <td id="comment-k-mg" style="font-weight:bold; font-size:11px; text-align:left;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align:left; font-weight:bold;">N / K Molar</td>
+            <td id="ratio-n-k" style="font-weight:bold;">0.00</td>
+            <td>1.00 - 1.60</td>
+            <td id="comment-n-k" style="font-weight:bold; font-size:11px; text-align:left;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align:left; font-weight:bold;">N / P Molar</td>
+            <td id="ratio-n-p" style="font-weight:bold;">0.00</td>
+            <td>8.00 - 12.00</td>
+            <td id="comment-n-p" style="font-weight:bold; font-size:11px; text-align:left;">-</td>
+        </tr>
+    </tbody>
+</table>
+            <div style="font-size: 11px; color: #555; text-align: left; padding: 5px;">
+                * Nota de Electroneutralidad de la gota final en el gotero: <span id="gotero-electroneutralidad" style="font-weight:bold; color: var(--success-color);">0.0%</span>.
+            </div>
+            <div style="font-size: 10.5px; color: #888; text-align: left; padding: 0 5px 5px;">
+                * La CE (Punto 5) es un buen control global de sales, pero no indica qué nutriente concreto falta o sobra: una CE correcta puede coexistir con un desequilibrio de K, Ca, Mg o N. Usa siempre esta tabla de ratios como complemento a la CE, no como sustituto.
+            </div>
+        </div>
+
+        <!-- Soluciones Nutritivas de Referencia (Hidroponía) - SOLO COMPARATIVO -->
+        <div class="config-card" style="margin-top: 15px; border-color: #d1c4e9; background-color: #fbfaff;">
+            <h3 style="color: var(--primary-color);">📚 Soluciones Nutritivas Clásicas de Hidroponía (Solo Referencia)</h3>
+            <div style="font-size: 11px; color: #555; text-align: left; padding: 0 5px 8px;">
+                <strong>Aviso importante:</strong> Steiner, Hoagland &amp; Arnon I/II, Long Ashton–Hewitt y Knop son fórmulas
+                clásicas desarrolladas para <strong>cultivo sin suelo</strong> (hidroponía / sustrato inerte), donde el 100% de la
+                nutrición procede de la solución. <strong>No son directamente aplicables a la fertirrigación en suelo</strong> de este
+                programa, ya que en suelo el propio terreno aporta y amortigua nutrientes (CIC, materia orgánica, fertilidad
+                residual). Se muestran aquí únicamente como <strong>referencia comparativa del equilibrio iónico</strong> (macros en
+                meq/L, micros en ppm), para que puedas ver cuánto se parece o se aleja tu solución calculada de estos patrones
+                clásicos — no sustituyen el cálculo de necesidades en kg/ha de este programa.
+            </div>
+            <div style="overflow-x:auto;">
+            <table class="data-table" style="font-size: 11px;">
+                <thead>
+                    <tr>
+                        <th>Solución</th>
+                        <th>N-NH₄⁺<br>meq/L</th>
+                        <th>N-NO₃⁻<br>meq/L</th>
+                        <th>P-H₂PO₄⁻<br>meq/L</th>
+                        <th>S-SO₄²⁻<br>meq/L</th>
+                        <th>K⁺<br>meq/L</th>
+                        <th>Ca²⁺<br>meq/L</th>
+                        <th>Mg²⁺<br>meq/L</th>
+                        <th>Fe<br>ppm</th>
+                        <th>Mn<br>ppm</th>
+                        <th>Zn<br>ppm</th>
+                        <th>B<br>ppm</th>
+                        <th>Cu<br>ppm</th>
+                        <th>Mo<br>ppm</th>
+                    </tr>
+                </thead>
+                <tbody id="ref-hidroponia-tbody">
+                    <!-- filas generadas por JS a partir de SOLUCIONES_REFERENCIA_HIDROPONIA -->
+                </tbody>
+                <tbody>
+                    <tr style="background-color: #ede7f6; font-weight:bold;">
+                        <td style="text-align:left;">➡ Tu solución calculada (gotero, este mes/fase)</td>
+                        <td id="ref-mi-nh4">0.00</td>
+                        <td id="ref-mi-no3">0.00</td>
+                        <td id="ref-mi-p">0.00</td>
+                        <td id="ref-mi-s">0.00</td>
+                        <td id="ref-mi-k">0.00</td>
+                        <td id="ref-mi-ca">0.00</td>
+                        <td id="ref-mi-mg">0.00</td>
+                        <td colspan="6" style="font-weight:normal; font-style:italic; color:#888;">Micros no calculados en este punto</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUNTO 8: DICTAMEN AGRONÓMICO DE RIESGOS (PREVENTIVO) -->
+    <div class="main-tab-content" id="punto-8-container">
+        <div class="section-header">
+            <h2>Punto 8: Dictamen Agronómico y Evaluación de Riesgos</h2>
+        </div>
+        <div id="dictamen-alerts-container">
+            <!-- Las alertas de diagnósticos residen aquí -->
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA PROFESIONAL DE EUROCHEM -->
+    <div class="footer-credits">
+        <p style="margin: 0; font-weight: bold; color: var(--dark-blue);">Plan Master de Fertirrigación Experto — Eurochem Agro Iberia</p>
+        <p style="margin: 3px 0 0 0;">Desarrollado y Auditado por G. Morales</p>
+        <p style="margin: 2px 0 0 0; font-size: 9px; color: #999;">© 2026 G. Morales & Eurochem Agro Iberia. Reservados todos los derechos. Generado para uso offline 100% interactivo.</p>
+    </div>
+
+    <!-- CÓDIGO DE BASE DE DATOS Y MOTOR LÓGICO DE LA VERSIÓN 71 -->
+    <script>
+        // 58 Cultivos con Coeficientes de Extracción (kg/t) y Límites de Salinidad (dS/m)
+        const cultivoExtracciones = {
+            "Caqui (Kaki)": { n: 4.00, p: 1.00, k: 3.50, mg: 0.60, ca: 1.50, s: 0.80 },
+            "Pimiento": { n: 5.00, p: 1.60, k: 6.50, mg: 0.80, ca: 2.00, s: 0.90 },
+            "Tomate": { n: 3.00, p: 1.00, k: 5.50, mg: 0.80, ca: 2.00, s: 0.70 },
+            "Limonero": { n: 5.00, p: 1.20, k: 4.00, mg: 0.80, ca: 1.80, s: 0.90 },
+            "Mandarino": { n: 5.00, p: 1.10, k: 3.80, mg: 0.70, ca: 1.60, s: 0.85 },
+            "Naranjo": { n: 5.00, p: 1.00, k: 3.50, mg: 0.60, ca: 1.50, s: 0.80 },
+            "Olivar SI": { n: 8.00, p: 4.00, k: 12.00, mg: 1.20, ca: 2.50, s: 1.00 },
+            "Olivar": { n: 12.00, p: 4.00, k: 10.00, mg: 4.00, ca: 8.00, s: 2.00 },
+            "Aguacate": { n: 20.00, p: 15.00, k: 20.00, mg: 1.50, ca: 1.00, s: 1.10 },
+            "Almendro (pepita)": { n: 65.00, p: 25.00, k: 70.00, mg: 15.00, ca: 20.00, s: 5.00 },
+            "Cebolla": { n: 4.00, p: 1.20, k: 4.50, mg: 0.80, ca: 1.50, s: 0.75 },
+            "Patata": { n: 4.50, p: 1.80, k: 7.50, mg: 0.80, ca: 1.00, s: 0.90 },
+            "Fresa": { n: 4.50, p: 1.50, k: 6.50, mg: 1.00, ca: 2.00, s: 1.00 },
+            "Pistacho (grano seco)": { n: 55.00, p: 20.00, k: 60.00, mg: 12.00, ca: 18.00, s: 4.50 },
+            "Vid vinificación": { n: 4.00, p: 1.50, k: 5.00, mg: 1.00, ca: 2.00, s: 0.90 },
+            "Trigo blando": { n: 35.00, p: 10.00, k: 18.00, mg: 4.00, ca: 6.00, s: 3.50 },
+            "Cebada": { n: 22.00, p: 10.00, k: 20.00, mg: 4.00, ca: 5.00, s: 3.00 },
+            "Maíz grano": { n: 35.00, p: 10.00, k: 25.00, mg: 5.00, ca: 4.00, s: 3.50 },
+            "Espárrago": { n: 10.00, p: 3.00, k: 12.00, mg: 1.50, ca: 3.00, s: 2.0 },
+            "Colza": { n: 60.00, p: 30.00, k: 45.00, mg: 12.00, ca: 25.00, s: 6.50 },
+            "Algodón": { n: 55.00, p: 25.00, k: 55.00, mg: 12.00, ca: 18.00, s: 6.00 }
+        };
+
+        const limitesSalinos = {
+            "Caqui (Kaki)": 2.0,
+            "Pimiento": 1.5,
+            "Tomate": 2.5,
+            "Limonero": 1.7,
+            "Mandarino": 1.7,
+            "Naranjo": 1.7,
+            "Olivar SI": 3.5,
+            "Olivar": 3.5,
+            "Aguacate": 1.3,
+            "Almendro (pepita)": 1.5,
+            "Cebolla": 1.2,
+            "Patata": 1.7,
+            "Fresa": 1.0,
+            "Pistacho (grano seco)": 4.5,
+            "Vid vinificación": 1.5,
+            "Trigo blando": 6.0,
+            "Cebada": 8.0,
+            "Maíz grano": 1.7,
+            "Espárrago": 1.5,
+            "Colza": 1.5,
+            "Algodón": 7.7
+        };
+
+        // Cultivos personalizados añadidos por el usuario (localStorage). Se fusionan con los catálogos
+        // fijos cultivoExtracciones/limitesSalinos justo después de cargarlos, así el resto del programa
+        // (selector, cálculo de necesidades, alertas de salinidad) los trata exactamente igual que los
+        // cultivos predefinidos, sin necesidad de tocar ninguna otra parte del código.
+        const CULTIVOS_CUSTOM_KEY = "fertirrigacion_cultivos_custom_v1";
+        function cargarCultivosPersonalizados() {
+            try {
+                const guardados = JSON.parse(localStorage.getItem(CULTIVOS_CUSTOM_KEY) || "{}");
+                Object.keys(guardados).forEach(nombre => {
+                    cultivoExtracciones[nombre] = guardados[nombre].extracciones;
+                    limitesSalinos[nombre] = guardados[nombre].salino;
+                });
+            } catch (e) {
+                console.warn("No se pudieron cargar los cultivos personalizados:", e);
+            }
+        }
+        cargarCultivosPersonalizados();
+
+        function toggleNuevoCultivoForm() {
+            const div = document.getElementById("nuevo-cultivo-form");
+            div.style.display = (div.style.display === "none") ? "block" : "none";
+        }
+
+        function guardarCultivoNuevo() {
+            const nombre = document.getElementById("nc-nombre").value.trim();
+            if (!nombre) { alert("Introduce un nombre para el cultivo."); return; }
+            if (cultivoExtracciones[nombre]) {
+                if (!confirm(`Ya existe un cultivo llamado "${nombre}". ¿Sobrescribir sus valores?`)) return;
+            }
+            const extracciones = {
+                n: parseFloat(document.getElementById("nc-n").value) || 0,
+                p: parseFloat(document.getElementById("nc-p").value) || 0,
+                k: parseFloat(document.getElementById("nc-k").value) || 0,
+                mg: parseFloat(document.getElementById("nc-mg").value) || 0,
+                ca: parseFloat(document.getElementById("nc-ca").value) || 0,
+                s: parseFloat(document.getElementById("nc-s").value) || 0
+            };
+            const salino = parseFloat(document.getElementById("nc-salino").value) || 2.0;
+
+            cultivoExtracciones[nombre] = extracciones;
+            limitesSalinos[nombre] = salino;
+
+            let guardados = {};
+            try { guardados = JSON.parse(localStorage.getItem(CULTIVOS_CUSTOM_KEY) || "{}"); } catch (e) { guardados = {}; }
+            guardados[nombre] = { extracciones, salino };
+            localStorage.setItem(CULTIVOS_CUSTOM_KEY, JSON.stringify(guardados));
+
+            // Repoblar el selector de cultivos y seleccionar el recién creado
+            const cropSel = document.getElementById("crop-selector");
+            if (!Array.from(cropSel.options).some(o => o.value === nombre)) {
+                const opt = document.createElement("option");
+                opt.value = nombre;
+                opt.textContent = nombre + " (personalizado)";
+                cropSel.appendChild(opt);
+            }
+            cropSel.value = nombre;
+            toggleNuevoCultivoForm();
+            loadSelectedCrop();
+            alert(`Cultivo "${nombre}" guardado. Ya está disponible en el selector de Cultivo.`);
+        }
+
+        // Prioridades y tendencias nutricionales por fase fenológica (guía conceptual, no receta
+        // numérica universal — fuente: Guía práctica de fertirrigación, sección 10, con base FAO/
+        // Penn State/OSU/UF-IFAS). Se usa para interpretar los ratios Sonneveld ya calculados en el
+        // Punto 7 en función del momento del cultivo, no para sustituir sus rangos numéricos.
+        const FASES_INFO = {
+            sin_fase: { label: "Sin fase específica / Reposo", prioridad: "—", tendencia: "Sin prioridad nutricional específica definida para esta fase.", objetivo: "—" },
+            arranque: { label: "Arranque / Brotación", prioridad: "N + P + Ca", tendencia: "N moderado; P disponible; Ca estable; CE moderada", objetivo: "Raíz, brotación y establecimiento" },
+            vegetativo: { label: "Crecimiento vegetativo", prioridad: "N + K + Ca + Mg", tendencia: "Sube N/K según demanda; Mg y S acompañan", objetivo: "Biomasa y área foliar" },
+            floracion: { label: "Prefloración / Floración", prioridad: "P + K + Ca + B", tendencia: "Reducir dependencia de N; reforzar K/Ca; micronutrientes según cultivo", objetivo: "Floración, cuajado" },
+            cuajado: { label: "Cuajado / Crecimiento de fruto", prioridad: "K + Ca + Mg", tendencia: "K alto relativo; Ca estable; N controlado", objetivo: "Translocación, calibre y calidad" },
+            engorde: { label: "Engorde / Llenado", prioridad: "K + Ca + Mg", tendencia: "K dominante; N moderado-bajo", objetivo: "Materia seca, calibre y calidad" },
+            maduracion: { label: "Maduración", prioridad: "K; N bajo", tendencia: "Reducir N; mantener K según cultivo", objetivo: "Calidad y maduración" },
+            precosecha: { label: "Pre-cosecha", prioridad: "Según extracción y análisis", tendencia: "Evitar exceso de CE y de N", objetivo: "No forzar crecimiento vegetativo" }
+        };
+
+        // Soluciones nutritivas clásicas de hidroponía / cultivo sin suelo (Punto 7).
+        // SOLO REFERENCIA COMPARATIVA: no aplicables directamente a fertirrigación en suelo.
+        // Macros en meq/L, micros en ppm. Fuente: fórmulas estándar publicadas (Steiner;
+        // Hoagland & Arnon I/II; Long Ashton-Hewitt; Knop).
+        const SOLUCIONES_REFERENCIA_HIDROPONIA = [
+            { nombre: "Steiner 100%", nh4: 0, no3: 12, p: 1, s: 7, k: 7, ca: 9, mg: 4, fe: 1.33, mn: 0.62, zn: 0.11, b: 0.05, cu: 0.02, mo: 0.04 },
+            { nombre: "Hoagland & Arnon I", nh4: 0, no3: 15, p: 1, s: 4, k: 6, ca: 10, mg: 4, fe: 1, mn: 0.5, zn: 0.05, b: 0.5, cu: 0.02, mo: 0.048 },
+            { nombre: "Hoagland & Arnon II", nh4: 1, no3: 14, p: 1, s: 4, k: 6, ca: 8, mg: 4, fe: 1, mn: 0.5, zn: 0.05, b: 0.5, cu: 0.02, mo: 0.011 },
+            { nombre: "Long Ashton – Hewitt", nh4: 0, no3: 12, p: 1.32, s: 3, k: 4, ca: 8, mg: 3, fe: 2.8, mn: 0.55, zn: 0.065, b: 0.54, cu: 0.064, mo: 0.048 },
+            { nombre: "Knop", nh4: 0, no3: 14.66, p: 1.84, s: 2.03, k: 4.31, ca: 12.19, mg: 2.03, fe: 0, mn: 0, zn: 0, b: 0, cu: 0, mo: 0 }
+        ];
+
+        function renderSolucionesReferenciaHidroponia() {
+            const tbody = document.getElementById("ref-hidroponia-tbody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            SOLUCIONES_REFERENCIA_HIDROPONIA.forEach(sol => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold;">${sol.nombre}</td>
+                    <td>${sol.nh4.toFixed(2)}</td>
+                    <td>${sol.no3.toFixed(2)}</td>
+                    <td>${sol.p.toFixed(2)}</td>
+                    <td>${sol.s.toFixed(2)}</td>
+                    <td>${sol.k.toFixed(2)}</td>
+                    <td>${sol.ca.toFixed(2)}</td>
+                    <td>${sol.mg.toFixed(2)}</td>
+                    <td>${sol.fe}</td>
+                    <td>${sol.mn}</td>
+                    <td>${sol.zn}</td>
+                    <td>${sol.b}</td>
+                    <td>${sol.cu}</td>
+                    <td>${sol.mo}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Complejos Granulados de Fondo (Punto 4). Catálogo completo de 23 fórmulas EuroChem, tomado
+        // literalmente de la tabla oficial "Formulaciones granuladas Eurochem completas" (N total,
+        // N nítrico, N amoniacal, P2O5, K2O, SO3, MgO, CaO). nh4/no3 en % absoluto del producto
+        // (mismo convenio que solublesDB), no en % del N — nh4+no3 = n en cada fila.
+        // Origen del K e inhibidor de nitrificación (informativo, no usado en el cálculo numérico):
+        // Nitrofoska Especiales/MOP-Nitrofos = sin inhibidor; ENTEC/ENTEC Nitrofoska = DMPP;
+        // ENTEC EVO = DMPSA. El origen del K (sulfato potásico vs MOP/cloruro potásico) también consta
+        // en la tabla original si se necesita para decisiones de cultivos sensibles al cloro.
+        const granuladosDB = {
+            // --- Nitrofoska Especiales (sin inhibidor, K de sulfato potásico) ---
+            "Nitrofoska Special 12-12-17": { n: 12, no3: 4.8, nh4: 7.2, p: 12, k: 17, mg: 2, ca: 0, s: 20 },
+            "Nitrofoska Perfect 15-5-20": { n: 15, no3: 7, nh4: 8, p: 5, k: 20, mg: 2, ca: 0, s: 22.5 },
+            "Nitrofoska Super 20-5-10": { n: 20, no3: 9.5, nh4: 10.5, p: 5, k: 10, mg: 3, ca: 0, s: 12.5 },
+            // --- Nitrofoska MOP/Nitrofos (sin inhibidor, K de MOP/cloruro potásico) ---
+            "Nitrofoska MOP 12-20-12": { n: 12, no3: 4.5, nh4: 7.5, p: 20, k: 12, mg: 0, ca: 0, s: 0 },
+            "Nitrofoska MOP 15-15-15": { n: 15, no3: 6, nh4: 9, p: 15, k: 15, mg: 0, ca: 0, s: 5 },
+            "Nitrofoska MOP 22-8-10": { n: 22, no3: 10.2, nh4: 11.8, p: 8, k: 10, mg: 0, ca: 0, s: 2.5 },
+            "Nitrofoska Nitrofos 20-20": { n: 20, no3: 8.2, nh4: 11.8, p: 20, k: 0, mg: 0, ca: 0, s: 5 },
+            "Nitrofoska N Plus 22-5-5": { n: 22, no3: 10, nh4: 12, p: 5, k: 5, mg: 2, ca: 0, s: 7.5 },
+            // --- ENTEC (inhibidor DMPP) ---
+            "ENTEC 12-20-12": { n: 12, no3: 3.9, nh4: 8.1, p: 20, k: 12, mg: 0, ca: 0, s: 5 },
+            "ENTEC 13-9-16": { n: 13, no3: 3.6, nh4: 9.4, p: 9, k: 16, mg: 4, ca: 0, s: 20 },
+            "ENTEC 13-10-20": { n: 13, no3: 3.7, nh4: 9.3, p: 10, k: 20, mg: 0, ca: 0, s: 12.5 },
+            "ENTEC 15-13-13": { n: 15, no3: 5, nh4: 10, p: 13, k: 13, mg: 0, ca: 0, s: 12.5 },
+            "ENTEC 20-8-10": { n: 20, no3: 8.8, nh4: 11.2, p: 8, k: 10, mg: 2, ca: 0, s: 7.5 },
+            "ENTEC 20-10-10": { n: 20, no3: 8.6, nh4: 11.4, p: 10, k: 10, mg: 0, ca: 0, s: 7.5 },
+            "ENTEC 24-8-7": { n: 24, no3: 10.8, nh4: 13.3, p: 8, k: 7, mg: 0, ca: 0, s: 5 },
+            "ENTEC 25-15": { n: 25, no3: 11, nh4: 14, p: 15, k: 0, mg: 0, ca: 0, s: 2.5 },
+            // --- ENTEC Nitrofoska (inhibidor DMPP, K de sulfato potásico) ---
+            // Nombre "Especial" (no "Special") y sin desglose NPK en la clave, conservados tal cual
+            // para no romper la referencia por defecto en fondoItems.
+            "ENTEC Nitrofoska Especial 12-12-17": { n: 12, no3: 4.8, nh4: 7.2, p: 12, k: 17, mg: 2, ca: 0, s: 20 },
+            "ENTEC Nitrofoska 14-7-17": { n: 14, no3: 6.1, nh4: 7.9, p: 7, k: 17, mg: 2, ca: 0, s: 22.5 },
+            "ENTEC Nitrofoska 21-8-11": { n: 21, no3: 9.7, nh4: 11.3, p: 8, k: 11, mg: 0, ca: 0, s: 10 },
+            // --- ENTEC EVO (inhibidor DMPSA, base cálcica sin K ni P) ---
+            "ENTEC Evo 24": { n: 24, no3: 12, nh4: 12, p: 0, k: 0, mg: 0, ca: 12.3, s: 15 },
+            "ENTEC Evo 27": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 0, s: 0 },
+            "ENTEC Evo 27S": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 9.2, s: 10 },
+            "ENTEC Evo 27 Carbon Light": { n: 27, no3: 13.5, nh4: 13.5, p: 0, k: 0, mg: 0, ca: 0, s: 0 }
+        };
+
+        // Catálogo de productos foliares/correctores. Los dos productos reales incluidos de fábrica
+        // están tomados literalmente de sus fichas de datos (PDS) oficiales EuroChem Agro Iberia S.L.
+        // (EU) 2019/1009, rev. 1.03 de 23-sep-2025. El resto del catálogo lo completa el usuario con el
+        // botón "Definir Producto Foliar Nuevo" — no se fabrican composiciones sin ficha técnica real.
+        const foliaresDB = {
+            // PDS código 444289-5317098. Abono NPK(Mg+S) con micros 10-5-33(2+12.8). No mezclar con
+            // fuentes de calcio; fertilizante de reacción ácida. Recomendado en olivo y leñosos/hortícolas,
+            // sobre todo en crecimiento y maduración del fruto. Dosis de etiqueta: 0.5-2% en cuba.
+            "Nitrofoska Foliar 10-5-33": { n: 10.3, p: 5, k: 33, mg: 2, ca: 0, s: 12.8, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 2, mo: 0.001 },
+            // PDS código 444034-5317098. Abono NPK(Mg+S) con micros 24-8-20(2+5). No mezclar con fuentes
+            // de calcio; fertilizante de reacción ácida. Recomendado en olivo y leñosos, sobre todo en
+            // crecimiento vegetativo, producción y post-cosecha. Dosis de etiqueta: 0.5-2% en cuba.
+            "Nitrofoska Foliar 24-8-20": { n: 24, p: 8, k: 20, mg: 2, ca: 0, s: 4.1, fe: 0.05, mn: 0.05, zn: 0.02, cu: 0.02, b: 0.2, mo: 0.001 }
+        };
+        const FOLIARES_CUSTOM_KEY = "fertirrigacion_foliares_custom_v1";
+        function cargarFoliaresPersonalizados() {
+            try {
+                const guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY) || "{}");
+                Object.assign(foliaresDB, guardados);
+            } catch (e) {
+                console.warn("No se pudieron cargar los productos foliares personalizados:", e);
+            }
+        }
+        cargarFoliaresPersonalizados();
+
+        let foliarItems = [];
+
+        function toggleNuevoFoliarForm() {
+            const div = document.getElementById("nuevo-foliar-form");
+            div.style.display = (div.style.display === "none") ? "block" : "none";
+        }
+
+        function guardarFoliarNuevo() {
+            const nombre = document.getElementById("nf-nombre").value.trim();
+            if (!nombre) { alert("Introduce un nombre para el producto foliar."); return; }
+            if (foliaresDB[nombre] && !confirm(`Ya existe un producto llamado "${nombre}". ¿Sobrescribir su composición?`)) return;
+
+            const comp = {
+                n: parseFloat(document.getElementById("nf-n").value) || 0,
+                p: parseFloat(document.getElementById("nf-p").value) || 0,
+                k: parseFloat(document.getElementById("nf-k").value) || 0,
+                mg: parseFloat(document.getElementById("nf-mg").value) || 0,
+                ca: parseFloat(document.getElementById("nf-ca").value) || 0,
+                s: parseFloat(document.getElementById("nf-s").value) || 0,
+                fe: parseFloat(document.getElementById("nf-fe").value) || 0,
+                mn: parseFloat(document.getElementById("nf-mn").value) || 0,
+                zn: parseFloat(document.getElementById("nf-zn").value) || 0,
+                cu: parseFloat(document.getElementById("nf-cu").value) || 0,
+                b: parseFloat(document.getElementById("nf-b").value) || 0,
+                mo: parseFloat(document.getElementById("nf-mo").value) || 0
+            };
+
+            foliaresDB[nombre] = comp;
+            let guardados = {};
+            try { guardados = JSON.parse(localStorage.getItem(FOLIARES_CUSTOM_KEY) || "{}"); } catch (e) { guardados = {}; }
+            guardados[nombre] = comp;
+            localStorage.setItem(FOLIARES_CUSTOM_KEY, JSON.stringify(guardados));
+
+            const foliarSel = document.getElementById("foliar-selector");
+            if (!Array.from(foliarSel.options).some(o => o.value === nombre)) {
+                const opt = document.createElement("option");
+                opt.value = nombre;
+                opt.textContent = nombre;
+                foliarSel.appendChild(opt);
+            }
+            foliarSel.value = nombre;
+            toggleNuevoFoliarForm();
+            alert(`Producto foliar "${nombre}" guardado. Ya está disponible en el selector.`);
+        }
+
+        // Añadir/quitar aplicaciones foliares (sección de Punto 4)
+        function addFoliarAbono() {
+            const name = document.getElementById("foliar-selector").value;
+            const dosis = parseFloat(document.getElementById("foliar-dosis").value) || 0;
+            if (!name || dosis <= 0) return;
+            foliarItems.push({ name, dosis });
+            calculateAll();
+        }
+
+        function removeFoliarItem(index) {
+            foliarItems.splice(index, 1);
+            calculateAll();
+        }
+
+        function updateFoliarItemDosis(index, newDosis) {
+            foliarItems[index].dosis = parseFloat(newDosis) || 0;
+            calculateAll();
+        }
+
+        function updateFoliarPreview() {
+            const name = document.getElementById("foliar-selector").value;
+            const dosis = parseFloat(document.getElementById("foliar-dosis").value) || 0;
+            const preview = document.getElementById("foliar-preview");
+            if (dosis <= 0 || !name) { preview.style.display = "none"; return; }
+            const p = foliaresDB[name];
+            if (p) {
+                preview.textContent = `Aporte estimado: N: ${(dosis*p.n/100).toFixed(2)} | P₂O₅: ${(dosis*p.p/100).toFixed(2)} | K₂O: ${(dosis*p.k/100).toFixed(2)} | MgO: ${(dosis*p.mg/100).toFixed(2)} | CaO: ${(dosis*p.ca/100).toFixed(2)} | SO₃: ${(dosis*p.s/100).toFixed(2)} kg/ha — Fe: ${(dosis*p.fe*10).toFixed(1)} | Mn: ${(dosis*p.mn*10).toFixed(1)} | Zn: ${(dosis*p.zn*10).toFixed(1)} | Cu: ${(dosis*p.cu*10).toFixed(1)} | B: ${(dosis*p.b*10).toFixed(1)} | Mo: ${(dosis*p.mo*10).toFixed(2)} g/ha`;
+                preview.style.display = "block";
+            }
+        }
+
+        // 22 Fertilizantes Solubles de Eurochem (Punto 5 y Sonneveld)
+        // Propiedad 'tanque' (A = cálcicos, B = sulfatos/fosfatos, N = neutro/compatible con ambos):
+        // no mezclar nunca un producto Tanque A con uno Tanque B en la misma cuba, por riesgo de
+        // precipitado de yeso (CaSO4) o fosfato cálcico que obtura goteros.
+        const solublesDB = {
+            "ENTEC Solub 21": { n: 21, p: 0, k: 0, mg: 0, ca: 0, s: 60, nh4: 21, no3: 0, ec_coeff: 0.8, tanque: 'B' },
+            "ENTEC Solub 20-5-10": { n: 20, p: 5, k: 10, mg: 2, ca: 0, s: 27, nh4: 6, no3: 5, ec_coeff: 0.7, tanque: 'B' },
+            "ENTEC Solub 11-5-30": { n: 11, p: 5, k: 30, mg: 2, ca: 0, s: 27, nh4: 9, no3: 6, ec_coeff: 0.75, tanque: 'B' },
+            "ENTEC Solub 16-10-17": { n: 16, p: 10, k: 17, mg: 2, ca: 0, s: 12, nh4: 10, no3: 6, ec_coeff: 0.7, tanque: 'B' },
+            "Nitrofoska Solub Calcium K": { n: 14, p: 7, k: 17, mg: 0, ca: 13, s: 0, nh4: 2, no3: 12, ec_coeff: 0.75, tanque: 'A' },
+            "Nitrofoska Solub 7-5-40": { n: 7, p: 5, k: 40, mg: 0, ca: 0, s: 28, nh4: 3, no3: 4, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 15-10-15": { n: 15, p: 10, k: 15, mg: 2, ca: 0, s: 30, nh4: 10.7, no3: 4.3, ec_coeff: 0.65, tanque: 'B' },
+            "Nitrofoska Solub 13-40-13": { n: 13, p: 40, k: 13, mg: 0, ca: 0, s: 1.9, nh4: 8.8, no3: 4.2, ec_coeff: 0.55, tanque: 'B' },
+            "Nitrofoska Solub 12-5-30": { n: 12, p: 5, k: 30, mg: 1, ca: 0, s: 22, nh4: 1.9, no3: 5.1, ec_coeff: 0.8, tanque: 'B' },
+            "Nitrofoska Solub 7-12-40": { n: 7, p: 12, k: 40, mg: 0, ca: 0, s: 18.4, nh4: 9, no3: 6, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 18-18-18": { n: 18, p: 18, k: 18, mg: 0, ca: 0, s: 11.5, nh4: 10, no3: 8, ec_coeff: 0.6, tanque: 'B' },
+            "Nitrofoska Solub 20-5-5": { n: 20, p: 5, k: 5, mg: 2, ca: 0, s: 37, nh4: 15.6, no3: 4.4, ec_coeff: 0.85, tanque: 'B' },
+            "Nitrato Cálcico Soluble": { n: 15.5, p: 0, k: 0, mg: 0, ca: 26.3, s: 0, nh4: 1.1, no3: 14.4, ec_coeff: 0.72, tanque: 'A' },
+            "Nitrato Magnésico Soluble": { n: 11, p: 0, k: 0, mg: 15.4, ca: 0, s: 0, nh4: 0, no3: 11, ec_coeff: 0.68, tanque: 'N' },
+            "NOP Solub": { n: 13, p: 0, k: 46, mg: 0, ca: 0, s: 0, nh4: 0, no3: 13, ec_coeff: 0.8, tanque: 'N' },
+            "MAP Solub": { n: 12, p: 61, k: 0, mg: 0, ca: 0, s: 0, nh4: 12, no3: 0, ec_coeff: 0.52, tanque: 'B' },
+            "UP solub": { n: 18, p: 44, k: 0, mg: 0, ca: 0, s: 0, nh4: 18, no3: 0, ec_coeff: 0.82, tanque: 'B' },
+            "SOP solub": { n: 0, p: 0, k: 52, mg: 0, ca: 0, s: 45, nh4: 0, no3: 0, ec_coeff: 0.88, tanque: 'B' },
+            "Sulfato de Magnesio": { n: 0, p: 0, k: 0, mg: 16, ca: 0, s: 32, nh4: 0, no3: 0, ec_coeff: 0.62, tanque: 'B' },
+            "Ácido Fosfórico": { n: 0, p: 52, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 0, ec_coeff: 0.48, tanque: 'B' },
+            "Ácido Nítrico": { n: 15, p: 0, k: 0, mg: 0, ca: 0, s: 0, nh4: 0, no3: 15, ec_coeff: 0.5, tanque: 'N' }
+        };
+
+        // Estado de Datos Global (Fondo y 12 Meses Fijos de Fertirrigación)
+        let fondoItems = [
+            { name: "ENTEC Nitrofoska Especial 12-12-17", dosis: 300 }
+        ];
+
+        let selectedMonth = 5; // Inicia en Mayo
+
+        let monthlyData = {
+            1: { name: "Enero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            2: { name: "Febrero", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            3: { name: "Marzo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "arranque", solubles: [] },
+            4: { name: "Abril", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "arranque", solubles: [] },
+            5: { name: "Mayo", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "floracion", solubles: [
+                { name: "Nitrofoska Solub 18-18-18", dosis: 0 },
+                { name: "MAP Solub", dosis: 0 }
+            ]},
+            6: { name: "Junio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "cuajado", solubles: [] },
+            7: { name: "Julio", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "engorde", solubles: [
+                { name: "ENTEC Solub 11-5-30", dosis: 0 },
+                { name: "Nitrato Cálcico Soluble", dosis: 0 }
+            ]},
+            8: { name: "Agosto", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "engorde", solubles: [
+                { name: "SOP solub", dosis: 0 }
+            ]},
+            9: { name: "Septiembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "maduracion", solubles: [] },
+            10: { name: "Octubre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "precosecha", solubles: [] },
+            11: { name: "Noviembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] },
+            12: { name: "Diciembre", water: 0, num_riegos: 0, cuba_vol: 1000, flow_rate: 1.6, tiempo_riego: 2, fase: "sin_fase", solubles: [] }
+        };
+
+        // Inicialización al cargar la página
+        window.addEventListener("DOMContentLoaded", () => {
+            renderSolucionesReferenciaHidroponia();
+            // Cargar selector de cultivos
+            const cropSel = document.getElementById("crop-selector");
+            cropSel.innerHTML = "";
+            Object.keys(cultivoExtracciones).forEach(crop => {
+                const opt = document.createElement("option");
+                opt.value = crop;
+                opt.textContent = crop;
+                cropSel.appendChild(opt);
+            });
+            cropSel.value = "Caqui (Kaki)";
+
+            // Cargar selector de fondo
+            const fondoSel = document.getElementById("fondo-selector");
+            fondoSel.innerHTML = "";
+            Object.keys(granuladosDB).forEach(prod => {
+                const opt = document.createElement("option");
+                opt.value = prod;
+                opt.textContent = prod;
+                fondoSel.appendChild(opt);
+            });
+
+            // Cargar selector de productos foliares
+            const foliarSel = document.getElementById("foliar-selector");
+            foliarSel.innerHTML = "";
+            Object.keys(foliaresDB).forEach(prod => {
+                const opt = document.createElement("option");
+                opt.value = prod;
+                opt.textContent = prod;
+                foliarSel.appendChild(opt);
+            });
+
+            // Establecer fecha por defecto (hoy)
+            document.getElementById("meta-fecha").valueAsDate = new Date();
+
+            // Construir bloques HTML para el Punto 5
+            buildMonthlyHTMLBlocks();
+
+            // Sincronizar nombres iniciales de fases
+            for (let m = 1; m <= 12; m++) {
+                syncMonthName(m);
+            }
+
+            // Cambiar a mes inicial (Mayo)
+            switchMonth(5);
+
+            // Calcular todo por primera vez
+            calculateAll();
+        });
+
+        // Alternar Pestañas de Trabajo Principales (v67/v69)
+        function switchPunto(puntoId) {
+            document.querySelectorAll(".main-tab-content").forEach(panel => {
+                panel.classList.remove("active");
+            });
+            document.querySelectorAll(".punto-tab-btn").forEach(b => {
+                b.classList.remove("active");
+            });
+
+            document.getElementById(`pbtn-${puntoId}`).classList.add("active");
+            if (puntoId === 1) document.getElementById("punto-1-container").classList.add("active");
+            if (puntoId === 2) document.getElementById("punto-2-container").classList.add("active");
+            if (puntoId === 3) document.getElementById("punto-3-container").classList.add("active");
+            if (puntoId === 4) document.getElementById("punto-4-container").classList.add("active");
+            if (puntoId === 5) document.getElementById("punto-5-container").classList.add("active");
+            if (puntoId === 7) document.getElementById("punto-7-container").classList.add("active");
+            if (puntoId === 8) document.getElementById("punto-8-container").classList.add("active");
+        }
+
+        // Cargar cultivo y rellenar tabla de balances (v68 editable)
+        function loadSelectedCrop() {
+            const crop = document.getElementById("crop-selector").value;
+            const data = cultivoExtracciones[crop];
+            if (data) {
+                document.getElementById("coeff-n").value = data.n.toFixed(2);
+                document.getElementById("coeff-p").value = data.p.toFixed(2);
+                document.getElementById("coeff-k").value = data.k.toFixed(2);
+                document.getElementById("coeff-mg").value = data.mg.toFixed(2);
+                document.getElementById("coeff-ca").value = data.ca.toFixed(2);
+                document.getElementById("coeff-s").value = data.s.toFixed(2);
+            }
+            calculateAll();
+        }
+
+        // Construir bloques mensuales del Punto 5 de forma estática
+        function buildMonthlyHTMLBlocks() {
+            const container = document.getElementById("monthly-containers-box");
+            container.innerHTML = "";
+
+            for (let m = 1; m <= 12; m++) {
+                const monthPanel = document.createElement("div");
+                monthPanel.id = `month-panel-${m}`;
+                monthPanel.className = "month-panel";
+                if (m === selectedMonth) monthPanel.style.display = "block";
+                else monthPanel.style.display = "none";
+
+                monthPanel.innerHTML = `
+                    <div class="print-phase-title" id="print-phase-title-${m}">Fase de Planificación: ${monthlyData[m].name}</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px;">
+                        <!-- Columna de Variables de Riego -->
+                        <div>
+                            <h4 style="margin-top:0; color: var(--primary-color); font-size:14px; text-transform:uppercase;">Hidráulica & Riego de la Fase</h4>
+                            <table class="data-table">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold; width:60%;">Nombre Personalizado / Fase:</td>
+                                        <td><input type="text" class="form-input" id="mname-${m}" value="${monthlyData[m].name}" oninput="syncMonthName(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;" title="Determina qué prioridad nutricional se espera en la solución (guía de fertirrigación, sección 10) para poder sugerir ajustes.">Fase Fenológica:</td>
+                                        <td>
+                                            <select class="form-select" id="mfase-${m}" onchange="syncMonthFase(${m})">
+                                                <option value="sin_fase">Sin fase específica / Reposo</option>
+                                                <option value="arranque">Arranque / Brotación</option>
+                                                <option value="vegetativo">Crecimiento vegetativo</option>
+                                                <option value="floracion">Prefloración / Floración</option>
+                                                <option value="cuajado">Cuajado / Crecimiento de fruto</option>
+                                                <option value="engorde">Engorde / Llenado</option>
+                                                <option value="maduracion">Maduración</option>
+                                                <option value="precosecha">Pre-cosecha</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Volumen de Riego (m³/ha-mes):</td>
+                                        <td><input type="number" class="form-input" id="mwater-${m}" value="${monthlyData[m].water}" oninput="syncMonthWater(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Número de Riegos al Mes:</td>
+                                        <td><input type="number" class="form-input" id="mriegos-${m}" value="${monthlyData[m].num_riegos}" oninput="syncMonthRiegos(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Volumen Cuba de Inyección (L):</td>
+                                        <td><input type="number" class="form-input" id="mcuba-${m}" value="${monthlyData[m].cuba_vol}" oninput="syncMonthCuba(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Caudal del Emisor (L/h/gotero):</td>
+                                        <td><input type="number" class="form-input" id="mflow-${m}" value="${monthlyData[m].flow_rate}" oninput="syncMonthFlow(${m})"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:bold;">Tiempo de Riego por Evento (horas):</td>
+                                        <td><input type="number" class="form-input" id="mtiempo-${m}" step="0.1" value="${monthlyData[m].tiempo_riego}" oninput="syncMonthTiempo(${m})"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Tarjeta de Diagnóstico de Cuba de la Fase (Sonneveld e Hidráulica v63) -->
+                            <div class="lab-card" style="margin-top:15px; border-color: #bbdefb; background-color: #fafcff;">
+                                <h4 style="color: var(--primary-color); font-size: 13px; border-bottom: 1px solid #bbdefb; padding-bottom: 4px; margin: 0 0 8px 0;">🔬 Laboratorio de Gota y Cuba en la Fase</h4>
+                                <div class="lab-item">
+                                    <span>Conductividad Eléctrica Gota Final:</span>
+                                    <span class="lab-val" id="mcalc-ec-${m}" style="color: var(--primary-color);">0.00 dS/m</span>
+                                </div>
+                                <div class="lab-item">
+                                    <span>Concentración Gotero Final (g/L):</span>
+                                    <span class="lab-val" id="mcalc-gota-gl-${m}" style="color: var(--success-color);">0.000 g/L</span>
+                                </div>
+                                <div class="lab-item">
+                                    <span>Concentración Solución Madre (Cuba):</span>
+                                    <span class="lab-val" id="mcalc-cuba-${m}">0.00% (0.0 g/L)</span>
+                                </div>
+                                <div class="lab-item">
+                                    <span title="Estimado a partir del caudal del emisor y del tiempo de riego introducido: no es un dato que debas medir, es una comprobación de coherencia de tu diseño de riego.">Nº Emisores/ha (estimado):</span>
+                                    <span class="lab-val" id="mcalc-emisores-${m}">0</span>
+                                </div>
+                                <div class="lab-item">
+                                    <span>Caudal necesario Bomba Inyectora:</span>
+                                    <span class="lab-val" id="mcalc-bomba-${m}">0 L/h</span>
+                                </div>
+
+                                <!-- Banner de Alerta de Exceso de Conductividad de Gota -->
+                                <div id="mcalc-alert-banner-${m}" class="gota-alert-banner"></div>
+
+                                <!-- Banner de Alerta de Incompatibilidad de Tanque (Ca vs Sulfatos/Fosfatos) -->
+                                <div id="mtanque-alert-${m}" class="gota-alert-banner"></div>
+                            </div>
+                        </div>
+
+                        <!-- Columna de Solubles -->
+                        <div>
+                            <h4 style="margin-top:0; color: var(--primary-color); font-size:14px; text-transform:uppercase;">Inyección de Abonos Solubles</h4>
+                            
+                            <div class="adder-panel no-print">
+                                <select id="mselect-prod-${m}" class="form-select" style="width:160px;" onchange="updateSolPreview(${m})">
+                                    <!-- Se popula con solubles -->
+                                </select>
+                                <input type="number" id="mdosis-val-${m}" class="form-input" style="width:70px;" value="100" oninput="updateSolPreview(${m})">
+                                <button class="btn-action" onclick="addSolubleAbono(${m})">➕ Añadir</button>
+                                <div id="mpreview-uf-${m}" class="preview-uf-card"></div>
+                            </div>
+
+                            <table class="data-table" id="msol-table-${m}">
+                                <thead>
+                                    <tr>
+                                        <th>Fertilizante Soluble</th>
+                                        <th>kg/ha</th>
+                                        <th>N</th>
+                                        <th>P₂O₅</th>
+                                        <th>K₂O</th>
+                                        <th>MgO</th>
+                                        <th>CaO</th>
+                                        <th>SO₃</th>
+                                        <th class="no-print">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="msol-table-body-${m}">
+                                    <!-- Fila de solubles dinámica -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro Unificado de Suministro Nutricional por Fase (v66/v67/v68) -->
+                    <div style="margin-top:20px; border-radius: 6px; overflow: hidden; border: 1px solid var(--primary-color);">
+                        <table class="data-table" style="margin-bottom:0;">
+                            <thead>
+                                <tr style="background-color: var(--primary-color); color: white;">
+                                    <th colspan="7" style="background-color: var(--primary-color); color: white; text-align: left; font-size: 13px; font-weight: bold; border:none; padding: 10px 15px;">
+                                        📊 Suministro Consolidado — Creado por G. Morales
+                                    </th>
+                                </tr>
+                                <tr style="background-color: #f1f5f9; color: var(--dark-blue);">
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px; width:35%;">Origen de Unidades (kg/ha)</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">N</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">P₂O₅</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">K₂O</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">MgO</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">CaO</th>
+                                    <th style="background-color:#004080; border-color:#004080; font-size:12px;">SO₃</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:left; font-weight:bold; color: #555;">1. Fertilizantes Cristalinos Inyectados (kg/ha)</td>
+                                    <td id="muf-fert-n-${m}" style="font-weight:bold;">0.0</td>
+                                    <td id="muf-fert-p-${m}" style="font-weight:bold;">0.0</td>
+                                    <td id="muf-fert-k-${m}" style="font-weight:bold;">0.0</td>
+                                    <td id="muf-fert-mg-${m}" style="font-weight:bold;">0.0</td>
+                                    <td id="muf-fert-ca-${m}" style="font-weight:bold;">0.0</td>
+                                    <td id="muf-fert-s-${m}" style="font-weight:bold;">0.0</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left; font-weight:bold; color: #555;">2. Aportes Naturales del Agua de Riego (kg/ha)</td>
+                                    <td id="muf-water-n-${m}">0.0</td>
+                                    <td id="muf-water-p-${m}">0.0</td>
+                                    <td id="muf-water-k-${m}">0.0</td>
+                                    <td id="muf-water-mg-${m}">0.0</td>
+                                    <td id="muf-water-ca-${m}">0.0</td>
+                                    <td id="muf-water-s-${m}">0.0</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left; font-weight:bold; color: #555;">3. Aportes del Ácido Regulador Comercial (kg/ha)</td>
+                                    <td id="muf-acid-n-${m}">0.0</td>
+                                    <td id="muf-acid-p-${m}">0.0</td>
+                                    <td id="muf-acid-k-${m}">0.0</td>
+                                    <td id="muf-acid-mg-${m}">0.0</td>
+                                    <td id="muf-acid-ca-${m}">0.0</td>
+                                    <td id="muf-acid-s-${m}">0.0</td>
+                                </tr>
+                                <tr style="background-color: #e8f5e9; font-weight:bold; color: var(--success-color); font-size: 13px;">
+                                    <td style="text-align:left;">Suma Suministro Total Neto (kg/ha)</td>
+                                    <td id="muf-sum-n-${m}">0.0</td>
+                                    <td id="muf-sum-p-${m}">0.0</td>
+                                    <td id="muf-sum-k-${m}">0.0</td>
+                                    <td id="muf-sum-mg-${m}">0.0</td>
+                                    <td id="muf-sum-ca-${m}">0.0</td>
+                                    <td id="muf-sum-s-${m}">0.0</td>
+                                </tr>
+                                <tr style="background-color: #f1f8ff; font-weight:bold; color: var(--primary-color); font-size:12px;">
+                                    <td style="text-align:left;">% Aportado sobre el Objetivo Requerido (Gotero):</td>
+                                    <td id="muf-pct-n-${m}">0.0%</td>
+                                    <td id="muf-pct-p-${m}">0.0%</td>
+                                    <td id="muf-pct-k-${m}">0.0%</td>
+                                    <td id="muf-pct-mg-${m}">0.0%</td>
+                                    <td id="muf-pct-ca-${m}">0.0%</td>
+                                    <td id="muf-pct-s-${m}">0.0%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.appendChild(monthPanel);
+
+                // Popular selectores de abonos solubles de forma interna en cada fase
+                const mSelector = document.getElementById(`mselect-prod-${m}`);
+                mSelector.innerHTML = "";
+                Object.keys(solublesDB).forEach(sol => {
+                    const opt = document.createElement("option");
+                    opt.value = sol;
+                    opt.textContent = sol;
+                    mSelector.appendChild(opt);
+                });
+
+                // Fijar la fase fenológica guardada en el selector recién creado
+                document.getElementById(`mfase-${m}`).value = monthlyData[m].fase || "sin_fase";
+            }
+        }
+
+        // Cambio de pestaña de mes en Punto 5 (Fijo v52/v61/v68)
+        function switchMonth(mId) {
+            selectedMonth = mId;
+            document.querySelectorAll('.month-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`mbtn-${mId}`).classList.add('active');
+
+            for (let m = 1; m <= 12; m++) {
+                const block = document.getElementById(`month-panel-${m}`);
+                if (m === mId) block.style.display = "block";
+                else block.style.display = "none";
+            }
+
+            // Cambiar también el selector del Punto 7 para ir a la par
+            document.getElementById("sonneveld-month-selector").value = mId;
+            calculateAll();
+        }
+
+        // Sincronización de inputs de riego
+        function syncMonthName(m) {
+            monthlyData[m].name = document.getElementById(`mname-${m}`).value || `Mes ${m}`;
+            document.getElementById(`mbtn-${m}`).textContent = monthlyData[m].name;
+            document.getElementById(`print-phase-title-${m}`).textContent = `Fase de Planificación: ${monthlyData[m].name}`;
+            
+            // Sincronizar el selector de Sonneveld
+            const option = document.querySelector(`#sonneveld-month-selector option[value="${m}"]`);
+            if (option) option.textContent = `${m} - ${monthlyData[m].name}`;
+            
+            calculateAll();
+        }
+        function syncMonthWater(m) {
+            monthlyData[m].water = parseFloat(document.getElementById(`mwater-${m}`).value) || 0;
+            calculateAll();
+        }
+        function syncMonthRiegos(m) {
+            monthlyData[m].num_riegos = parseFloat(document.getElementById(`mriegos-${m}`).value) || 1;
+            calculateAll();
+        }
+        function syncMonthCuba(m) {
+            monthlyData[m].cuba_vol = parseFloat(document.getElementById(`mcuba-${m}`).value) || 1000;
+            calculateAll();
+        }
+        function syncMonthFlow(m) {
+            monthlyData[m].flow_rate = parseFloat(document.getElementById(`mflow-${m}`).value) || 1.6;
+            calculateAll();
+        }
+        function syncMonthTiempo(m) {
+            monthlyData[m].tiempo_riego = parseFloat(document.getElementById(`mtiempo-${m}`).value) || 0;
+            calculateAll();
+        }
+        function syncMonthFase(m) {
+            monthlyData[m].fase = document.getElementById(`mfase-${m}`).value;
+            calculateAll();
+        }
+
+        // Switch de tipos de ácido (Punto 3)
+        function switchAcidType() {
+            const type = document.getElementById("acid-selector").value;
+            const customBox = document.getElementById("custom-acid-nutrients");
+
+            if (type === "Nítrico (60%)") {
+                document.getElementById("acid-density").value = "1.37";
+                document.getElementById("acid-purity").value = "60.0";
+                document.getElementById("acid-eq-wt").value = "63.0";
+                customBox.style.display = "none";
+            } else if (type === "Fosfórico (75%)") {
+                document.getElementById("acid-density").value = "1.58";
+                document.getElementById("acid-purity").value = "75.0";
+                document.getElementById("acid-eq-wt").value = "98.0";
+                customBox.style.display = "none";
+            } else if (type === "Sulfúrico (98%)") {
+                document.getElementById("acid-density").value = "1.84";
+                document.getElementById("acid-purity").value = "98.0";
+                document.getElementById("acid-eq-wt").value = "49.0";
+                customBox.style.display = "none";
+            } else if (type === "Personalizado") {
+                customBox.style.display = "block";
+            }
+            calculateAll();
+        }
+
+        // Sincronizar el mes de Sonneveld (Punto 7)
+        function switchSonneveldMonth() {
+            const mId = parseInt(document.getElementById("sonneveld-month-selector").value);
+            document.getElementById("sonneveld-phase-header").textContent = `Equilibrio Químico en Gotero — Fase: ${monthlyData[mId].name}`;
+            calculateAll();
+        }
+
+        // Añadir abonos granulados de fondo (Punto 4)
+        function addFondoAbono() {
+            const name = document.getElementById("fondo-selector").value;
+            const dosis = parseFloat(document.getElementById("fondo-dosis").value) || 0;
+            if (dosis <= 0) return;
+
+            fondoItems.push({ name, dosis });
+            calculateAll();
+        }
+
+        function removeFondoItem(index) {
+            fondoItems.splice(index, 1);
+            calculateAll();
+        }
+
+        // Editar dosis de fondo directamente en la tabla
+        function updateFondoItemDosis(index, newDosis) {
+            fondoItems[index].dosis = parseFloat(newDosis) || 0;
+            calculateAll();
+        }
+
+        // Previsualización flotante antes de añadir fondo
+        function updateFondoPreview() {
+            const name = document.getElementById("fondo-selector").value;
+            const dosis = parseFloat(document.getElementById("fondo-dosis").value) || 0;
+            const preview = document.getElementById("fondo-preview");
+
+            if (dosis <= 0) {
+                preview.style.display = "none";
+                return;
+            }
+
+            const p = granuladosDB[name];
+            if (p) {
+                const n = (dosis * p.n / 100).toFixed(1);
+                const p2 = (dosis * p.p / 100).toFixed(1);
+                const k = (dosis * p.k / 100).toFixed(1);
+                const mg = (dosis * p.mg / 100).toFixed(1);
+                const ca = (dosis * p.ca / 100).toFixed(1);
+                const s = (dosis * p.s / 100).toFixed(1);
+
+                preview.textContent = `Aporte estimado: N: ${n} | P₂O₅: ${p2} | K₂O: ${k} | MgO: ${mg} | CaO: ${ca} | SO₃: ${s} UF`;
+                preview.style.display = "block";
+            }
+        }
+
+        // Añadir soluble en la fase seleccionada (Punto 5)
+        function addSolubleAbono(m) {
+            const name = document.getElementById(`mselect-prod-${m}`).value;
+            const dosis = parseFloat(document.getElementById(`mdosis-val-${m}`).value) || 0;
+            if (dosis <= 0) return;
+
+            monthlyData[m].solubles.push({ name, dosis });
+            calculateAll();
+        }
+
+        function removeSolubleItem(m, index) {
+            monthlyData[m].solubles.splice(index, 1);
+            calculateAll();
+        }
+
+        // Editar dosis de soluble directamente en la tabla
+        function updateSolubleItemDosis(m, index, newDosis) {
+            monthlyData[m].solubles[index].dosis = parseFloat(newDosis) || 0;
+            calculateAll();
+        }
+
+        // Previsualización flotante antes de añadir soluble
+        function updateSolPreview(m) {
+            const name = document.getElementById(`mselect-prod-${m}`).value;
+            const dosis = parseFloat(document.getElementById(`mdosis-val-${m}`).value) || 0;
+            const preview = document.getElementById(`mpreview-uf-${m}`);
+
+            if (dosis <= 0) {
+                preview.style.display = "none";
+                return;
+            }
+
+            const p = solublesDB[name];
+            if (p) {
+                const n = (dosis * p.n / 100).toFixed(1);
+                const p2 = (dosis * p.p / 100).toFixed(1);
+                const k = (dosis * p.k / 100).toFixed(1);
+                const mg = (dosis * p.mg / 100).toFixed(1);
+                const ca = (dosis * p.ca / 100).toFixed(1);
+                const s = (dosis * p.s / 100).toFixed(1);
+
+                preview.textContent = `Previsualización aporte: N: ${n} | P₂O₅: ${p2} | K₂O: ${k} | MgO: ${mg} | CaO: ${ca} | SO₃: ${s} (kg/ha)`;
+                preview.style.display = "block";
+            }
+        }
+
+        // MOTOR CENTRAL DE CÁLCULO ESTEQUIOMÉTRICO (REVISADO v72)
+        function calculateAll() {
+            // 1. Recoger Analítica de Agua (Punto 2)
+            const ca_mg_l = parseFloat(document.getElementById("water-mg-ca").value) || 0;
+            const mg_mg_l = parseFloat(document.getElementById("water-mg-mg").value) || 0;
+            const k_mg_l = parseFloat(document.getElementById("water-mg-k").value) || 0;
+            const na_mg_l = parseFloat(document.getElementById("water-mg-na").value) || 0;
+            const nh4_mg_l = parseFloat(document.getElementById("water-mg-nh4").value) || 0;
+
+            const no3_mg_l = parseFloat(document.getElementById("water-mg-no3").value) || 0;
+            const h2po4_mg_l = parseFloat(document.getElementById("water-mg-h2po4").value) || 0;
+            const so4_mg_l = parseFloat(document.getElementById("water-mg-so4").value) || 0;
+            const cl_mg_l = parseFloat(document.getElementById("water-mg-cl").value) || 0;
+            const hco3_mg_l = parseFloat(document.getElementById("water-mg-hco3").value) || 0;
+
+            const water_ec = parseFloat(document.getElementById("water-ec").value) || 0;
+
+            // Calcular miliequivalentes (meq/L) usando pesos equivalentes oficiales
+            const meq_ca = ca_mg_l / 20.04;
+            const meq_mg = mg_mg_l / 12.16;
+            const meq_k = k_mg_l / 39.1;
+            const meq_na = na_mg_l / 23.0;
+            const meq_nh4 = nh4_mg_l / 18.04;
+
+            const meq_no3 = no3_mg_l / 62.0;
+            const meq_h2po4 = h2po4_mg_l / 97.0;
+            const meq_so4 = so4_mg_l / 48.03;
+            const meq_cl = cl_mg_l / 35.45;
+            const meq_hco3 = hco3_mg_l / 61.02;
+
+            document.getElementById("water-meq-ca").textContent = meq_ca.toFixed(2);
+            document.getElementById("water-meq-mg").textContent = meq_mg.toFixed(2);
+            document.getElementById("water-meq-k").textContent = meq_k.toFixed(2);
+            document.getElementById("water-meq-na").textContent = meq_na.toFixed(2);
+            document.getElementById("water-meq-nh4").textContent = meq_nh4.toFixed(2);
+
+            document.getElementById("water-meq-no3").textContent = meq_no3.toFixed(2);
+            document.getElementById("water-meq-h2po4").textContent = meq_h2po4.toFixed(2);
+            document.getElementById("water-meq-so4").textContent = meq_so4.toFixed(2);
+            document.getElementById("water-meq-cl").textContent = meq_cl.toFixed(2);
+            document.getElementById("water-meq-hco3").textContent = meq_hco3.toFixed(2);
+
+            const sum_cat = meq_ca + meq_mg + meq_k + meq_na + meq_nh4;
+            const sum_ani = meq_no3 + meq_h2po4 + meq_so4 + meq_cl + meq_hco3;
+
+            document.getElementById("sum-cationes").textContent = sum_cat.toFixed(2);
+            document.getElementById("sum-aniones").textContent = sum_ani.toFixed(2);
+
+            // Relación de Electroneutralidad del Agua Base
+            let water_ratio_val = 0;
+            if (sum_cat + sum_ani > 0) {
+                water_ratio_val = Math.abs(sum_cat - sum_ani) / ((sum_cat + sum_ani) / 2) * 100;
+            }
+            const wrBadge = document.getElementById("water-balance-ratio");
+            wrBadge.textContent = `${water_ratio_val.toFixed(1)}%`;
+            wrBadge.className = "diag-badge " + (water_ratio_val <= 5 ? "diag-ok" : "diag-warn");
+
+            // R.A.S. Sódico con Potasio Integrado
+            let ras_val = 0;
+            if (meq_ca + meq_mg > 0) {
+                ras_val = (meq_na + meq_k) / Math.sqrt((meq_ca + meq_mg) / 2);
+            }
+            document.getElementById("water-ras-val").textContent = ras_val.toFixed(2);
+
+            // 1b. Diagnóstico ampliado del agua: STD, presión osmótica, dureza, riesgos e iones tóxicos.
+            const water_ph = parseFloat(document.getElementById("water-ph").value) || 0;
+            const water_b_mg = parseFloat(document.getElementById("water-mg-b").value) || 0;
+            const water_fe_mg = parseFloat(document.getElementById("water-mg-fe").value) || 0;
+
+            const std_gl = water_ec * 0.64;
+            const po_atm = water_ec * 0.36;
+            const dureza_gf = (ca_mg_l * 2.5 + mg_mg_l * 4.12) / 10;
+
+            document.getElementById("water-std").textContent = `${std_gl.toFixed(2)} g/L`;
+            document.getElementById("water-po").textContent = `${po_atm.toFixed(2)} atm`;
+            document.getElementById("water-dureza").textContent = `${dureza_gf.toFixed(1)} °F`;
+
+            // Riesgo de Infiltración (Ayers & Westcot, 1985, FAO-29, Tabla 1). Reutiliza el mismo RAS
+            // (Sódico con Potasio incluido) ya calculado arriba para este programa.
+            const bandasInfiltracionFAO = [
+                { rasMax: 3,  ninguna: 0.7, severa: 0.2 },
+                { rasMax: 6,  ninguna: 1.2, severa: 0.3 },
+                { rasMax: 12, ninguna: 1.9, severa: 0.5 },
+                { rasMax: 20, ninguna: 2.9, severa: 1.3 },
+                { rasMax: 40, ninguna: 5.0, severa: 2.9 }
+            ];
+            const bandaInf = bandasInfiltracionFAO.find(b => ras_val <= b.rasMax) || bandasInfiltracionFAO[bandasInfiltracionFAO.length - 1];
+            const bInf = document.getElementById("water-infiltracion");
+            if (water_ec < bandaInf.severa) {
+                bInf.textContent = "Restricción Severa"; bInf.className = "diag-badge diag-danger";
+            } else if (water_ec < bandaInf.ninguna) {
+                bInf.textContent = "Restricción Ligera-Moderada"; bInf.className = "diag-badge diag-warn";
+            } else {
+                bInf.textContent = "Sin restricción"; bInf.className = "diag-badge diag-ok";
+            }
+
+            // Riesgo de Obturación Calcárea: indicador simplificado (pH + HCO3 + Ca disponible).
+            const bObt = document.getElementById("water-obturacion");
+            if (water_ph > 7.5 && meq_hco3 > 2.0 && meq_ca > 3.0) {
+                bObt.textContent = "Riesgo Importante"; bObt.className = "diag-badge diag-danger";
+            } else if (water_ph > 7.5 && meq_hco3 > 2.0) {
+                bObt.textContent = "Riesgo Moderado"; bObt.className = "diag-badge diag-warn";
+            } else {
+                bObt.textContent = "Riesgo Bajo"; bObt.className = "diag-badge diag-ok";
+            }
+
+            // Toxicidad de iones específicos
+            document.getElementById("water-cl-val").textContent = `${meq_cl.toFixed(2)} meq/L`;
+            const bCl = document.getElementById("water-cl-badge");
+            if (meq_cl < 4) { bCl.textContent = "Excelente"; bCl.className = "diag-badge diag-ok"; }
+            else if (meq_cl <= 10) { bCl.textContent = "Moderado"; bCl.className = "diag-badge diag-warn"; }
+            else { bCl.textContent = "Peligroso"; bCl.className = "diag-badge diag-danger"; }
+
+            document.getElementById("water-na-val").textContent = `${meq_na.toFixed(2)} meq/L`;
+            const bNa = document.getElementById("water-na-badge");
+            if (meq_na < 3) { bNa.textContent = "Sin riesgo"; bNa.className = "diag-badge diag-ok"; }
+            else if (meq_na <= 9) { bNa.textContent = "Moderado"; bNa.className = "diag-badge diag-warn"; }
+            else { bNa.textContent = "Grave"; bNa.className = "diag-badge diag-danger"; }
+
+            document.getElementById("water-b-val").textContent = `${water_b_mg.toFixed(2)} mg/L`;
+            const bB = document.getElementById("water-b-badge");
+            if (water_b_mg < 0.7) { bB.textContent = "Sin riesgo"; bB.className = "diag-badge diag-ok"; }
+            else if (water_b_mg <= 3.0) { bB.textContent = "Precaución"; bB.className = "diag-badge diag-warn"; }
+            else { bB.textContent = "Tóxico"; bB.className = "diag-badge diag-danger"; }
+
+            // Volumen de riego anual = suma de los 12 meses (m³/ha·año), ya introducido en Puntos 5-7.
+            const volAnual = Object.keys(monthlyData).reduce((s, m) => s + (monthlyData[m].water || 0), 0);
+            document.getElementById("water-vol-anual").textContent = volAnual.toFixed(0);
+
+            // Caja de ahorros de nutrientes gratuitos del agua (informativo, no se resta de las dosis).
+            const ahorroN = (no3_mg_l * (14.0 / 62.0) * volAnual) / 1000.0;
+            const ahorroCaO = (ca_mg_l * volAnual / 1000.0) * 1.399;
+            const ahorroMgO = (mg_mg_l * volAnual / 1000.0) * 1.658;
+            const ahorroK2O = (k_mg_l * volAnual / 1000.0) * 1.205;
+            const ahorroSO3 = (so4_mg_l * (32.06 / 96.06) * volAnual / 1000.0) * 2.497;
+
+            document.getElementById("water-ahorro-n").textContent = `${ahorroN.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-ca").textContent = `${ahorroCaO.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-mg").textContent = `${ahorroMgO.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-k").textContent = `${ahorroK2O.toFixed(1)} kg/ha`;
+            document.getElementById("water-ahorro-s").textContent = `${ahorroSO3.toFixed(1)} kg/ha`;
+
+            // Plan de cloración: dosis objetivo 15-20 ppm de cloro activo sobre el volumen anual,
+            // convertida a litros de producto comercial al 10% de cloro activo (10% p/v = 0.10 kg Cl/L).
+            const kgClMin = (15.0 * volAnual) / 1000.0;
+            const kgClMax = (20.0 * volAnual) / 1000.0;
+            document.getElementById("water-cloro-min").textContent = (kgClMin / 0.10).toFixed(0);
+            document.getElementById("water-cloro-max").textContent = (kgClMax / 0.10).toFixed(0);
+            document.getElementById("water-cloro-fe").textContent = (0.65 * water_fe_mg).toFixed(3);
+
+            // 2. Cálculos de Ácido y Neutralización (Punto 3)
+            document.getElementById("acid-base-hco3").textContent = meq_hco3.toFixed(2);
+            const target_hco3 = parseFloat(document.getElementById("acid-target-hco3").value) || 0;
+            const neut_hco3 = Math.max(0, meq_hco3 - target_hco3);
+            document.getElementById("acid-neut-hco3").textContent = neut_hco3.toFixed(2);
+
+            const acid_purity = parseFloat(document.getElementById("acid-purity").value) || 0;
+            const acid_density = parseFloat(document.getElementById("acid-density").value) || 1;
+            const acid_eq_wt = parseFloat(document.getElementById("acid-eq-wt").value) || 1;
+
+            let acid_dose_l = 0;
+            let acid_dose_g = 0;
+            if (acid_purity > 0) {
+                acid_dose_l = (neut_hco3 * acid_eq_wt) / (acid_purity * acid_density * 10);
+                acid_dose_g = acid_dose_l * acid_density * 1000;
+            }
+            document.getElementById("acid-dose-l").textContent = acid_dose_l.toFixed(3);
+            document.getElementById("acid-dose-g").textContent = acid_dose_g.toFixed(1);
+
+            const acid_type = document.getElementById("acid-selector").value;
+
+            // 3. Renderizar y calcular Abonado de Fondo (Punto 4)
+            const fBody = document.getElementById("fondo-table-body");
+            fBody.innerHTML = "";
+            let fondo_sum_n = 0, fondo_sum_p = 0, fondo_sum_k = 0, fondo_sum_mg = 0, fondo_sum_ca = 0, fondo_sum_s = 0;
+            let total_fondo_dosis_acum = 0;
+
+            fondoItems.forEach((item, idx) => {
+                const p = granuladosDB[item.name];
+                if (p) {
+                    const n = item.dosis * p.n / 100;
+                    const p2 = item.dosis * p.p / 100;
+                    const k = item.dosis * p.k / 100;
+                    const mg = item.dosis * p.mg / 100;
+                    const ca = item.dosis * p.ca / 100;
+                    const s = item.dosis * p.s / 100;
+
+                    fondo_sum_n += n;
+                    fondo_sum_p += p2;
+                    fondo_sum_k += k;
+                    fondo_sum_mg += mg;
+                    fondo_sum_ca += ca;
+                    fondo_sum_s += s;
+                    total_fondo_dosis_acum += item.dosis;
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="text-align:left; font-weight:bold; color: var(--dark-blue);">${item.name}</td>
+                        <td><input type="number" class="form-input" style="width:75px;" value="${item.dosis}" oninput="updateFondoItemDosis(${idx}, this.value)"></td>
+                        <td style="font-weight:bold;">${n.toFixed(1)}</td>
+                        <td style="font-weight:bold;">${p2.toFixed(1)}</td>
+                        <td style="font-weight:bold;">${k.toFixed(1)}</td>
+                        <td>${mg.toFixed(1)}</td>
+                        <td>${ca.toFixed(1)}</td>
+                        <td>${s.toFixed(1)}</td>
+                        <td class="no-print"><button class="btn-danger" onclick="removeFondoItem(${idx})">🗑️ Retirar</button></td>
+                    `;
+                    fBody.appendChild(row);
+                }
+            });
+
+            document.getElementById("total-fondo-dosis").textContent = `${total_fondo_dosis_acum.toFixed(0)} kg/ha`;
+            document.getElementById("fondo-total-n").textContent = fondo_sum_n.toFixed(1);
+            document.getElementById("fondo-total-p").textContent = fondo_sum_p.toFixed(1);
+            document.getElementById("fondo-total-k").textContent = fondo_sum_k.toFixed(1);
+            document.getElementById("fondo-total-mg").textContent = fondo_sum_mg.toFixed(1);
+            document.getElementById("fondo-total-ca").textContent = fondo_sum_ca.toFixed(1);
+            document.getElementById("fondo-total-s").textContent = fondo_sum_s.toFixed(1);
+
+            document.getElementById("fondo-n").textContent = fondo_sum_n.toFixed(1);
+            document.getElementById("fondo-p").textContent = fondo_sum_p.toFixed(1);
+            document.getElementById("fondo-k").textContent = fondo_sum_k.toFixed(1);
+            document.getElementById("fondo-mg").textContent = fondo_sum_mg.toFixed(1);
+            document.getElementById("fondo-ca").textContent = fondo_sum_ca.toFixed(1);
+            document.getElementById("fondo-s").textContent = fondo_sum_s.toFixed(1);
+
+            // 3b. Renderizar y calcular Aplicación Foliar (macro en kg/ha, micro en g/ha)
+            const foBody = document.getElementById("foliar-table-body");
+            foBody.innerHTML = "";
+            let foliar_sum_n = 0, foliar_sum_p = 0, foliar_sum_k = 0, foliar_sum_mg = 0, foliar_sum_ca = 0, foliar_sum_s = 0;
+            let foliar_sum_fe = 0, foliar_sum_mn = 0, foliar_sum_zn = 0, foliar_sum_cu = 0, foliar_sum_b = 0, foliar_sum_mo = 0;
+            let total_foliar_dosis_acum = 0;
+
+            foliarItems.forEach((item, idx) => {
+                const p = foliaresDB[item.name];
+                if (p) {
+                    const n = item.dosis * p.n / 100;
+                    const p2 = item.dosis * p.p / 100;
+                    const k = item.dosis * p.k / 100;
+                    const mg = item.dosis * p.mg / 100;
+                    const ca = item.dosis * p.ca / 100;
+                    const s = item.dosis * p.s / 100;
+                    const fe = item.dosis * p.fe * 10;
+                    const mn = item.dosis * p.mn * 10;
+                    const zn = item.dosis * p.zn * 10;
+                    const cu = item.dosis * p.cu * 10;
+                    const b = item.dosis * p.b * 10;
+                    const mo = item.dosis * p.mo * 10;
+
+                    foliar_sum_n += n; foliar_sum_p += p2; foliar_sum_k += k;
+                    foliar_sum_mg += mg; foliar_sum_ca += ca; foliar_sum_s += s;
+                    foliar_sum_fe += fe; foliar_sum_mn += mn; foliar_sum_zn += zn;
+                    foliar_sum_cu += cu; foliar_sum_b += b; foliar_sum_mo += mo;
+                    total_foliar_dosis_acum += item.dosis;
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="text-align:left; font-weight:bold; color: var(--dark-blue);">${item.name}</td>
+                        <td><input type="number" class="form-input" style="width:70px;" value="${item.dosis}" step="0.1" oninput="updateFoliarItemDosis(${idx}, this.value)"></td>
+                        <td style="font-weight:bold;">${n.toFixed(2)}</td>
+                        <td style="font-weight:bold;">${p2.toFixed(2)}</td>
+                        <td style="font-weight:bold;">${k.toFixed(2)}</td>
+                        <td>${mg.toFixed(2)}</td>
+                        <td>${ca.toFixed(2)}</td>
+                        <td>${s.toFixed(2)}</td>
+                        <td>${fe.toFixed(1)}</td>
+                        <td>${mn.toFixed(1)}</td>
+                        <td>${zn.toFixed(1)}</td>
+                        <td>${cu.toFixed(1)}</td>
+                        <td>${b.toFixed(1)}</td>
+                        <td>${mo.toFixed(2)}</td>
+                        <td class="no-print"><button class="btn-danger" onclick="removeFoliarItem(${idx})">🗑️ Retirar</button></td>
+                    `;
+                    foBody.appendChild(row);
+                }
+            });
+
+            document.getElementById("total-foliar-dosis").textContent = `${total_foliar_dosis_acum.toFixed(1)} kg-L/ha`;
+            document.getElementById("foliar-total-n").textContent = foliar_sum_n.toFixed(2);
+            document.getElementById("foliar-total-p").textContent = foliar_sum_p.toFixed(2);
+            document.getElementById("foliar-total-k").textContent = foliar_sum_k.toFixed(2);
+            document.getElementById("foliar-total-mg").textContent = foliar_sum_mg.toFixed(2);
+            document.getElementById("foliar-total-ca").textContent = foliar_sum_ca.toFixed(2);
+            document.getElementById("foliar-total-s").textContent = foliar_sum_s.toFixed(2);
+            document.getElementById("foliar-total-fe").textContent = foliar_sum_fe.toFixed(1);
+            document.getElementById("foliar-total-mn").textContent = foliar_sum_mn.toFixed(1);
+            document.getElementById("foliar-total-zn").textContent = foliar_sum_zn.toFixed(1);
+            document.getElementById("foliar-total-cu").textContent = foliar_sum_cu.toFixed(1);
+            document.getElementById("foliar-total-b").textContent = foliar_sum_b.toFixed(1);
+            document.getElementById("foliar-total-mo").textContent = foliar_sum_mo.toFixed(2);
+
+            // 4. PRE-CÁLCULO DEL BALANCE ANUAL PARA SOLUCIONAR CIRCULARIDAD v72
+            let water_annual_sum_n = 0, water_annual_sum_p = 0, water_annual_sum_k = 0, water_annual_sum_mg = 0, water_annual_sum_ca = 0, water_annual_sum_s = 0;
+            let acid_annual_sum_n = 0, acid_annual_sum_p = 0, acid_annual_sum_k = 0, acid_annual_sum_mg = 0, acid_annual_sum_ca = 0, acid_annual_sum_s = 0;
+            let solub_annual_sum_n = 0, solub_annual_sum_p = 0, solub_annual_sum_k = 0, solub_annual_sum_mg = 0, solub_annual_sum_ca = 0, solub_annual_sum_s = 0;
+
+            for (let m = 1; m <= 12; m++) {
+                const month = monthlyData[m];
+                
+                // Water credits (mg/L * m3 / 1000 = kg/ha)
+                const w_n = month.water * no3_mg_l * 0.226 / 1000;
+                const w_p = month.water * h2po4_mg_l * 0.732 / 1000;
+                const w_k = month.water * k_mg_l * 1.205 / 1000;
+                const w_mg = month.water * mg_mg_l * 1.658 / 1000;
+                const w_ca = month.water * ca_mg_l * 1.399 / 1000;
+                const w_s = month.water * so4_mg_l * 0.833 / 1000;
+
+                water_annual_sum_n += w_n;
+                water_annual_sum_p += w_p;
+                water_annual_sum_k += w_k;
+                water_annual_sum_mg += w_mg;
+                water_annual_sum_ca += w_ca;
+                water_annual_sum_s += w_s;
+
+                // Acid credits
+                let a_n = 0, a_p = 0, a_s = 0;
+                if (month.water > 0) {
+                    if (acid_type === "Nítrico (60%)") {
+                        a_n = (month.water * neut_hco3 * 14.0) / 1000;
+                    } else if (acid_type === "Fosfórico (75%)") {
+                        a_p = (month.water * neut_hco3 * 71.0) / 1000;
+                    } else if (acid_type === "Sulfúrico (98%)") {
+                        a_s = (month.water * neut_hco3 * 40.0) / 1000;
+                    } else if (acid_type === "Personalizado") {
+                        const customN = parseFloat(document.getElementById("acid-custom-n").value) || 0;
+                        const customP = parseFloat(document.getElementById("acid-custom-p").value) || 0;
+                        const customS = parseFloat(document.getElementById("acid-custom-s").value) || 0;
+                        a_n = (month.water * neut_hco3 * customN) / 1000;
+                        a_p = (month.water * neut_hco3 * customP) / 1000;
+                        a_s = (month.water * neut_hco3 * customS) / 1000;
+                    }
+                }
+                acid_annual_sum_n += a_n;
+                acid_annual_sum_p += a_p;
+                acid_annual_sum_s += a_s;
+
+                // Solubles credits
+                month.solubles.forEach(item => {
+                    const p = solublesDB[item.name];
+                    if (p) {
+                        solub_annual_sum_n += item.dosis * p.n / 100;
+                        solub_annual_sum_p += item.dosis * p.p / 100;
+                        solub_annual_sum_k += item.dosis * p.k / 100;
+                        solub_annual_sum_mg += item.dosis * p.mg / 100;
+                        solub_annual_sum_ca += item.dosis * p.ca / 100;
+                        solub_annual_sum_s += item.dosis * p.s / 100;
+                    }
+                });
+            }
+
+            // Calcular Necesidades Brutas Anuales (A)
+            const yield_val = parseFloat(document.getElementById("crop-yield").value) || 0;
+            const cn = parseFloat(document.getElementById("coeff-n").value) || 0;
+            const cp = parseFloat(document.getElementById("coeff-p").value) || 0;
+            const ck = parseFloat(document.getElementById("coeff-k").value) || 0;
+            const cmg = parseFloat(document.getElementById("coeff-mg").value) || 0;
+            const cca = parseFloat(document.getElementById("coeff-ca").value) || 0;
+            const cs = parseFloat(document.getElementById("coeff-s").value) || 0;
+
+            const base_n_ha = yield_val * cn;
+            const base_p_ha = yield_val * cp;
+            const base_k_ha = yield_val * ck;
+            const base_mg_ha = yield_val * cmg;
+            const base_ca_ha = yield_val * cca;
+            const base_s_ha = yield_val * cs;
+
+            document.getElementById("base-n").textContent = base_n_ha.toFixed(1);
+            document.getElementById("base-p").textContent = base_p_ha.toFixed(1);
+            document.getElementById("base-k").textContent = base_k_ha.toFixed(1);
+            document.getElementById("base-mg").textContent = base_mg_ha.toFixed(1);
+            document.getElementById("base-ca").textContent = base_ca_ha.toFixed(1);
+            document.getElementById("base-s").textContent = base_s_ha.toFixed(1);
+
+            const extra_n = parseFloat(document.getElementById("extra-n").value) || 0;
+            const extra_p = parseFloat(document.getElementById("extra-p").value) || 0;
+            const extra_k = parseFloat(document.getElementById("extra-k").value) || 0;
+            const extra_mg = parseFloat(document.getElementById("extra-mg").value) || 0;
+            const extra_ca = parseFloat(document.getElementById("extra-ca").value) || 0;
+            const extra_s = parseFloat(document.getElementById("extra-s").value) || 0;
+
+            // Target exigido en gotero = A - C - D1 - D2 + E
+            const target_n_val = base_n_ha - fondo_sum_n - water_annual_sum_n - acid_annual_sum_n + extra_n;
+            const target_p_val = base_p_ha - fondo_sum_p - water_annual_sum_p - acid_annual_sum_p + extra_p;
+            const target_k_val = base_k_ha - fondo_sum_k - water_annual_sum_k + extra_k;
+            const target_mg_val = base_mg_ha - fondo_sum_mg - water_annual_sum_mg + extra_mg;
+            const target_ca_val = base_ca_ha - fondo_sum_ca - water_annual_sum_ca + extra_ca;
+            const target_s_val = base_s_ha - fondo_sum_s - water_annual_sum_s - acid_annual_sum_s + extra_s;
+
+            // 5. CÁLCULO E INTEGRACIÓN FASE POR FASE (PUNTO 5) - COMPLETAMENTE REACTIVO Y ESTABLE
+            const mesesConflictoTanque = [];
+            for (let m = 1; m <= 12; m++) {
+                const month = monthlyData[m];
+
+                // Aportes de agua del mes (mg/L * m3 / 1000 = kg/ha)
+                const w_n = month.water * no3_mg_l * 0.226 / 1000;
+                const w_p = month.water * h2po4_mg_l * 0.732 / 1000;
+                const w_k = month.water * k_mg_l * 1.205 / 1000;
+                const w_mg = month.water * mg_mg_l * 1.658 / 1000;
+                const w_ca = month.water * ca_mg_l * 1.399 / 1000;
+                const w_s = month.water * so4_mg_l * 0.833 / 1000;
+
+                // Aportes de ácido del mes (L * densidad * pureza * %elemento en reactivo)
+                let a_n = 0, a_p = 0, a_s = 0;
+                if (month.water > 0) {
+                    if (acid_type === "Nítrico (60%)") {
+                        a_n = (month.water * neut_hco3 * 14.0) / 1000;
+                    } else if (acid_type === "Fosfórico (75%)") {
+                        a_p = (month.water * neut_hco3 * 71.0) / 1000;
+                    } else if (acid_type === "Sulfúrico (98%)") {
+                        a_s = (month.water * neut_hco3 * 40.0) / 1000;
+                    } else if (acid_type === "Personalizado") {
+                        const customN = parseFloat(document.getElementById("acid-custom-n").value) || 0;
+                        const customP = parseFloat(document.getElementById("acid-custom-p").value) || 0;
+                        const customS = parseFloat(document.getElementById("acid-custom-s").value) || 0;
+                        a_n = (month.water * neut_hco3 * customN) / 1000;
+                        a_p = (month.water * neut_hco3 * customP) / 1000;
+                        a_s = (month.water * neut_hco3 * customS) / 1000;
+                    }
+                }
+
+                // Renderizar la tabla de solubles agregados de la fase
+                const solBody = document.getElementById(`msol-table-body-${m}`);
+                solBody.innerHTML = "";
+                let month_sol_n = 0, month_sol_p = 0, month_sol_k = 0, month_sol_mg = 0, month_sol_ca = 0, month_sol_s = 0;
+                let hasTanqueA = false, hasTanqueB = false;
+
+                month.solubles.forEach((item, idx) => {
+                    const p = solublesDB[item.name];
+                    if (p) {
+                        const n = item.dosis * p.n / 100;
+                        const p2 = item.dosis * p.p / 100;
+                        const k = item.dosis * p.k / 100;
+                        const mg = item.dosis * p.mg / 100;
+                        const ca = item.dosis * p.ca / 100;
+                        const s = item.dosis * p.s / 100;
+
+                        month_sol_n += n;
+                        month_sol_p += p2;
+                        month_sol_k += k;
+                        month_sol_mg += mg;
+                        month_sol_ca += ca;
+                        month_sol_s += s;
+
+                        if (item.dosis > 0) {
+                            if (p.tanque === 'A') hasTanqueA = true;
+                            if (p.tanque === 'B') hasTanqueB = true;
+                        }
+
+                        const row = document.createElement("tr");
+                        row.className = (item.dosis === 0 ? "zero-dose-row" : "");
+                        row.innerHTML = `
+                            <td style="text-align:left; font-weight:bold; color: var(--dark-blue);">${item.name}</td>
+                            <td><input type="number" class="form-input" style="width:70px;" value="${item.dosis}" oninput="updateSolubleItemDosis(${m}, ${idx}, this.value)"></td>
+                            <td style="font-weight:bold;">${n.toFixed(1)}</td>
+                            <td style="font-weight:bold;">${p2.toFixed(1)}</td>
+                            <td style="font-weight:bold;">${k.toFixed(1)}</td>
+                            <td>${mg.toFixed(1)}</td>
+                            <td>${ca.toFixed(1)}</td>
+                            <td>${s.toFixed(1)}</td>
+                            <td class="no-print"><button class="btn-danger" onclick="removeSolubleItem(${m}, ${idx})">🗑️ Retirar</button></td>
+                        `;
+                        solBody.appendChild(row);
+                    }
+                });
+
+                const tanqueBanner = document.getElementById(`mtanque-alert-${m}`);
+                if (hasTanqueA && hasTanqueB) {
+                    tanqueBanner.style.display = "block";
+                    tanqueBanner.textContent = "💥 RIESGO DE PRECIPITADO: esta fase mezcla productos Tanque A (cálcicos) con productos Tanque B (sulfatos/fosfatos). Inyéctalos desde cubas separadas.";
+                    mesesConflictoTanque.push(month.name || `Mes ${m}`);
+                } else {
+                    tanqueBanner.style.display = "none";
+                }
+
+                // Escribir en la subtabla del mes: 1. Fertilizantes Cristalinos
+                document.getElementById(`muf-fert-n-${m}`).textContent = month_sol_n.toFixed(1);
+                document.getElementById(`muf-fert-p-${m}`).textContent = month_sol_p.toFixed(1);
+                document.getElementById(`muf-fert-k-${m}`).textContent = month_sol_k.toFixed(1);
+                document.getElementById(`muf-fert-mg-${m}`).textContent = month_sol_mg.toFixed(1);
+                document.getElementById(`muf-fert-ca-${m}`).textContent = month_sol_ca.toFixed(1);
+                document.getElementById(`muf-fert-s-${m}`).textContent = month_sol_s.toFixed(1);
+
+                // Escribir en la subtabla del mes: 2. Aportes del Agua
+                document.getElementById(`muf-water-n-${m}`).textContent = w_n.toFixed(1);
+                document.getElementById(`muf-water-p-${m}`).textContent = w_p.toFixed(1);
+                document.getElementById(`muf-water-k-${m}`).textContent = w_k.toFixed(1);
+                document.getElementById(`muf-water-mg-${m}`).textContent = w_mg.toFixed(1);
+                document.getElementById(`muf-water-ca-${m}`).textContent = w_ca.toFixed(1);
+                document.getElementById(`muf-water-s-${m}`).textContent = w_s.toFixed(1);
+
+                // Escribir en la subtabla del mes: 3. Aportes de Ácido
+                document.getElementById(`muf-acid-n-${m}`).textContent = a_n.toFixed(1);
+                document.getElementById(`muf-acid-p-${m}`).textContent = a_p.toFixed(1);
+                document.getElementById(`muf-acid-k-${m}`).textContent = "0.0";
+                document.getElementById(`muf-acid-mg-${m}`).textContent = "0.0";
+                document.getElementById(`muf-acid-ca-${m}`).textContent = "0.0";
+                document.getElementById(`muf-acid-s-${m}`).textContent = a_s.toFixed(1);
+
+                // Suma Suministro Total Neto
+                const m_sum_n = month_sol_n + w_n + a_n;
+                const m_sum_p = month_sol_p + w_p + a_p;
+                const m_sum_k = month_sol_k + w_k;
+                const m_sum_mg = month_sol_mg + w_mg;
+                const m_sum_ca = month_sol_ca + w_ca;
+                const m_sum_s = month_sol_s + w_s + a_s;
+
+                document.getElementById(`muf-sum-n-${m}`).textContent = m_sum_n.toFixed(1);
+                document.getElementById(`muf-sum-p-${m}`).textContent = m_sum_p.toFixed(1);
+                document.getElementById(`muf-sum-k-${m}`).textContent = m_sum_k.toFixed(1);
+                document.getElementById(`muf-sum-mg-${m}`).textContent = m_sum_mg.toFixed(1);
+                document.getElementById(`muf-sum-ca-${m}`).textContent = m_sum_ca.toFixed(1);
+                document.getElementById(`muf-sum-s-${m}`).textContent = m_sum_s.toFixed(1);
+
+                // % Aportado de la fase sobre el Objetivo Requerido (Gotero) (Lógica de la v72)
+                document.getElementById(`muf-pct-n-${m}`).textContent = target_n_val > 0 ? `${(m_sum_n / target_n_val * 100).toFixed(1)}%` : "0.0%";
+                document.getElementById(`muf-pct-p-${m}`).textContent = target_p_val > 0 ? `${(m_sum_p / target_p_val * 100).toFixed(1)}%` : "0.0%";
+                document.getElementById(`muf-pct-k-${m}`).textContent = target_k_val > 0 ? `${(m_sum_k / target_k_val * 100).toFixed(1)}%` : "0.0%";
+                document.getElementById(`muf-pct-mg-${m}`).textContent = target_mg_val > 0 ? `${(m_sum_mg / target_mg_val * 100).toFixed(1)}%` : "0.0%";
+                document.getElementById(`muf-pct-ca-${m}`).textContent = target_ca_val > 0 ? `${(m_sum_ca / target_ca_val * 100).toFixed(1)}%` : "0.0%";
+                document.getElementById(`muf-pct-s-${m}`).textContent = target_s_val > 0 ? `${(m_sum_s / target_s_val * 100).toFixed(1)}%` : "0.0%";
+
+                // Cálculos Hidráulicos de la Fase (CE Gota, Cuba, Bomba)
+                let ec_gota = water_ec;
+                month.solubles.forEach(item => {
+                    const p = solublesDB[item.name];
+                    if (p && month.water > 0) {
+                        const conc = item.dosis / month.water; // g/L in irrigation water
+                        ec_gota += conc * p.ec_coeff;
+                    }
+                });
+                
+                // Sumar aporte de CE por el ácido
+                if (month.water > 0) {
+                    ec_gota += (neut_hco3 * 0.05); // Coeficiente estimado
+                }
+
+                document.getElementById(`mcalc-ec-${m}`).textContent = `${ec_gota.toFixed(2)} dS/m`;
+
+                // g/L en gotero final
+                const total_solubles_mes_kg = month.solubles.reduce((acc, curr) => acc + curr.dosis, 0);
+                const conc_gota_gl = month.water > 0 ? (total_solubles_mes_kg / month.water) : 0;
+                document.getElementById(`mcalc-gota-gl-${m}`).textContent = `${conc_gota_gl.toFixed(3)} g/L`;
+
+                // Concentración de la cuba
+                const dosis_por_riego_kg = month.num_riegos > 0 ? (total_solubles_mes_kg / month.num_riegos) : 0;
+                let conc_cuba_pct = 0;
+                let conc_cuba_gl = 0;
+                if (month.cuba_vol > 0) {
+                    conc_cuba_gl = (dosis_por_riego_kg / month.cuba_vol) * 1000;
+                    conc_cuba_pct = (dosis_por_riego_kg / month.cuba_vol) * 100;
+                }
+
+                const cCard = document.getElementById(`mcalc-cuba-${m}`);
+                cCard.textContent = `${conc_cuba_pct.toFixed(2)}% (${conc_cuba_gl.toFixed(1)} g/L)`;
+                if (conc_cuba_gl > 150) {
+                    cCard.style.color = "var(--danger-color)";
+                    cCard.textContent += " ⚠️ Cuba saturada (>150 g/L)";
+                } else {
+                    cCard.style.color = "inherit";
+                }
+
+                // Tiempos e Inyectora: el tiempo de riego por evento ahora es un dato de entrada
+                // (mtiempo-${m}) en vez de derivarse de un número de goteros/ha supuesto. A partir
+                // de ese tiempo real se estima el nº de emisores/ha como comprobación de coherencia.
+                const caudal_por_riego_m3 = month.num_riegos > 0 ? (month.water / month.num_riegos) : 0;
+                const tiempo_riego_horas = month.tiempo_riego || 0;
+
+                let emisores_ha_estimado = 0;
+                if (month.flow_rate > 0 && tiempo_riego_horas > 0) {
+                    emisores_ha_estimado = (caudal_por_riego_m3 * 1000) / (month.flow_rate * tiempo_riego_horas);
+                }
+                document.getElementById(`mcalc-emisores-${m}`).textContent = emisores_ha_estimado.toFixed(0);
+
+                const tiempo_inyectora_h = tiempo_riego_horas * 0.8;
+                let bomba_l_h = 0;
+                if (tiempo_inyectora_h > 0) {
+                    bomba_l_h = month.cuba_vol / tiempo_inyectora_h;
+                }
+                document.getElementById(`mcalc-bomba-${m}`).textContent = `${bomba_l_h.toFixed(0)} L/h`;
+
+                // Alerta de Conductividad Gota vs Tolerancia del Cultivo
+                const crop = document.getElementById("crop-selector").value;
+                const threshold = limitesSalinos[crop] || 1.5;
+                const banner = document.getElementById(`mcalc-alert-banner-${m}`);
+                if (ec_gota > threshold) {
+                    banner.style.display = "block";
+                    banner.textContent = `⚠️ Alerta: La CE de la gota final (${ec_gota.toFixed(2)} dS/m) supera el umbral del cultivo (${threshold.toFixed(1)} dS/m).`;
+                } else {
+                    banner.style.display = "none";
+                }
+
+                // Preparación para Impresión en PDF (v65)
+                const panel = document.getElementById(`month-panel-${m}`);
+                if (month.water > 0 || total_solubles_mes_kg > 0) {
+                    panel.classList.add("active-print");
+                } else {
+                    panel.classList.remove("active-print");
+                }
+            }
+
+            // 6. VOLCAR LOS CRÉDITOS ANUALES A LA TABLA DE BALANCE (PUNTO 1)
+            document.getElementById("water-credit-n").textContent = water_annual_sum_n.toFixed(1);
+            document.getElementById("water-credit-p").textContent = water_annual_sum_p.toFixed(1);
+            document.getElementById("water-credit-k").textContent = water_annual_sum_k.toFixed(1);
+            document.getElementById("water-credit-mg").textContent = water_annual_sum_mg.toFixed(1);
+            document.getElementById("water-credit-ca").textContent = water_annual_sum_ca.toFixed(1);
+            document.getElementById("water-credit-s").textContent = water_annual_sum_s.toFixed(1);
+
+            document.getElementById("acid-credit-n").textContent = acid_annual_sum_n.toFixed(1);
+            document.getElementById("acid-credit-p").textContent = acid_annual_sum_p.toFixed(1);
+            document.getElementById("acid-credit-k").textContent = "0.0";
+            document.getElementById("acid-credit-mg").textContent = "0.0";
+            document.getElementById("acid-credit-ca").textContent = "0.0";
+            document.getElementById("acid-credit-s").textContent = acid_annual_sum_s.toFixed(1);
+
+            document.getElementById("target-n").textContent = target_n_val.toFixed(1);
+            document.getElementById("target-p").textContent = target_p_val.toFixed(1);
+            document.getElementById("target-k").textContent = target_k_val.toFixed(1);
+            document.getElementById("target-mg").textContent = target_mg_val.toFixed(1);
+            document.getElementById("target-ca").textContent = target_ca_val.toFixed(1);
+            document.getElementById("target-s").textContent = target_s_val.toFixed(1);
+
+            document.getElementById("total-applied-n").textContent = solub_annual_sum_n.toFixed(1);
+            document.getElementById("total-applied-p").textContent = solub_annual_sum_p.toFixed(1);
+            document.getElementById("total-applied-k").textContent = solub_annual_sum_k.toFixed(1);
+            document.getElementById("total-applied-mg").textContent = solub_annual_sum_mg.toFixed(1);
+            document.getElementById("total-applied-ca").textContent = solub_annual_sum_ca.toFixed(1);
+            document.getElementById("total-applied-s").textContent = solub_annual_sum_s.toFixed(1);
+
+            // Diferencia
+            const diff_n = solub_annual_sum_n - target_n_val;
+            const diff_p = solub_annual_sum_p - target_p_val;
+            const diff_k = solub_annual_sum_k - target_k_val;
+            const diff_mg = solub_annual_sum_mg - target_mg_val;
+            const diff_ca = solub_annual_sum_ca - target_ca_val;
+            const diff_s = solub_annual_sum_s - target_s_val;
+
+            document.getElementById("diff-n").textContent = (diff_n > 0 ? "+" : "") + diff_n.toFixed(1);
+            document.getElementById("diff-p").textContent = (diff_p > 0 ? "+" : "") + diff_p.toFixed(1);
+            document.getElementById("diff-k").textContent = (diff_k > 0 ? "+" : "") + diff_k.toFixed(1);
+            document.getElementById("diff-mg").textContent = (diff_mg > 0 ? "+" : "") + diff_mg.toFixed(1);
+            document.getElementById("diff-ca").textContent = (diff_ca > 0 ? "+" : "") + diff_ca.toFixed(1);
+            document.getElementById("diff-s").textContent = (diff_s > 0 ? "+" : "") + diff_s.toFixed(1);
+
+            // Colorear fila de balance final (Rojo = Defecto, Verde = Ajustado)
+            const balanceCells = document.getElementById("balance-row").querySelectorAll("td");
+            const values = [diff_n, diff_p, diff_k, diff_mg, diff_ca, diff_s];
+            for (let i = 1; i <= 6; i++) {
+                const val = values[i-1];
+                if (val < -5) {
+                    balanceCells[i].style.color = "var(--danger-color)";
+                    balanceCells[i].style.backgroundColor = "#ffebee";
+                } else if (val > 10) {
+                    balanceCells[i].style.color = "var(--warning-color)";
+                    balanceCells[i].style.backgroundColor = "#fff3e0";
+                } else {
+                    balanceCells[i].style.color = "var(--success-color)";
+                    balanceCells[i].style.backgroundColor = "#e8f5e9";
+                }
+            }
+
+            // Calcular % Cobertura de Fondo
+            document.getElementById("cober-fondo-n").textContent = base_n_ha > 0 ? `${(fondo_sum_n / base_n_ha * 100).toFixed(1)}%` : "0.0%";
+            document.getElementById("cober-fondo-p").textContent = base_p_ha > 0 ? `${(fondo_sum_p / base_p_ha * 100).toFixed(1)}%` : "0.0%";
+            document.getElementById("cober-fondo-k").textContent = base_k_ha > 0 ? `${(fondo_sum_k / base_k_ha * 100).toFixed(1)}%` : "0.0%";
+            document.getElementById("cober-fondo-mg").textContent = base_mg_ha > 0 ? `${(fondo_sum_mg / base_mg_ha * 100).toFixed(1)}%` : "0.0%";
+            document.getElementById("cober-fondo-ca").textContent = base_ca_ha > 0 ? `${(fondo_sum_ca / base_ca_ha * 100).toFixed(1)}%` : "0.0%";
+            document.getElementById("cober-fondo-s").textContent = base_s_ha > 0 ? `${(fondo_sum_s / base_s_ha * 100).toFixed(1)}%` : "0.0%";
+
+            // 7. CÁLCULO E INTEGRACIÓN DEL GOTERO DE SONNEVELD (PUNTO 7) - EN MEMORIA DEL MES SELECCIONADO
+            const sMonthId = parseInt(document.getElementById("sonneveld-month-selector").value);
+            const sm = monthlyData[sMonthId];
+
+            let got_nh4 = meq_nh4;
+            let got_no3 = meq_no3;
+            let got_p = meq_h2po4;
+            let got_s = meq_so4;
+            let got_k = meq_k;
+            let got_ca = meq_ca;
+            let got_mg = meq_mg;
+
+            // Restar bicarbonatos por neutralización
+            let got_hco3 = Math.max(0, meq_hco3 - neut_hco3);
+
+            // Sumar aportación química de los ácidos
+            if (acid_type === "Nítrico (60%)") {
+                got_no3 += neut_hco3;
+            } else if (acid_type === "Fosfórico (75%)") {
+                got_p += neut_hco3;
+            } else if (acid_type === "Sulfúrico (98%)") {
+                got_s += neut_hco3;
+            } else if (acid_type === "Personalizado") {
+                // Aporte estequiométrico del ácido personalizado
+                const customN = parseFloat(document.getElementById("acid-custom-n").value) || 0;
+                const customP = parseFloat(document.getElementById("acid-custom-p").value) || 0;
+                const customS = parseFloat(document.getElementById("acid-custom-s").value) || 0;
+                if (customN > 0) got_no3 += neut_hco3;
+                if (customP > 0) got_p += neut_hco3;
+                if (customS > 0) got_s += neut_hco3;
+            }
+
+            // Sumar aportaciones de los fertilizantes solubles de la fase usando factores estequiométricos v71
+            sm.solubles.forEach(item => {
+                const p = solublesDB[item.name];
+                if (p && sm.water > 0) {
+                    const conc_g_l = item.dosis / sm.water; // g de abono por Litro
+                    
+                    got_nh4 += (conc_g_l * p.nh4 * 10) / 14.0;
+                    got_no3 += (conc_g_l * p.no3 * 10) / 14.0;
+                    got_p += (conc_g_l * p.p * 10) / 71.0; 
+                    got_s += (conc_g_l * p.s * 10) / 40.0; 
+                    got_k += (conc_g_l * p.k * 10) / 47.1;
+                    got_ca += (conc_g_l * p.ca * 10) / 28.0;
+                    got_mg += (conc_g_l * p.mg * 10) / 20.15;
+                }
+            });
+
+            const total_cat_got = got_ca + got_mg + got_k + meq_na + got_nh4;
+            const total_ani_got = got_no3 + got_p + got_s + meq_cl + got_hco3;
+
+            document.getElementById("gotero-meq-ca").textContent = got_ca.toFixed(2);
+            document.getElementById("gotero-meq-mg").textContent = got_mg.toFixed(2);
+            document.getElementById("gotero-meq-k").textContent = got_k.toFixed(2);
+            document.getElementById("gotero-meq-na").textContent = meq_na.toFixed(2);
+            document.getElementById("gotero-meq-nh4").textContent = got_nh4.toFixed(2);
+
+            document.getElementById("gotero-meq-no3").textContent = got_no3.toFixed(2);
+            document.getElementById("gotero-meq-h2po4").textContent = got_p.toFixed(2);
+            document.getElementById("gotero-meq-so4").textContent = got_s.toFixed(2);
+            document.getElementById("gotero-meq-cl").textContent = meq_cl.toFixed(2);
+            document.getElementById("gotero-meq-hco3").textContent = got_hco3.toFixed(2);
+
+            document.getElementById("gotero-mg-ca").textContent = (got_ca * 20.04).toFixed(1);
+            document.getElementById("gotero-mg-mg").textContent = (got_mg * 12.16).toFixed(1);
+            document.getElementById("gotero-mg-k").textContent = (got_k * 39.1).toFixed(1);
+            document.getElementById("gotero-mg-na").textContent = (meq_na * 23.0).toFixed(1);
+            document.getElementById("gotero-mg-nh4").textContent = (got_nh4 * 18.04).toFixed(1);
+
+            document.getElementById("gotero-mg-no3").textContent = (got_no3 * 62.0).toFixed(1);
+            document.getElementById("gotero-mg-h2po4").textContent = (got_p * 97.0).toFixed(1);
+            document.getElementById("gotero-mg-so4").textContent = (got_s * 48.03).toFixed(1);
+            document.getElementById("gotero-mg-cl").textContent = (meq_cl * 35.45).toFixed(1);
+            document.getElementById("gotero-mg-hco3").textContent = (got_hco3 * 61.02).toFixed(1);
+
+            document.getElementById("gotero-total-cationes-meq").textContent = total_cat_got.toFixed(2);
+            document.getElementById("gotero-total-aniones-meq").textContent = total_ani_got.toFixed(2);
+
+            document.getElementById("gotero-total-cationes-mg").textContent = (got_ca * 20.04 + got_mg * 12.16 + got_k * 39.1 + meq_na * 23.0 + got_nh4 * 18.04).toFixed(1);
+            document.getElementById("gotero-total-aniones-mg").textContent = (got_no3 * 62.0 + got_p * 97.0 + got_s * 48.03 + meq_cl * 35.45 + got_hco3 * 61.02).toFixed(1);
+
+            // Balance iónico de gotero
+            let got_neutral_ratio = 0;
+            if (total_cat_got + total_ani_got > 0) {
+                got_neutral_ratio = Math.abs(total_cat_got - total_ani_got) / ((total_cat_got + total_ani_got) / 2) * 100;
+            }
+            document.getElementById("gotero-electroneutralidad").textContent = `${got_neutral_ratio.toFixed(1)}%`;
+
+            // Fila comparativa en la tabla de soluciones de referencia de hidroponía (solo visual)
+            document.getElementById("ref-mi-nh4").textContent = got_nh4.toFixed(2);
+            document.getElementById("ref-mi-no3").textContent = got_no3.toFixed(2);
+            document.getElementById("ref-mi-p").textContent = got_p.toFixed(2);
+            document.getElementById("ref-mi-s").textContent = got_s.toFixed(2);
+            document.getElementById("ref-mi-k").textContent = got_k.toFixed(2);
+            document.getElementById("ref-mi-ca").textContent = got_ca.toFixed(2);
+            document.getElementById("ref-mi-mg").textContent = got_mg.toFixed(2);
+
+            // Relaciones molares Sonneveld
+            let r_k_ca_mg = 0;
+            if (got_ca + got_mg > 0) r_k_ca_mg = got_k / (got_ca + got_mg);
+            let r_ca_mg = 0;
+            if (got_mg > 0) r_ca_mg = got_ca / got_mg;
+            let r_k_mg = 0;
+            if (got_mg > 0) r_k_mg = got_k / got_mg;
+            
+            // Relación N / K (molar): (NO3 + NH4) / K
+            let r_n_k = 0;
+            if (got_k > 0) r_n_k = (got_no3 + got_nh4) / got_k;
+            
+            // Relación N / P (molar): (NO3 + NH4) / H2PO4
+            let r_n_p = 0;
+            if (got_p > 0) r_n_p = (got_no3 + got_nh4) / got_p;
+
+            // Mostrar valores de las relaciones molares
+            document.getElementById("ratio-k-ca-mg").textContent = r_k_ca_mg.toFixed(2);
+            document.getElementById("ratio-ca-mg").textContent = r_ca_mg.toFixed(2);
+            document.getElementById("ratio-k-mg").textContent = r_k_mg.toFixed(2);
+            document.getElementById("ratio-n-k").textContent = r_n_k.toFixed(2);
+            document.getElementById("ratio-n-p").textContent = r_n_p.toFixed(2);
+// Comentarios dinámicos de Sonneveld (Basado en el archivo Equilibrios cationicos Sonnesvil.pdf)
+            const c_k_ca_mg = document.getElementById("comment-k-ca-mg");
+            if (r_k_ca_mg < 0.30) {
+                c_k_ca_mg.textContent = "⚠️ Relación baja. Riesgo de deficiencia de Potasio por exceso de Calcio y Magnesio.";
+                c_k_ca_mg.style.color = "var(--danger-color)";
+            } else if (r_k_ca_mg <= 0.50) {
+                c_k_ca_mg.textContent = "✅ Óptimo (0.30-0.50). Previene antagonismos de absorción con potasio.";
+                c_k_ca_mg.style.color = "var(--success-color)";
+            } else {
+                c_k_ca_mg.textContent = "⚠️ Relación alta. El exceso de Potasio puede bloquear la absorción de Calcio y Magnesio.";
+                c_k_ca_mg.style.color = "var(--danger-color)";
+            }
+
+            const c_ca_mg = document.getElementById("comment-ca-mg");
+            if (r_ca_mg < 2.50) {
+                c_ca_mg.textContent = "⚠️ Relación baja. Exceso de Magnesio que puede bloquear la absorción de Calcio.";
+                c_ca_mg.style.color = "var(--danger-color)";
+            } else if (r_ca_mg <= 5.00) {
+                c_ca_mg.textContent = "✅ Óptimo (2.50-5.00). Controla el equilibrio de asimilación de calcio.";
+                c_ca_mg.style.color = "var(--success-color)";
+            } else {
+                c_ca_mg.textContent = "⚠️ Relación alta. El exceso de Calcio puede inducir deficiencias de Magnesio.";
+                c_ca_mg.style.color = "var(--danger-color)";
+            }
+
+            const c_k_mg = document.getElementById("comment-k-mg");
+            if (r_k_mg < 1.50) {
+                c_k_mg.textContent = "⚠️ Relación baja. Riesgo de bajo nivel de Potasio activo en la planta.";
+                c_k_mg.style.color = "var(--danger-color)";
+            } else if (r_k_mg <= 3.00) {
+                c_k_mg.textContent = "✅ Óptimo (1.50-3.00). Evita clorosis foliares de magnesio por exceso de potasio.";
+                c_k_mg.style.color = "var(--success-color)";
+            } else {
+                c_k_mg.textContent = "⚠️ Relación alta. El exceso de Potasio provoca clorosis foliar por deficiencia de Magnesio.";
+                c_k_mg.style.color = "var(--danger-color)";
+            }
+
+            const c_n_k = document.getElementById("comment-n-k");
+            if (r_n_k < 1.00) {
+                c_n_k.textContent = "⚠️ Relación baja. Exceso de Potasio o falta de Nitrógeno (reduce el vigor).";
+                c_n_k.style.color = "var(--danger-color)";
+            } else if (r_n_k <= 1.60) {
+                c_n_k.textContent = "✅ Óptimo (1.00-1.60). Equilibrio vegetativo-productivo.";
+                c_n_k.style.color = "var(--success-color)";
+            } else {
+                c_n_k.textContent = "⚠️ Relación alta. Exceso de Nitrógeno (reblandecimiento foliar) o deficiencia de Potasio.";
+                c_n_k.style.color = "var(--danger-color)";
+            }
+
+            const c_n_p = document.getElementById("comment-n-p");
+            if (r_n_p < 8.00) {
+                c_n_p.textContent = "⚠️ Relación baja. Exceso de Fósforo o falta de Nitrógeno.";
+                c_n_p.style.color = "var(--danger-color)";
+            } else if (r_n_p <= 12.00) {
+                c_n_p.textContent = "✅ Óptimo (8.00-12.00). Desarrollo de raíces y vigor.";
+                c_n_p.style.color = "var(--success-color)";
+            } else {
+                c_n_p.textContent = "⚠️ Relación alta. Exceso de Nitrógeno o deficiencia de Fósforo (afecta enraizamiento).";
+                c_n_p.style.color = "var(--danger-color)";
+            }
+            // (Los diagnósticos de cada ratio ya se muestran en las celdas "comment-*" de arriba;
+            // las llamadas a evalRelationshipBadge() que había aquí apuntaban a elementos
+            // "diag-*" inexistentes en el HTML y lanzaban una excepción en cada recálculo,
+            // impidiendo que el código posterior de esta función (incluido el Dictamen del
+            // Punto 8) llegara a ejecutarse nunca. Se han retirado esas llamadas muertas.
+
+            // Sugerencia agronómica según la fase fenológica de esta fase (Punto 5/7)
+            renderFaseSuggestion(sm.fase, { r_k_ca_mg, r_ca_mg, r_k_mg, r_n_k, r_n_p });
+
+            // Barra tricolor Tríada catiónica
+            const cat_sum_molar = got_k + got_ca + got_mg;
+            let pct_k = 33.3, pct_ca = 33.3, pct_mg = 33.3;
+            if (cat_sum_molar > 0) {
+                pct_k = (got_k / cat_sum_molar) * 100;
+                pct_ca = (got_ca / cat_sum_molar) * 100;
+                pct_mg = (got_mg / cat_sum_molar) * 100;
+            }
+
+            document.getElementById("triad-pct-k").style.width = `${pct_k}%`;
+            document.getElementById("triad-pct-k").textContent = `K: ${pct_k.toFixed(0)}%`;
+            document.getElementById("triad-pct-ca").style.width = `${pct_ca}%`;
+            document.getElementById("triad-pct-ca").textContent = `Ca: ${pct_ca.toFixed(0)}%`;
+            document.getElementById("triad-pct-mg").style.width = `${pct_mg}%`;
+            document.getElementById("triad-pct-mg").textContent = `Mg: ${pct_mg.toFixed(0)}%`;
+
+            // Calcular CE de la fase de Sonneveld para el Punto 8
+            let ec_gota_fase = water_ec;
+            sm.solubles.forEach(item => {
+                const p = solublesDB[item.name];
+                if (p && sm.water > 0) {
+                    ec_gota_fase += (item.dosis / sm.water) * p.ec_coeff;
+                }
+            });
+            if (sm.water > 0) {
+                ec_gota_fase += (neut_hco3 * 0.05);
+            }
+
+            // 8. DICTAMEN AGRONÓMICO DE RIESGOS EN TIEMPO REAL (PUNTO 8)
+            generateExpertDictamen(ec_gota_fase, ras_val, meq_cl, mesesConflictoTanque);
+        }
+
+        // Diagnósticos de Sonneveld coloreados (sin uso actualmente: ver nota en calculateAll)
+        function evalRelationshipBadge(id, val, min, max, label) {
+            const b = document.getElementById(id);
+            if (!b) return;
+            if (val < min) {
+                b.textContent = "Deficiente";
+                b.className = "diag-badge diag-danger";
+            } else if (val > max) {
+                b.textContent = "Exceso";
+                b.className = "diag-badge diag-warn";
+            } else {
+                b.textContent = "Equilibrado";
+                b.className = "diag-badge diag-ok";
+            }
+        }
+
+        // Orientación agronómica de la solución nutritiva según la fase fenológica seleccionada
+        // (Punto 5). Combina la prioridad/tendencia cualitativa de la fase (ver FASES_INFO, guía
+        // de fertirrigación sección 10) con los rangos Sonneveld ya calculados y validados arriba:
+        // no introduce umbrales numéricos nuevos por fase, solo interpreta los ya existentes en
+        // función de qué se espera en ese momento del cultivo.
+        function renderFaseSuggestion(faseKey, ratios) {
+            const info = FASES_INFO[faseKey] || FASES_INFO.sin_fase;
+            document.getElementById("fase-label").textContent = info.label;
+            document.getElementById("fase-prioridad").textContent = info.prioridad;
+            document.getElementById("fase-tendencia").textContent = info.tendencia;
+
+            const list = document.getElementById("fase-suggestions-list");
+            const sugerencias = [];
+
+            const { r_k_ca_mg, r_ca_mg, r_k_mg, r_n_k, r_n_p } = ratios;
+
+            if (faseKey === "arranque") {
+                if (r_n_p > 12.00) sugerencias.push("Esta fase prioriza P disponible para el arranque radicular, pero tu relación N/P (" + r_n_p.toFixed(2) + ") es alta: hay más N relativo (o menos P) de lo recomendado. Considera reforzar el aporte de P.");
+            } else if (faseKey === "vegetativo") {
+                if (r_n_k < 1.00) sugerencias.push("En crecimiento vegetativo se espera N suficiente para biomasa y área foliar, pero tu relación N/K (" + r_n_k.toFixed(2) + ") es baja: el K relativo es alto. Revisa si el N está siendo limitante.");
+            } else if (faseKey === "floracion") {
+                if (r_n_k > 1.60) sugerencias.push("En floración se recomienda reducir la dependencia de N y reforzar K/Ca, pero tu relación N/K (" + r_n_k.toFixed(2) + ") es alta. Considera bajar el aporte de N y/o subir K.");
+                if (r_k_ca_mg < 0.30) sugerencias.push("Se espera reforzar K en esta fase; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja. Valora aumentar el aporte de K.");
+            } else if (faseKey === "cuajado" || faseKey === "engorde") {
+                if (r_k_ca_mg < 0.30) sugerencias.push("En " + info.label.toLowerCase() + " se espera K alto relativo para calibre y calidad; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja. Considera reforzar K.");
+                if (r_n_k > 1.60) sugerencias.push("Se recomienda N controlado en esta fase; tu relación N/K (" + r_n_k.toFixed(2) + ") es alta. Valora reducir el aporte de N.");
+            } else if (faseKey === "maduracion") {
+                if (r_n_k > 1.60) sugerencias.push("En maduración se recomienda reducir N y mantener K; tu relación N/K (" + r_n_k.toFixed(2) + ") sigue siendo alta. Considera bajar la dosis de fertilizantes nitrogenados.");
+                if (r_k_ca_mg < 0.30) sugerencias.push("Se recomienda mantener K en esta fase; tu relación K/(Ca+Mg) (" + r_k_ca_mg.toFixed(2) + ") es baja para el objetivo de calidad y maduración.");
+            } else if (faseKey === "precosecha") {
+                sugerencias.push("En pre-cosecha el objetivo es no forzar crecimiento vegetativo: evita subir N y vigila que la CE no se dispare (revisa el Punto 5 y el Punto 8 de esta misma fase).");
+            }
+
+            if (sugerencias.length === 0) {
+                list.innerHTML = faseKey === "sin_fase"
+                    ? '<div style="font-size:12px; color:#777;">Selecciona una fase fenológica arriba para recibir orientación sobre el equilibrio esperado de la solución.</div>'
+                    : '<div class="diag-badge diag-ok" style="display:inline-block;">✅ La solución de esta fase no contradice la prioridad nutricional esperada.</div>';
+            } else {
+                list.innerHTML = sugerencias.map(s => `<div class="diag-badge diag-warn" style="display:block; margin-bottom:6px; white-space:normal;">⚠️ ${s}</div>`).join("");
+            }
+        }
+
+        // Diagnóstico Experto v70/v71 corregido (analiza el mes seleccionado)
+        function generateExpertDictamen(ec_gota, ras_val, meq_cl, mesesConflictoTanque) {
+            const container = document.getElementById("dictamen-alerts-container");
+            container.innerHTML = "";
+
+            const crop = document.getElementById("crop-selector").value;
+            const threshold = limitesSalinos[crop] || 1.5;
+
+            // Alerta 1: Salinidad de Gota
+            // Nota: el % de pérdida es una estimación orientativa con una pendiente única (10%
+            // por dS/m) para todos los cultivos. La pendiente real (modelo Maas-Hoffman) varía
+            // mucho por cultivo (desde ~3%/dS/m en tolerantes hasta >20%/dS/m en sensibles), así
+            // que esta cifra es solo indicativa, no una previsión calibrada por cultivo.
+            let sal_class = "ok", sal_msg = `Conductividad óptima para ${crop}. La conductividad de gota (${ec_gota.toFixed(2)} dS/m) está por debajo del límite de tolerancia del cultivo (${threshold.toFixed(2)} dS/m).`;
+            if (ec_gota > threshold) {
+                sal_class = "danger";
+                const loss_pct = (ec_gota - threshold) * 10.0;
+                sal_msg = `⚠️ RIESGO DE SALINIDAD. La conductividad de la gota (${ec_gota.toFixed(2)} dS/m) supera el umbral de tolerancia de ${crop} (${threshold.toFixed(2)} dS/m). Pérdida de rendimiento orientativa (pendiente genérica, no calibrada por cultivo): ~${loss_pct.toFixed(0)}%.`;
+            }
+            container.appendChild(createAlertBox(sal_class, sal_msg));
+
+            // Alerta 2: R.A.S. Sódico
+            let ras_class = "ok", ras_msg = "Sodio equilibrado. La relación de adsorción de sodio (RAS) del agua de riego es óptima y no representa riesgos estructurales.";
+            if (ras_val > 6) {
+                ras_class = "warn";
+                ras_msg = `⚠️ ALERTA DE SODICIDAD (RAS: ${ras_val.toFixed(1)}). Riesgo moderado de dispersión de arcillas y pérdida de infiltración física en el suelo. Se recomienda vigilar el drenaje.`;
+            }
+            if (ras_val > 9) {
+                ras_class = "danger";
+                ras_msg = `❌ PELIGRO DE DEGRADACIÓN ESTRUCTURAL (RAS: ${ras_val.toFixed(1)}). El agua es fuertemente sódica. Existe riesgo inminente de asfixia radicular y compactación severa del suelo.`;
+            }
+            container.appendChild(createAlertBox(ras_class, ras_msg));
+
+            // Alerta 3: Toxicidad por Cloruro
+            let cl_class = "ok", cl_msg = "Concentración de cloruros óptima. No se prevén toxicidades marginales en hojas.";
+            if (meq_cl > 4) {
+                cl_class = "warn";
+                cl_msg = `⚠️ TOXICIDAD POR CLORUROS MODERADA. La concentración de cloruros supera 4.0 meq/L. Riesgo de quemaduras marginales en frutales u hortalizas sensibles.`;
+            }
+            container.appendChild(createAlertBox(cl_class, cl_msg));
+
+            // Alerta 4: Obturación del Gotero por Caliza
+            const hco3_mg_l = parseFloat(document.getElementById("water-mg-hco3").value) || 0;
+            let obt_class = "ok", obt_msg = "Riesgo de obturaciones bajo. El tratamiento regulador del ácido neutraliza el exceso de carbonatos.";
+            if (hco3_mg_l > 150) {
+                obt_class = "warn";
+                obt_msg = "⚠️ RIESGO DE OBTURACIONES CALIZAS. Se detecta una alta presencia de bicarbonatos en el agua base. Asegure el mantenimiento regular de inyección de ácido.";
+            }
+            container.appendChild(createAlertBox(obt_class, obt_msg));
+
+            // Alerta 5: Incompatibilidad de Tanque (Ca vs Sulfatos/Fosfatos) en cualquier fase del año
+            let tanque_class = "ok", tanque_msg = "Sin conflictos de tanque detectados en la planificación anual. Los productos cálcicos (Tanque A) y los sulfatados/fosfatados (Tanque B) no coinciden en ninguna fase.";
+            if (mesesConflictoTanque && mesesConflictoTanque.length > 0) {
+                tanque_class = "danger";
+                tanque_msg = `💥 RIESGO DE PRECIPITADO EN: ${mesesConflictoTanque.join(", ")}. Estas fases mezclan productos Tanque A (cálcicos) con productos Tanque B (sulfatos/fosfatos), lo que puede formar yeso o fosfato cálcico insoluble y obturar los goteros. Inyecta cada grupo desde una cuba separada.`;
+            }
+            container.appendChild(createAlertBox(tanque_class, tanque_msg));
+        }
+
+        function createAlertBox(className, text) {
+            const div = document.createElement("div");
+            div.className = `alert-box ${className}`;
+            div.innerHTML = `<span>${text}</span>`;
+            return div;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurochem Agro Iberia - NutriLeaf Pro v5.2</title>
+    <style>
+        :root {
+            --primary: #002F6C;       /* Azul oscuro corporativo Eurochem */
+            --primary-dark: #001A4E;
+            --accent: #009FDF;        /* Cian corporativo Eurochem */
+            --bg: #F4F6FA;
+            --card-bg: #ffffff;
+            --text: #1A2B49;
+            --border: #D3E0EA;
+            --danger: #D32F2F;        /* Muy bajo / Deficiente */
+            --warning: #EF6C00;       /* Bajo */
+            --success: #2E7D32;       /* Óptimo */
+            --indigo: #5E35B1;        /* Exceso */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 20px;
+            position: relative;
+            border-bottom: 4px solid var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .author-tag {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 25px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.1fr 2fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 950px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 22px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* HUECOS LIMPIOS PARA LOS LOGOTIPOS EN LA BARRA LATERAL (CLICABLES / CON ARRASTRE DE ARCHIVO) */
+        .sidebar-logos-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-sidebar-placeholder {
+            flex: 1;
+            height: 70px;
+            border: 2px dashed var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--accent);
+            border-radius: 6px;
+            background-color: rgba(0, 159, 223, 0.03);
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 4px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        .logo-sidebar-placeholder:hover {
+            background-color: rgba(0, 159, 223, 0.08);
+            border-color: var(--primary);
+        }
+
+        .logo-sidebar-distribuidor-placeholder {
+            flex: 1;
+            height: 70px;
+            border: 2px dashed #90A4AE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #78909C;
+            border-radius: 6px;
+            background-color: rgba(144, 164, 174, 0.03);
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 4px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        .logo-sidebar-distribuidor-placeholder:hover {
+            background-color: rgba(144, 164, 174, 0.08);
+            border-color: #546E7A;
+        }
+
+        .logo-sidebar-placeholder img, .logo-sidebar-distribuidor-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #334E68;
+        }
+
+        select, input[type="number"], input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #FCFDFF;
+            transition: all 0.3s;
+        }
+
+        select:focus, input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 159, 223, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #52606D;
+            margin-top: 5px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #3E4C59;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13.5px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #F0F4F8;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .badge-muy-bajo { background-color: #FFEBEE; color: var(--danger); border: 1px solid #FFCDD2; }
+        .badge-bajo { background-color: #FFF3E0; color: var(--warning); border: 1px solid #FFE0B2; }
+        .badge-optimo { background-color: #E8F5E9; color: var(--success); border: 1px solid #C8E6C9; }
+        .badge-alto { background-color: #E0F2F1; color: #00796B; border: 1px solid #B2DFDB; }
+        .badge-muy-alto { background-color: #F3E5F5; color: var(--indigo); border: 1px solid #E1BEE7; }
+
+        .alert-box {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+            border-left: 5px solid;
+        }
+
+        .alert-warning {
+            background-color: #FFF9E6;
+            border-left-color: #FFB300;
+            color: #664D03;
+        }
+
+        .alert-info {
+            background-color: #EBF8FF;
+            border-left-color: var(--accent);
+            color: #004B87;
+        }
+
+        .alert-success {
+            background-color: #E8F5E9;
+            border-left-color: var(--success);
+            color: #1B5E20;
+        }
+
+        .tab-menu {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #627D98;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .recom-card {
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 12px;
+            background-color: #FAFCFF;
+        }
+
+        .recom-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: var(--primary);
+        }
+
+        .factor-value {
+            font-weight: bold;
+            color: var(--accent);
+            background-color: #EBF8FF;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .note {
+            font-size: 11.5px;
+            color: #627D98;
+            margin-top: 5px;
+        }
+
+        .brand-logo {
+            font-weight: 800;
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .brand-logo span {
+            color: var(--accent);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #627D98;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+            background-color: white;
+        }
+
+        /* HUECOS PARA LOGO EN CABECERA INTERACTIVA */
+        .header-logos-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo-header-placeholder {
+            width: 180px;
+            height: 50px;
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 2px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s;
+        }
+
+        .logo-header-placeholder:hover {
+            border-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .logo-header-distribuidor-placeholder {
+            width: 180px;
+            height: 50px;
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 2px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s;
+        }
+
+        .logo-header-distribuidor-placeholder:hover {
+            border-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .logo-header-placeholder img, .logo-header-distribuidor-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-print-container {
+            display: none;
+        }
+
+        .print-meta-header {
+            display: none;
+        }
+
+        /* MEDIA QUERY DE IMPRESIÓN PROFESIONAL */
+        @media print {
+            html, body {
+                background: #ffffff !important;
+                color: #1A2B49 !important;
+                font-size: 12pt;
+                height: auto !important;
+            }
+            header, .sidebar, .sidebar-logos-container, .btn, .btn-secondary, .tab-menu, #btn-print, .note, #bienvenida-box, .footer {
+                display: none !important;
+            }
+            .container {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .main-content {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 30px !important;
+                background: none !important;
+            }
+            #resultados-box.card {
+                page-break-inside: auto !important;
+            }
+            .card h2 {
+                border-bottom: 2px solid var(--accent) !important;
+                color: var(--primary) !important;
+                padding-bottom: 5px !important;
+                margin-top: 25px !important;
+            }
+            .card-meta-summary {
+                display: none !important; /* Evitar duplicación con el print-meta-header */
+            }
+            .print-meta-header {
+                display: block !important;
+                border-bottom: 3px solid var(--primary);
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            .print-meta-header table {
+                width: 100%;
+                margin: 0;
+            }
+            .print-meta-header td {
+                border: none !important;
+                padding: 4px 0 !important;
+            }
+            
+            /* Contenedor de logos alineados en el PDF */
+            .logo-print-container {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            
+            .logo-print-placeholder {
+                display: flex !important;
+                width: 200px;
+                height: 60px;
+                border: 1px dashed var(--primary);
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                color: var(--primary);
+                border-radius: 4px;
+                text-transform: uppercase;
+                overflow: hidden;
+            }
+
+            .logo-print-distribuidor-placeholder {
+                display: flex !important;
+                width: 200px;
+                height: 60px;
+                border: 1px dashed #78909C;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                color: #78909C;
+                border-radius: 4px;
+                text-transform: uppercase;
+                overflow: hidden;
+            }
+
+            .logo-print-placeholder img, .logo-print-distribuidor-placeholder img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+
+            /* Imprimir todas las secciones juntas para un reporte completo */
+            .tab-content {
+                display: block !important;
+                opacity: 1 !important;
+                page-break-after: auto;
+            }
+            .recom-card {
+                page-break-inside: avoid;
+                background-color: #FAFCFF !important;
+                border: 1px solid var(--border) !important;
+                border-left: 5px solid var(--primary) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- INPUTS INVISIBLES PARA SUBIR LOS LOGOS DESDE EL ORDENADOR -->
+<input type="file" id="upload-eurochem-file" style="display: none;" accept="image/*" onchange="processLogo(this, 'eurochem')">
+<input type="file" id="upload-distribuidor-file" style="display: none;" accept="image/*" onchange="processLogo(this, 'distribuidor')">
+
+<header>
+    <div class="author-tag">Creado por G.Morales</div>
+    <div class="header-logos-container">
+        <div class="logo-header-placeholder" onclick="triggerUpload('eurochem')">
+            <span id="txt-header-eurochem">[ Logo Eurochem ]</span>
+            <img id="img-header-eurochem" style="display: none;">
+        </div>
+        <div class="logo-header-distribuidor-placeholder" onclick="triggerUpload('distribuidor')">
+            <span id="txt-header-dist">[ Logo Distribuidor ]</span>
+            <img id="img-header-dist" style="display: none;">
+        </div>
+    </div>
+    <h1 style="text-align: center;">NutriLeaf Pro v5.2</h1>
+    <p style="text-align: center; margin-top: 3px;">Software Profesional de Diagnóstico Foliar, Ratios de Equilibrio, Plan de Abonado y Diagnóstico DRIS</p>
+</header>
+
+<div class="container">
+    <div class="sidebar">
+        <!-- HUECO COMPATIBLE CON CARGA DE IMAGEN (SIN TEXTO AL IMPRIMIR) -->
+        <div class="sidebar-logos-container">
+            <div class="logo-sidebar-placeholder" onclick="triggerUpload('eurochem')">
+                <span id="txt-sidebar-eurochem">[ Logo Eurochem ]</span>
+                <img id="img-sidebar-eurochem" style="display: none;">
+            </div>
+            <div class="logo-sidebar-distribuidor-placeholder" onclick="triggerUpload('distribuidor')">
+                <span id="txt-sidebar-dist">[ Logo Distribuidor ]</span>
+                <img id="img-sidebar-dist" style="display: none;">
+            </div>
+        </div>
+
+        <!-- TARJETA DE DATOS DE LA FINCA -->
+        <div class="card">
+            <h2>Datos del Informe</h2>
+            <div class="form-group">
+                <label for="finca_nombre">Nombre de la Finca:</label>
+                <input type="text" id="finca_nombre" placeholder="Ej. Finca La Mancha" value="Finca La Mancha">
+            </div>
+            <div class="form-group">
+                <label for="finca_fecha">Fecha de Muestreo:</label>
+                <input type="date" id="finca_fecha" value="2026-07-06">
+            </div>
+            <div class="form-group">
+                <label for="asesor_nombre">Asesor Agrónomo:</label>
+                <input type="text" id="asesor_nombre" placeholder="Ej. G. Morales" value="G. Morales">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Configuración del Cultivo</h2>
+            <div class="form-group">
+                <label for="cultivo">Grupo / Variedad:</label>
+                <select id="cultivo" onchange="actualizarNormasUI()">
+                    <option value="olivo">Olivo (Muestreo de Julio - Con DRIS)</option>
+                    <option value="viña">Viña (Floración - Limbos W17-W23)</option>
+                    <option value="almendro">Almendro (Muestreo de Julio - Con DRIS)</option>
+                    <option value="citricos">Cítricos (Muestreo de Otoño)</option>
+                    <option value="aguacate">Aguacate (Muestreo de Otoño)</option>
+                    <option value="tomate">Tomate (Brotación / Floración)</option>
+                    <option value="melocoton">Melocotón (Muestreo de Julio)</option>
+                    <option value="pistacho">Pistacho (Muestreo Julio-Agosto)</option>
+                    <option value="caqui">Caqui 'Rojo Brillante' (Engorde de Fruto / Julio - Con DRIS)</option>
+                    <option value="personalizado">Personalizado / Otros Cultivos</option>
+                </select>
+                <div class="note" id="cultivo-note">Cargando base de datos agroquímica...</div>
+            </div>
+
+            <div id="almendro-variedad-config" style="display:none; border-top: 1px solid var(--border); padding-top:15px; margin-top:15px;">
+                <div class="form-group">
+                    <label for="almendro-variedad">Variedad de Almendro:</label>
+                    <select id="almendro-variedad" onchange="actualizarNormasUI()">
+                        <option value="generico">Genérica / Otras variedades (IFAPA, UC ANR)</option>
+                        <option value="ferraduel">Ferraduel</option>
+                        <option value="ferragnes">Ferragnès</option>
+                        <option value="garrigues">Garrigues</option>
+                    </select>
+                    <div class="note">Ferraduel/Ferragnès/Garrigues usan las normas de suficiencia y DRIS de Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete) y Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio.</div>
+                </div>
+            </div>
+
+            <div id="dris-olivo-config" style="display:none; border-top: 1px solid var(--border); padding-top:15px; margin-top:15px;">
+                <h3 style="font-size:14px; color:var(--primary); margin-top:0;">Variables DRIS Olivar</h3>
+                <div class="form-group">
+                    <label for="dris-manejo">Sistema de Cultivo / Manejo:</label>
+                    <select id="dris-manejo" onchange="actualizarAvisoDrisOlivo()">
+                        <option value="secano">Secano Tradicional (Picual)</option>
+                        <option value="regadio">Intensivo (Regadío) (Picual)</option>
+                        <option value="superintensivo">Superintensivo (Seto) (Arbequina/Arbosana/Picual)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dris-zona">Zona de Cultivo / Suelo:</label>
+                    <select id="dris-zona" onchange="actualizarAvisoDrisOlivo()">
+                        <option value="estandar">Suelo Estándar / Otros</option>
+                        <option value="Guadalquivir_Arcillas">Valle del Guadalquivir - Arcillas / Vertisoles</option>
+                    </select>
+                </div>
+                <div id="aviso-ambito-dris" class="note" style="line-height:1.4;"></div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="cargarEjemploMuestra()">Cargar Análisis de Ejemplo</button>
+        </div>
+
+        <div class="card">
+            <h2>Resultados de Laboratorio</h2>
+            <form id="analisisForm" onsubmit="event.preventDefault(); procesarAnalisisFoliar();">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nitrógeno (N %):</label>
+                        <input type="number" id="val_N" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fósforo (P %):</label>
+                        <input type="number" id="val_P" step="0.001" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Potasio (K %):</label>
+                        <input type="number" id="val_K" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Calcio (Ca %):</label>
+                        <input type="number" id="val_Ca" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Magnesio (Mg %):</label>
+                        <input type="number" id="val_Mg" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hierro (Fe mg/kg):</label>
+                        <input type="number" id="val_Fe" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Manganeso (Mn mg/kg):</label>
+                        <input type="number" id="val_Mn" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Zinc (Zn mg/kg):</label>
+                        <input type="number" id="val_Zn" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cobre (Cu mg/kg):</label>
+                        <input type="number" id="val_Cu" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Boro (B mg/kg):</label>
+                        <input type="number" id="val_B" step="0.1" min="0" required>
+                    </div>
+                </div>
+
+                <div id="cloruro-field" style="display:none; margin-top:10px;">
+                    <div class="form-group">
+                        <label>Cloruro (Cl⁻ %):</label>
+                        <input type="number" id="val_Cl" step="0.01" min="0">
+                        <div class="note">Solo aplica a Aguacate: riesgo de toxicidad por Cl⁻ (UC ANR).</div>
+                    </div>
+                </div>
+
+                <div id="caqui-extra-fields" style="display:none; margin-top:10px;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Sodio (Na %):</label>
+                            <input type="number" id="val_Na" step="0.001" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Azufre (S %):</label>
+                            <input type="number" id="val_S" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Cloruro (Cl⁻ %):</label>
+                            <input type="number" id="val_Cl_caqui" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="note">Solo aplica a Caqui: el sistema DRIS completo de Morales et al. (2022) usa 13 elementos (incluye Na, S y Cl como indicadores, además de N-P-K-Ca-Mg y micros).</div>
+                </div>
+
+                <div id="personalizado-limits" style="display:none; margin-top:15px; border-top: 1px dashed var(--border); padding-top:10px;">
+                    <h3 style="font-size:13px; margin:0 0 10px 0; color:var(--primary);">Límites Óptimos Personalizados</h3>
+                    <div class="form-grid" style="font-size:12px;">
+                        <div><label>N Óptimo %:</label><input type="number" id="norm_N" step="0.1" value="2.5"></div>
+                        <div><label>P Óptimo %:</label><input type="number" id="norm_P" step="0.01" value="0.14"></div>
+                        <div><label>K Óptimo %:</label><input type="number" id="norm_K" step="0.1" value="0.8"></div>
+                        <div><label>Ca Óptimo %:</label><input type="number" id="norm_Ca" step="0.1" value="3.5"></div>
+                        <div><label>Mg Óptimo %:</label><input type="number" id="norm_Mg" step="0.01" value="0.35"></div>
+                        <div><label>Fe Óptimo mg/kg:</label><input type="number" id="norm_Fe" step="1" value="80"></div>
+                        <div><label>Mn Óptimo mg/kg:</label><input type="number" id="norm_Mn" step="1" value="50"></div>
+                        <div><label>Zn Óptimo mg/kg:</label><input type="number" id="norm_Zn" step="1" value="30"></div>
+                        <div><label>Cu Óptimo mg/kg:</label><input type="number" id="norm_Cu" step="1" value="10"></div>
+                        <div><label>B Óptimo mg/kg:</label><input type="number" id="norm_B" step="1" value="40"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Calcular Diagnóstico</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- CABECERA EXCLUSIVA PARA LA IMPRESIÓN PDF -->
+        <div class="print-meta-header">
+            <!-- CONTENEDOR DE LOGOS PARA EL PDF (SIN LETRAS DE MARCADOR) -->
+            <div class="logo-print-container">
+                <div class="logo-print-placeholder">
+                    <span id="txt-print-eurochem"></span>
+                    <img id="img-print-eurochem" style="display: none;">
+                </div>
+                <div class="logo-print-distribuidor-placeholder">
+                    <span id="txt-print-dist"></span>
+                    <img id="img-print-dist" style="display: none;">
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div style="font-size: 20px; font-weight: bold; color: var(--primary); letter-spacing: 1px;">INFORME TÉCNICO DE DIAGNÓSTICO NUTRICIONAL FOLIAR</div>
+                <div style="font-size: 14px; color: #52606D; margin-top: 3px;">Eurochem Agro Iberia S.L.</div>
+            </div>
+            <table style="width:100%; border:none;">
+                <tr>
+                    <td style="width:50%;"><strong>Nombre de la Finca:</strong> <span id="print_finca">-</span></td>
+                    <td style="width:50%; text-align:right;"><strong>Fecha de Muestreo:</strong> <span id="print_fecha">-</span></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;"><strong>Cultivo Diagnosticado:</strong> <span id="print_cultivo">-</span></td>
+                    <td style="width:50%; text-align:right;"><strong>Asesor Agrónomo:</strong> <span id="print_asesor">-</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card" id="resultados-box" style="display:none;">
+            <!-- RESUMEN EN PANTALLA DE DATOS DE LA FINCA -->
+            <div class="card-meta-summary" style="background-color: #F0F4F8; padding: 15px; border-radius: 6px; border-left: 5px solid var(--primary); margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13.5px;">
+                <div><strong>Finca:</strong> <span id="screen_finca">-</span></div>
+                <div><strong>Fecha de Muestreo:</strong> <span id="screen_fecha">-</span></div>
+                <div><strong>Cultivo Analizado:</strong> <span id="screen_cultivo">-</span></div>
+                <div><strong>Asesor Agrónomo:</strong> <span id="screen_asesor">-</span></div>
+            </div>
+
+            <!-- MENÚ DE PESTAÑAS Y BOTÓN DE IMPRESIÓN -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); flex-wrap: wrap;">
+                <div class="tab-menu" id="menu-pestanas" style="margin-bottom: 0; border-bottom: none; flex-grow: 1;">
+                    <button class="tab-btn active" id="btn-tab-estado" onclick="switchTab('estado-tab')">Estado de Suficiencia</button>
+                    <button class="tab-btn" id="btn-tab-equilibrio" onclick="switchTab('equilibrio-tab')">Ratios de Equilibrio</button>
+                    <button class="tab-btn" id="btn-tab-dris" onclick="switchTab('dris-tab')" style="display:none;">Sistema DRIS Olivar</button>
+                    <button class="tab-btn" id="btn-tab-dris-generic" onclick="switchTab('dris-generic-tab')" style="display:none;">Sistema DRIS</button>
+                    <button class="tab-btn" id="btn-tab-correccion" onclick="switchTab('correccion-tab')">Plan de Abonado y Corrección</button>
+                    <button class="tab-btn" id="btn-tab-historico" onclick="switchTab('historico-tab')">Histórico Multi-Año</button>
+                </div>
+                <button class="btn btn-secondary" id="btn-guardar-historico" onclick="guardarEnHistorico()" style="width: auto; margin: 5px 5px 5px 0; padding: 8px 16px; display: inline-flex; align-items: center; gap: 8px;">
+                    💾 Guardar en Histórico
+                </button>
+                <button class="btn" id="btn-print" onclick="window.print()" style="width: auto; margin: 5px 0; padding: 8px 16px; background-color: var(--accent); display: inline-flex; align-items: center; gap: 8px;">
+                    🖨️ Guardar PDF / Imprimir
+                </button>
+            </div>
+
+            <!-- TAB 1: ESTADO DE SUFICIENCIA -->
+            <div id="estado-tab" class="tab-content active">
+                <h2>Interpretación de Niveles Nutritivos</h2>
+                <div class="alert-box alert-info" id="banner-diagnostico">
+                    Diagnóstico calculado exitosamente según las tablas oficiales de referencia.
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Elemento</th>
+                            <th>Su Valor</th>
+                            <th>Rango Óptimo</th>
+                            <th>Estado Interpretado</th>
+                            <th>DOP (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-suficiencia-body"></tbody>
+                </table>
+                <div id="fuentes-bibliograficas" style="margin-top:15px;"></div>
+            </div>
+
+            <!-- TAB 2: RATIOS DE EQUILIBRIO -->
+            <div id="equilibrio-tab" class="tab-content">
+                <h2>Ratios de Equilibrio Nutricional</h2>
+                <div class="alert-box alert-info">
+                    <strong>Análisis Dinámico de Balances:</strong> Los equilibrios entre elementos revelan problemas de absorción o antagonismos. A continuación, se detallan las desviaciones críticas y qué nutriente presenta problemas.
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ratio de Control</th>
+                            <th>Valor Calculado</th>
+                            <th>Rango de Referencia</th>
+                            <th>Evaluación y Nutriente con Problema</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ratios-body"></tbody>
+                </table>
+            </div>
+
+            <!-- TAB 3: SISTEMA DRIS EXCLUSIVO OLIVAR -->
+            <div id="dris-tab" class="tab-content">
+                <h2>Módulo de Diagnóstico Avanzado DRIS Olivar</h2>
+                <div class="alert-box alert-warning" id="aviso-ambito-dris-tab" style="margin-bottom:20px; line-height:1.5;"></div>
+
+                <!-- SUBTABLA 1: DRIS MACROS DE 3 PUNTOS (UCO) -->
+                <div class="card" style="border: 1px solid var(--border); margin-bottom: 25px;">
+                    <h3 style="color: var(--primary); margin-top: 0; font-size: 16px;">1. Índices DRIS de Macronutrientes (Modelo UCO / Beaufils)</h3>
+                    <p style="font-size: 12px; color: #52606D; margin: -5px 0 15px 0;">Norma calibrada según el sistema de cultivo (Secano, Riego o Superintensivo). No existe una única norma DRIS validada para todo el olivar andaluz: use el resultado como orientación, contrastada con suelo y criterio agronómico, no como diagnóstico cerrado.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nutriente</th>
+                                <th>Índice DRIS (3P)</th>
+                                <th>Desviación del Equilibrio</th>
+                                <th>Prioridad de Corrección</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-dris-macros-body"></tbody>
+                    </table>
+                    <div style="background-color:#F0F4F8; padding: 10px 15px; border-radius: 4px; border-left: 4px solid var(--primary); margin-top: 15px; font-size:13px;">
+                        <strong>Índice de Balance de Macronutrientes (IBN₃):</strong> <span id="val-ibn3" style="font-weight:bold; font-size:15px; color: var(--primary);">-</span>
+                    </div>
+                </div>
+
+                <!-- SUBTABLA 2: DRIS COMPLETO DE 10 PUNTOS (CSR) -->
+                <div class="card" style="border: 1px solid var(--border); margin-bottom: 25px;">
+                    <h3 style="color: var(--primary); margin-top: 0; font-size: 16px;">2. Índices DRIS Completos de 10 Puntos (Modelo CSR / Jones)</h3>
+                    <p style="font-size: 12px; color: #52606D; margin: -5px 0 15px 0;">Cruza simultáneamente 17 relaciones nutricionales macro-micro aplicando el Coeficiente de Variación como factor estandarizado de Jones (1981).</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nutriente</th>
+                                <th>Índice DRIS (10P)</th>
+                                <th>Desviación del Equilibrio</th>
+                                <th>Prioridad de Corrección</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-dris-10p-body"></tbody>
+                    </table>
+                    <div style="background-color:#F0F4F8; padding: 10px 15px; border-radius: 4px; border-left: 4px solid var(--primary); margin-top: 15px; font-size:13px;">
+                        <strong>Índice de Balance Nutricional Global (IBN₁₀):</strong> <span id="val-ibn10" style="font-weight:bold; font-size:15px; color: var(--primary);">-</span>
+                        <span style="font-size:11px; color:#52606D; display:block; margin-top:3px;">Nota: Valores de IBN₁₀ superiores a 60 indican un fuerte desequilibrio metabólico general en el árbol.</span>
+                    </div>
+                </div>
+
+                <div id="alertas-condicionales-dris" style="margin-top:20px;"></div>
+            </div>
+
+            <!-- TAB DRIS GENÉRICA: ALMENDRO / CAQUI -->
+            <div id="dris-generic-tab" class="tab-content">
+                <h2 id="dris-generic-title">Módulo DRIS</h2>
+                <div class="alert-box alert-warning" id="dris-generic-aviso" style="margin-bottom:20px; line-height:1.5;"></div>
+                <div class="card" style="border: 1px solid var(--border); margin-bottom: 25px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nutriente</th>
+                                <th>Índice DRIS</th>
+                                <th>Desviación del Equilibrio</th>
+                                <th>Prioridad de Corrección</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-dris-generic-body"></tbody>
+                    </table>
+                    <div style="background-color:#F0F4F8; padding: 10px 15px; border-radius: 4px; border-left: 4px solid var(--primary); margin-top: 15px; font-size:13px;">
+                        <strong>Índice de Balance Nutricional (IBN):</strong> <span id="dris-generic-ibn" style="font-weight:bold; font-size:15px; color: var(--primary);">-</span>
+                        <span style="font-size:11px; color:#52606D; display:block; margin-top:3px;">Cuanto más cerca de cero, más equilibrada está la analítica en conjunto. Índices negativos = elemento relativamente limitante; positivos = elemento relativamente en exceso frente al resto.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: FACTORES DE CORRECCIÓN -->
+            <div id="correccion-tab" class="tab-content">
+                <h2>Factores de Ajuste y Propuestas Genéricas de Abonado</h2>
+                <div class="alert-box alert-warning">
+                    <strong>Matriz de Factores de Ajuste:</strong>
+                    <ul>
+                        <li><strong>N, P, K:</strong> Ajustan las dosis del <strong>Plan de Abonado de Suelo / Fertirrigación General</strong> (subir dosis si es Bajo/Muy Bajo, bajar o anular si es Excesivo/Alto).</li>
+                        <li><strong>B, Zn, Fe, Mn, Cu:</strong> Recomiendan <strong>tratamientos foliares específicos</strong> de quelatos y sales solubles genéricas de alta eficiencia en campo.</li>
+                        <li><strong>Ca, Mg:</strong> Recomiendan <strong>aspersión foliar únicamente como Último Término</strong>, debido a su baja movilidad foliar y alta demanda estructural.</li>
+                    </ul>
+                </div>
+                <div id="recomendaciones-abonado-list"></div>
+            </div>
+
+            <!-- TAB 5: HISTÓRICO MULTI-AÑO -->
+            <div id="historico-tab" class="tab-content">
+                <h2>Evolución Histórica de Analíticas Foliares</h2>
+                <div class="alert-box alert-info">
+                    <strong>Cómo funciona:</strong> cada vez que pulses "💾 Guardar en Histórico" se archiva la analítica actual
+                    (finca, fecha, cultivo y valores) en el navegador. Aquí puedes revisar todas las analíticas guardadas de una
+                    finca y ver la evolución de cada nutriente a lo largo de los años.
+                    <br><strong>⚠️ Importante:</strong> el histórico se guarda localmente en <em>este navegador y este dispositivo</em>
+                    (localStorage) — no se sincroniza entre ordenadores ni se sube a ningún servidor. Usa "Exportar CSV" periódicamente
+                    para tener una copia de seguridad de tus datos.
+                </div>
+
+                <div class="form-grid" style="margin-bottom:15px;">
+                    <div class="form-group">
+                        <label for="hist-finca-selector">Finca:</label>
+                        <select id="hist-finca-selector" onchange="renderHistorico()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hist-cultivo-selector">Cultivo (para gráfico de evolución):</label>
+                        <select id="hist-cultivo-selector" onchange="renderHistorico()"></select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <button class="btn btn-secondary" style="width:auto; display:inline-block; padding:6px 14px;" onclick="exportarHistoricoCSV()">⬇️ Exportar CSV</button>
+                </div>
+
+                <h3 style="font-size:15px;">Registros Guardados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cultivo</th>
+                            <th>Asesor</th>
+                            <th>N %</th>
+                            <th>P %</th>
+                            <th>K %</th>
+                            <th>Ca %</th>
+                            <th>Mg %</th>
+                            <th>Fe</th>
+                            <th>Mn</th>
+                            <th>Zn</th>
+                            <th>Cu</th>
+                            <th>B</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historico-body"></tbody>
+                </table>
+                <div id="historico-vacio-msg" style="display:none; padding:15px; text-align:center; color:#627D98;">
+                    Todavía no hay analíticas guardadas para esta finca. Calcula un diagnóstico y pulsa "💾 Guardar en Histórico".
+                </div>
+
+                <h3 style="font-size:15px; margin-top:25px;">📈 Evolución por Nutriente (mismo cultivo, ordenado por fecha)</h3>
+                <div id="historico-sparklines-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:15px;"></div>
+                <div id="historico-sparklines-vacio" style="display:none; padding:15px; text-align:center; color:#627D98;">
+                    Se necesitan al menos 2 analíticas guardadas del mismo cultivo en esta finca para dibujar una evolución.
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="bienvenida-box" style="text-align: center; padding: 50px 30px;">
+            <div style="font-size: 50px; color: var(--primary); margin-bottom: 15px;">📊</div>
+            <h2>Bienvenido a NutriLeaf Pro v5.2</h2>
+            <p>Introduce los datos analíticos foliares de tu laboratorio en el menú de la izquierda y haz clic en <strong>"Calcular Diagnóstico"</strong> para generar el reporte de equilibrios, excesos/carencias y factores de corrección.</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    NutriLeaf Pro v5.2 • Diseñado de manera profesional para campo • Soportado por el modelo DRIS de la Universidad de Córdoba y tablas de referencia españolas
+</div>
+
+<script>
+    // SISTEMA AGROQUÍMICO DE DISPARADOR DE SUBIDA DE ARCHIVOS
+    function triggerUpload(logoKey) {
+        if (logoKey === 'eurochem') {
+            document.getElementById('upload-eurochem-file').click();
+        } else if (logoKey === 'distribuidor') {
+            document.getElementById('upload-distribuidor-file').click();
+        }
+    }
+
+    // PROCESAMIENTO DE IMÁGENES LOCALES (FileReader - 100% Offline)
+    function processLogo(input, logoKey) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                if (logoKey === 'eurochem') {
+                    // Actualizar en Header
+                    document.getElementById('img-header-eurochem').src = dataUrl;
+                    document.getElementById('img-header-eurochem').style.display = 'block';
+                    document.getElementById('txt-header-eurochem').style.display = 'none';
+                    // Actualizar en Sidebar
+                    document.getElementById('img-sidebar-eurochem').src = dataUrl;
+                    document.getElementById('img-sidebar-eurochem').style.display = 'block';
+                    document.getElementById('txt-sidebar-eurochem').style.display = 'none';
+                    // Actualizar en PDF Impreso
+                    document.getElementById('img-print-eurochem').src = dataUrl;
+                    document.getElementById('img-print-eurochem').style.display = 'block';
+                    document.getElementById('txt-print-eurochem').style.display = 'none';
+                } else if (logoKey === 'distribuidor') {
+                    // Actualizar en Header
+                    document.getElementById('img-header-dist').src = dataUrl;
+                    document.getElementById('img-header-dist').style.display = 'block';
+                    document.getElementById('txt-header-dist').style.display = 'none';
+                    // Actualizar en Sidebar
+                    document.getElementById('img-sidebar-dist').src = dataUrl;
+                    document.getElementById('img-sidebar-dist').style.display = 'block';
+                    document.getElementById('txt-sidebar-dist').style.display = 'none';
+                    // Actualizar en PDF Impreso
+                    document.getElementById('img-print-dist').src = dataUrl;
+                    document.getElementById('img-print-dist').style.display = 'block';
+                    document.getElementById('txt-print-dist').style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // =================================================================================
+    // BASE DE DATOS DE REFERENCIA FOLIAR — 100% TRAZABLE A BIBLIOGRAFÍA CONTRASTADA
+    // Esquema por nutriente: mb (techo "muy bajo"), o_min/o_max (rango óptimo),
+    // alto_max (techo de "alto"; null = sin techo de exceso establecido en la fuente).
+    // El tramo "bajo" se interpola automáticamente como [mb, o_min).
+    // "nota" recoge matices o zonas objetivo más estrechas citadas en la bibliografía.
+    // =================================================================================
+    const BASE_DE_DATOS_CULTIVOS = {
+        olivo: {
+            fuenteCultivo: 'MAPA, Guía Práctica de la Fertilización Racional de los Cultivos en España; Fernández-Escobar et al. (Universidad de Córdoba)',
+            ventanaMuestreo: { meses: [7], texto: 'Julio (parada vegetativa estival)' },
+            N:  { mb: 1.30, o_min: 1.50, o_max: 2.00, alto_max: 2.50, unit: '%' },
+            P:  { mb: 0.08, o_min: 0.10, o_max: 0.14, alto_max: 0.30, unit: '%' },
+            K:  { mb: 0.40, o_min: 0.70, o_max: 1.00, alto_max: 1.50, unit: '%' },
+            Ca: { mb: 0.40, o_min: 1.00, o_max: 2.50, alto_max: 3.50, unit: '%' },
+            Mg: { mb: 0.08, o_min: 0.10, o_max: 0.15, alto_max: 0.40, unit: '%' },
+            Fe: { mb: 40,   o_min: 60,   o_max: 200,  alto_max: null, unit: 'mg/kg' },
+            Mn: { mb: 20,   o_min: 20,   o_max: 50,   alto_max: null, unit: 'mg/kg', nota: 'Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido.' },
+            Zn: { mb: 10,   o_min: 10,   o_max: 30,   alto_max: null, unit: 'mg/kg', nota: 'Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido.' },
+            Cu: { mb: 4,    o_min: 4,    o_max: 10,   alto_max: null, unit: 'mg/kg', nota: 'Rango orientativo (Fernández-Escobar et al.; UF/IFAS); sin techo de exceso establecido.' },
+            B:  { mb: 14,   o_min: 20,   o_max: 100,  alto_max: 150, unit: 'mg/kg' }
+        },
+        viña: {
+            fuenteCultivo: 'Eurofins CSR Agro Testing — Informe de laboratorio acreditado (AN-ROEC/24/073), Valores de Referencia CSR (mayo 2025). Etapa: Limbos en Floración (W17-W23).',
+            ventanaMuestreo: { meses: [5, 6], texto: 'Floración (mayo-junio), limbos foliares W17-W23' },
+            N:  { mb: 2.50, o_min: 2.90, o_max: 3.90, alto_max: 4.50, unit: '%' },
+            P:  { mb: 0.25, o_min: 0.30, o_max: 0.45, alto_max: 0.60, unit: '%' },
+            K:  { mb: 0.60, o_min: 0.90, o_max: 1.50, alto_max: 1.90, unit: '%' },
+            Ca: { mb: 0.90, o_min: 1.20, o_max: 2.00, alto_max: 2.40, unit: '%' },
+            Mg: { mb: 0.20, o_min: 0.25, o_max: 0.30, alto_max: 0.35, unit: '%' },
+            Fe: { mb: 90,   o_min: 115,  o_max: 160,  alto_max: 190, unit: 'mg/kg' },
+            Mn: { mb: 25,   o_min: 35,   o_max: 120,  alto_max: 160, unit: 'mg/kg' },
+            Cu: { mb: 1,    o_min: 3,    o_max: 20,   alto_max: 40,  unit: 'mg/kg' },
+            Zn: { mb: 20,   o_min: 30,   o_max: 50,   alto_max: 70,  unit: 'mg/kg' },
+            B:  { mb: 25,   o_min: 35,   o_max: 75,   alto_max: 100, unit: 'mg/kg' }
+        },
+        almendro_generico: {
+            fuenteCultivo: 'Arquero, O. et al. (IFAPA); UC Agriculture and Natural Resources, Almond Nutrients & Fertilization; MAPA',
+            ventanaMuestreo: { meses: [6, 7], texto: 'Finales de junio a mediados de julio' },
+            N:  { mb: 1.80, o_min: 2.20, o_max: 2.50, alto_max: 3.00, unit: '%' },
+            P:  { mb: 0.08, o_min: 0.11, o_max: 0.20, alto_max: 0.40, unit: '%' },
+            K:  { mb: 0.90, o_min: 1.40, o_max: 2.00, alto_max: 3.00, unit: '%' },
+            Ca: { mb: 1.50, o_min: 2.00, o_max: 4.50, alto_max: 5.50, unit: '%' },
+            Mg: { mb: 0.20, o_min: 0.30, o_max: 0.60, alto_max: 1.00, unit: '%' },
+            B:  { mb: 25,   o_min: 35,   o_max: 80,   alto_max: 150, unit: 'mg/kg' },
+            Zn: { mb: 12,   o_min: 18,   o_max: 40,   alto_max: null, unit: 'mg/kg' },
+            Fe: { mb: null, o_min: null, o_max: null, alto_max: null, unit: 'mg/kg', nota: 'UC ANR: sin valor crítico establecido para Fe en almendro; no se aplica clasificación por umbral.' },
+            Mn: { mb: 20,   o_min: 30,   o_max: 80,   alto_max: null, unit: 'mg/kg', nota: 'UC ANR; sin techo de exceso establecido.' },
+            Cu: { mb: 4,    o_min: 6,    o_max: 10,   alto_max: null, unit: 'mg/kg', nota: 'UC ANR; sin techo de exceso establecido.' }
+        },
+        // Rangos de normalidad (Tabla 2) de Ferrández-Cámara et al. (2021), Horticulturae 7, 481.
+        // Hellín (Albacete) / Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio.
+        almendro_ferraduel: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.45, o_min: 1.83, o_max: 2.63, alto_max: 3.01, unit: '%' },
+            P:  { mb: 0.01, o_min: 0.07, o_max: 0.21, alto_max: 0.27, unit: '%' },
+            K:  { mb: 0.34, o_min: 0.68, o_max: 1.39, alto_max: 1.74, unit: '%' },
+            Ca: { mb: 2.39, o_min: 3.26, o_max: 5.04, alto_max: 5.92, unit: '%' },
+            Mg: { mb: 0.47, o_min: 0.63, o_max: 0.97, alto_max: 1.14, unit: '%' }
+            // Fe, Mn, Zn, Cu, B: no evaluados en este estudio (solo macronutrientes N,P,K,Ca,Mg).
+        },
+        almendro_ferragnes: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Hellín (Albacete), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.44,  o_min: 1.82, o_max: 2.61, alto_max: 3.00, unit: '%' },
+            P:  { mb: 0.01,  o_min: 0.06, o_max: 0.19, alto_max: 0.25, unit: '%' },
+            K:  { mb: 0.298, o_min: 0.64, o_max: 1.39, alto_max: 1.76, unit: '%' },
+            Ca: { mb: 2.32,  o_min: 3.25, o_max: 5.15, alto_max: 6.09, unit: '%' },
+            Mg: { mb: 0.50,  o_min: 0.68, o_max: 1.07, alto_max: 1.26, unit: '%' }
+        },
+        almendro_garrigues: {
+            fuenteCultivo: 'Ferrández-Cámara et al. (2021), Horticulturae 7, 481 — Jumilla (Murcia), riego localizado, muestreo de julio',
+            ventanaMuestreo: { meses: [7], texto: 'Julio' },
+            N:  { mb: 1.00, o_min: 1.42, o_max: 2.23, alto_max: 2.73, unit: '%' },
+            P:  { mb: 0.03, o_min: 0.05, o_max: 0.12, alto_max: 0.15, unit: '%' },
+            // Nota: la Tabla 2 original publica la banda "Low" de K como "0.33–0.32" (invertida), un
+            // error tipográfico aparente en la fuente. Se usan solo los cortes inequívocos (mb, o_max,
+            // alto_max) y se colapsa o_min=mb hasta poder contrastar el valor real con los autores.
+            K:  { mb: 0.33, o_min: 0.33, o_max: 1.02, alto_max: 1.36, unit: '%', nota: 'Banda "Bajo" no reconstruible: la publicación original (Tabla 2) da un rango invertido (0.33–0.32) para Garrigues-K, posible errata. Umbrales mb/óptimo/alto tomados tal cual del resto de la tabla.' },
+            Ca: { mb: 2.54, o_min: 3.17, o_max: 4.46, alto_max: 5.10, unit: '%' },
+            Mg: { mb: 0.63, o_min: 0.80, o_max: 1.17, alto_max: 1.35, unit: '%' }
+        },
+        // NOR fase Fruit Enlargement (FE, ~julio en Comunidad Valenciana) de Morales et al. (2022),
+        // Agronomy 12, 1269. PDO Kaki Ribera del Xúquer, cv. Rojo Brillante, población de alto rendimiento.
+        caqui: {
+            fuenteCultivo: "Morales et al. (2022), Agronomy 12, 1269 — PDO Kaki Ribera del Xúquer, cv. 'Rojo Brillante'",
+            ventanaMuestreo: { meses: [7], texto: 'Engorde de fruto (Fruit Enlargement, ~julio en la Comunidad Valenciana)' },
+            N:  { mb: 1.723, o_min: 1.826, o_max: 2.033, alto_max: 2.136, unit: '%' },
+            P:  { mb: 0.094, o_min: 0.099, o_max: 0.109, alto_max: 0.114, unit: '%' },
+            K:  { mb: 1.198, o_min: 1.318, o_max: 1.559, alto_max: 1.679, unit: '%' },
+            Ca: { mb: 1.437, o_min: 1.595, o_max: 1.911, alto_max: 2.069, unit: '%' },
+            Mg: { mb: 0.418, o_min: 0.480, o_max: 0.604, alto_max: 0.666, unit: '%' },
+            Na: { mb: 0.008, o_min: 0.010, o_max: 0.017, alto_max: 0.020, unit: '%', nota: 'Indicador de salinidad más que de suficiencia nutricional.' },
+            S:  { mb: 0.187, o_min: 0.214, o_max: 0.269, alto_max: 0.296, unit: '%' },
+            Cl: { mb: 0.543, o_min: 0.630, o_max: 0.805, alto_max: 0.892, unit: '%', nota: 'Indicador de salinidad más que de suficiencia nutricional; caqui es sensible a la salinidad.' },
+            B:  { mb: 15.97, o_min: 24.38, o_max: 41.23, alto_max: 49.65, unit: 'mg/kg' },
+            Cu: { mb: 1.65,  o_min: 2.72,  o_max: 4.86,  alto_max: 5.93,  unit: 'mg/kg' },
+            Fe: { mb: 31.97, o_min: 41.07, o_max: 59.30, alto_max: 68.41, unit: 'mg/kg' },
+            Mn: { mb: 0.00,  o_min: 44.67, o_max: 207.42, alto_max: 288.79, unit: 'mg/kg' },
+            Zn: { mb: 20.81, o_min: 29.73, o_max: 47.59, alto_max: 56.52, unit: 'mg/kg' }
+        },
+        citricos: {
+            fuenteCultivo: 'Legaz, F. et al. (IVIA); UF/IFAS, Nutrition of Florida Citrus Trees; MAPA',
+            ventanaMuestreo: { meses: [9, 10], texto: 'Otoño (septiembre a octubre)' },
+            N:  { mb: 2.20, o_min: 2.40, o_max: 2.80, alto_max: 3.00, unit: '%' },
+            P:  { mb: 0.09, o_min: 0.12, o_max: 0.18, alto_max: 0.30, unit: '%' },
+            K:  { mb: 0.70, o_min: 1.00, o_max: 1.70, alto_max: 2.40, unit: '%' },
+            Ca: { mb: 2.50, o_min: 3.00, o_max: 5.50, alto_max: 7.00, unit: '%' },
+            Mg: { mb: 0.16, o_min: 0.26, o_max: 0.60, alto_max: 1.00, unit: '%' },
+            Fe: { mb: 35,   o_min: 60,   o_max: 120,  alto_max: 250, unit: 'mg/kg' },
+            Mn: { mb: 16,   o_min: 25,   o_max: 100,  alto_max: 200, unit: 'mg/kg' },
+            Zn: { mb: 16,   o_min: 25,   o_max: 100,  alto_max: 200, unit: 'mg/kg' },
+            Cu: { mb: 3,    o_min: 5,    o_max: 16,   alto_max: 20,  unit: 'mg/kg' },
+            B:  { mb: 20,   o_min: 36,   o_max: 100,  alto_max: 200, unit: 'mg/kg' }
+        },
+        aguacate: {
+            fuenteCultivo: 'UC Agriculture and Natural Resources, Avocado Leaf Analysis Guide; UC IPM; MAPA',
+            ventanaMuestreo: { meses: [10, 11], texto: 'Otoño (octubre a noviembre)' },
+            N:  { mb: 1.40, o_min: 1.60, o_max: 2.00, alto_max: 2.40, unit: '%' },
+            P:  { mb: 0.08, o_min: 0.10, o_max: 0.20, alto_max: 0.30, unit: '%' },
+            K:  { mb: 0.65, o_min: 0.85, o_max: 1.80, alto_max: 2.80, unit: '%' },
+            Ca: { mb: 0.80, o_min: 1.20, o_max: 2.50, alto_max: 4.00, unit: '%' },
+            Mg: { mb: 0.20, o_min: 0.30, o_max: 0.70, alto_max: 1.10, unit: '%' },
+            Fe: { mb: 20,   o_min: 50,   o_max: 200,  alto_max: null, unit: 'mg/kg', nota: 'UC ANR; zona objetivo más ajustada citada en bibliografía: > 80 ppm.' },
+            Mn: { mb: 15,   o_min: 30,   o_max: 500,  alto_max: 1000, unit: 'mg/kg', nota: 'UC ANR: rango de suficiencia muy amplio (30–500 ppm); zona objetivo más ajustada citada: 180–250 ppm.' },
+            Zn: { mb: 20,   o_min: 30,   o_max: 150,  alto_max: 300, unit: 'mg/kg', nota: 'UC ANR; zona objetivo más ajustada citada en bibliografía: 45–55 ppm.' },
+            Cu: { mb: 3,    o_min: 5,    o_max: 15,   alto_max: 25,  unit: 'mg/kg', nota: 'UC ANR; zona objetivo más ajustada citada en bibliografía: 7–9 ppm.' },
+            B:  { mb: 20,   o_min: 20,   o_max: 100,  alto_max: 250, unit: 'mg/kg', nota: 'UC ANR; zona objetivo más ajustada citada en bibliografía: 40–60 ppm.' },
+            Cl: { esToxicidad: true, o_max: 0.22, alto_max: 0.50, unit: '%', nota: 'UC ANR: > 0.50% supone riesgo extremo de toxicidad por cloruros en aguacate.' }
+        },
+        tomate: {
+            fuenteCultivo: 'University of Massachusetts / Oregon State University, Organic Greenhouse Tomato Nutrition; NCDA; MAPA',
+            ventanaMuestreo: { meses: [], texto: 'Inicio de floración / desarrollo del 4º-5º ramillete (no ligado a mes fijo)' },
+            N:  { mb: 2.50, o_min: 3.50, o_max: 5.00, alto_max: 5.50, unit: '%' },
+            P:  { mb: 0.20, o_min: 0.35, o_max: 0.60, alto_max: 0.85, unit: '%' },
+            K:  { mb: 2.20, o_min: 3.00, o_max: 4.50, alto_max: 5.50, unit: '%' },
+            Ca: { mb: 1.00, o_min: 1.50, o_max: 3.50, alto_max: 4.50, unit: '%' },
+            Mg: { mb: 0.25, o_min: 0.40, o_max: 0.80, alto_max: 1.20, unit: '%' },
+            Fe: { mb: 50,   o_min: 50,   o_max: 200,  alto_max: null, unit: 'mg/kg', nota: 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.' },
+            Mn: { mb: 50,   o_min: 50,   o_max: 125,  alto_max: null, unit: 'mg/kg', nota: 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.' },
+            Zn: { mb: 25,   o_min: 25,   o_max: 60,   alto_max: null, unit: 'mg/kg', nota: 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.' },
+            Cu: { mb: 8,    o_min: 8,    o_max: 20,   alto_max: null, unit: 'mg/kg', nota: 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.' },
+            B:  { mb: 35,   o_min: 35,   o_max: 60,   alto_max: null, unit: 'mg/kg', nota: 'Umbral "alto" orientativo (UMass/Oregon State), no necesariamente indica toxicidad.' }
+        },
+        melocoton: {
+            fuenteCultivo: 'MAPA, Guía Práctica de la Fertilización Racional de los Cultivos en España',
+            ventanaMuestreo: { meses: [7], texto: 'Julio (80-100 días tras plena floración)' },
+            N:  { mb: 2.00, o_min: 2.40, o_max: 3.30, alto_max: 3.80, unit: '%' },
+            P:  { mb: 0.10, o_min: 0.14, o_max: 0.25, alto_max: 0.40, unit: '%' },
+            K:  { mb: 1.20, o_min: 1.80, o_max: 2.80, alto_max: 3.50, unit: '%' },
+            Ca: { mb: 1.30, o_min: 1.80, o_max: 3.00, alto_max: 4.50, unit: '%' },
+            Mg: { mb: 0.22, o_min: 0.30, o_max: 0.60, alto_max: 0.90, unit: '%' },
+            Fe: { mb: 50,   o_min: 80,   o_max: 150,  alto_max: null, unit: 'mg/kg' }
+            // Mn, Zn, Cu, B: sin bibliografía contrastada todavía para este cultivo.
+        },
+        pistacho: {
+            fuenteCultivo: 'Arquero, O. et al. (IFAPA); MAPA',
+            ventanaMuestreo: { meses: [7, 8], texto: 'Finales de julio a agosto (estabilización foliar estival)' },
+            N:  { mb: 1.60, o_min: 1.80, o_max: 2.50, alto_max: 2.90, unit: '%' },
+            P:  { mb: 0.07, o_min: 0.09, o_max: 0.15, alto_max: 0.25, unit: '%' },
+            K:  { mb: 0.80, o_min: 1.20, o_max: 2.00, alto_max: 2.50, unit: '%' },
+            Ca: { mb: 1.00, o_min: 1.30, o_max: 2.20, alto_max: 3.00, unit: '%' },
+            Mg: { mb: 0.15, o_min: 0.25, o_max: 0.45, alto_max: 0.75, unit: '%' },
+            B:  { mb: 40,   o_min: 90,   o_max: 250,  alto_max: 350, unit: 'mg/kg' },
+            Zn: { mb: 7,    o_min: 12,   o_max: 25,   alto_max: null, unit: 'mg/kg' }
+            // Fe, Mn, Cu: sin bibliografía contrastada todavía para este cultivo.
+        }
+    };
+
+    // Ratios nutricionales específicos por cultivo, validados contra fuente real de laboratorio.
+    // Si un cultivo no aparece aquí, se usan los umbrales genéricos universales (ver controlRatios).
+    const RATIOS_ESPECIFICOS_CULTIVO = {
+        viña: {
+            fuente: 'Eurofins CSR Agro Testing — Valores de Referencia CSR (mayo 2025), Vid limbos floración W17-W23',
+            ratios: [
+                { name: 'Ca/Mg', calc: v => v.Ca / v.Mg, max: 6.0, labelAlto: 'Bajo Mg (exceso relativo de Calcio)' },
+                { name: 'K/Mg',  calc: v => v.K / v.Mg,  min: 3.0, max: 5.8, labelBajo: 'Bajo K', labelAlto: 'Bajo Mg' },
+                { name: 'Ca/K',  calc: v => v.Ca / v.K,  max: 1.5, labelAlto: 'Bajo K (exceso relativo de Calcio)' },
+                { name: 'K/P',   calc: v => v.K / v.P,   max: 3.0, labelAlto: 'Bajo P (exceso relativo de Potasio)' },
+                { name: 'N/K',   calc: v => v.N / v.K,   max: 3.0, labelAlto: 'Bajo K (exceso relativo de Nitrógeno)' },
+                { name: 'Ca+Mg+K (suma catiónica)', calc: v => v.Ca + v.Mg + v.K, min: 2.5, max: 3.5, labelBajo: 'Desnutrición', labelAlto: 'Exceso' },
+                { name: 'N+P+K (suma NPK)',         calc: v => v.N + v.P + v.K,   min: 4.3, max: 5.5, labelBajo: 'Desnutrición', labelAlto: 'Exceso' }
+            ]
+        }
+    };
+
+    // Clasifica un valor analítico contra su referencia bibliográfica (nuevo esquema: mb/o_min/o_max/alto_max).
+    // Devuelve null si no hay bibliografía contrastada para ese nutriente/cultivo (ref con umbrales en null).
+    function clasificarValor(val, ref) {
+        if (!ref || ref.mb === null || ref.mb === undefined) return null;
+        if (isNaN(val)) return null;
+
+        let estado = "ÓPTIMO", badgeClass = "badge-optimo", factor = 1.0;
+
+        if (val < ref.mb) {
+            estado = "MUY BAJO"; badgeClass = "badge-muy-bajo"; factor = 2.0;
+        } else if (val < ref.o_min) {
+            estado = "BAJO"; badgeClass = "badge-bajo"; factor = 1.5;
+        } else if (val <= ref.o_max) {
+            estado = "ÓPTIMO"; badgeClass = "badge-optimo"; factor = 1.0;
+        } else if (ref.alto_max === null || ref.alto_max === undefined || val <= ref.alto_max) {
+            estado = "ALTO"; badgeClass = "badge-alto"; factor = 0.5;
+        } else {
+            estado = "MUY ALTO / EXCESO"; badgeClass = "badge-muy-alto"; factor = 0.0;
+        }
+        return { estado, badgeClass, factor };
+    }
+
+    // Resuelve la clave real de BASE_DE_DATOS_CULTIVOS a usar, que puede depender de un
+    // selector secundario (variedad de almendro) además del cultivo elegido en el desplegable principal.
+    function resolveNormasKey(cultivo) {
+        if (cultivo === "almendro") {
+            const variedad = document.getElementById("almendro-variedad").value;
+            return "almendro_" + variedad;
+        }
+        return cultivo;
+    }
+
+    function actualizarNormasUI() {
+        const cultivo = document.getElementById("cultivo").value;
+        const note = document.getElementById("cultivo-note");
+        const divPers = document.getElementById("personalizado-limits");
+        const divDris = document.getElementById("dris-olivo-config");
+        const btnDris = document.getElementById("btn-tab-dris");
+        const btnDrisGeneric = document.getElementById("btn-tab-dris-generic");
+        const divCloruro = document.getElementById("cloruro-field");
+        const divAlmendroVariedad = document.getElementById("almendro-variedad-config");
+        const divCaquiExtra = document.getElementById("caqui-extra-fields");
+
+        divCloruro.style.display = (cultivo === "aguacate") ? "block" : "none";
+        divAlmendroVariedad.style.display = (cultivo === "almendro") ? "block" : "none";
+        divCaquiExtra.style.display = (cultivo === "caqui") ? "block" : "none";
+
+        if (cultivo === "personalizado") {
+            divPers.style.display = "block";
+            divDris.style.display = "none";
+            btnDris.style.display = "none";
+            btnDrisGeneric.style.display = "none";
+            note.textContent = "Ingrese los niveles de referencia recomendados de su laboratorio.";
+        } else {
+            divPers.style.display = "none";
+            const normasKey = resolveNormasKey(cultivo);
+            const datosCultivo = BASE_DE_DATOS_CULTIVOS[normasKey];
+            if (cultivo === "olivo") {
+                divDris.style.display = "block";
+                btnDris.style.display = "block";
+                btnDrisGeneric.style.display = "none";
+                actualizarAvisoDrisOlivo();
+            } else if (cultivo === "almendro" || cultivo === "caqui") {
+                divDris.style.display = "none";
+                btnDris.style.display = "none";
+                btnDrisGeneric.style.display = "block";
+                document.getElementById("dris-generic-title").textContent =
+                    cultivo === "almendro" ? "Módulo DRIS Almendro" : "Módulo DRIS Caqui 'Rojo Brillante'";
+                document.getElementById("dris-generic-aviso").innerHTML = textoAvisoDrisGeneric(cultivo);
+            } else {
+                divDris.style.display = "none";
+                btnDris.style.display = "none";
+                btnDrisGeneric.style.display = "none";
+            }
+            if (datosCultivo) {
+                note.textContent = `Momento de muestreo: ${datosCultivo.ventanaMuestreo.texto}. Fuente: ${datosCultivo.fuenteCultivo}`;
+            } else {
+                note.textContent = "";
+            }
+        }
+    }
+
+    function textoAvisoDrisGeneric(cultivo) {
+        if (cultivo === "almendro") {
+            const variedad = document.getElementById("almendro-variedad").value;
+            if (variedad === "generico") {
+                return `⚠️ Selecciona una variedad concreta (Ferraduel, Ferragnès o Garrigues) en "Configuración del Cultivo" para activar el DRIS de almendro. La norma genérica no tiene DRIS asociado — solo rango de suficiencia.`;
+            }
+            const avisoGarrigues = variedad === "garrigues"
+                ? ` <strong>Aviso adicional:</strong> se detectaron 3 de las 10 normas de esta variedad con etiquetas que no cuadraban con las concentraciones medias reales publicadas por los mismos autores (posibles erratas de la Tabla 4 original) y se han reinterpretado en consecuencia (ver comentario en el código fuente). Se recomienda contrastar con los autores antes de un uso crítico.`
+                : "";
+            return `⚠️ <strong>Ámbito de validez:</strong> Norma DRIS de Ferrández-Cámara et al. (2021) para <strong>${variedad.charAt(0).toUpperCase() + variedad.slice(1)}</strong>, obtenida en Hellín (Albacete) / Jumilla (Murcia), riego localizado, ~4.000 kg/ha, muestreo de julio. Los términos tipo producto (ej. K×Mg) siguen la convención estándar de Beaufils: contribuyen con el mismo signo al índice de ambos nutrientes implicados. No usar directamente sobre variedades distintas a las tres estudiadas sin contrastar.${avisoGarrigues}`;
+        }
+        if (cultivo === "caqui") {
+            return `⚠️ <strong>Ámbito de validez:</strong> Norma DRIS de Morales et al. (2022) para caqui 'Rojo Brillante', PDO Kaki Ribera del Xúquer (Comunidad Valenciana), población de alto rendimiento (&gt;46,4 t/ha). Sistema completo de 78 relaciones entre 13 elementos (N,P,K,Ca,Mg,Na,S,Cl,B,Cu,Fe,Mn,Zn). Los propios autores señalan que debería validarse en otras variedades y condiciones de cultivo antes de generalizarse fuera de esta zona.`;
+        }
+        return "";
+    }
+
+    // Ámbito de validez de las normas DRIS de Olivo según sistema/zona seleccionados.
+    // Fuente: revisión bibliográfica "DRIS en otros cultivos y ámbito de validación en olivar" (rev. 23/08/2026),
+    // que cita Lucena Marotta et al. (2002, UPM/Fertiberia) para Jaén y Giménez et al. (2021) para Murcia.
+    function textoAvisoDrisOlivo() {
+        const sistema = document.getElementById("dris-manejo").value;
+        const zona = document.getElementById("dris-zona").value;
+
+        let base = "";
+        if (sistema === "secano" || sistema === "regadio") {
+            base = `<strong>Referencia de partida: Jaén</strong> (Lucena Marotta et al., 2002, UPM/Fertiberia) — obtenida para <strong>Picual en cultivo tradicional</strong> ${sistema === "regadio" ? "bajo riego" : "de secano"}. `;
+        } else if (sistema === "superintensivo") {
+            base = `<strong>Referencia orientativa: Murcia</strong> (Giménez et al., 2021) — obtenida en una plantación superintensiva de <strong>Arbequina/Arbosana/Picual</strong> en Alhama de Murcia (&gt;8.000 kg/ha, fertirrigación). Los propios autores señalan que estas normas <strong>todavía necesitan validación práctica</strong>. `;
+        }
+
+        let zonaTexto = (zona === "Guadalquivir_Arcillas")
+            ? "Ajuste adicional aplicado para suelos arcillosos/vertisoles del Valle del Guadalquivir (mayor fijación de K)."
+            : "";
+
+        return `⚠️ <strong>Ámbito de validez:</strong> ${base}No existe una única norma DRIS publicada y validada para todo el olivar andaluz: variedad, sistema de cultivo, rendimiento de referencia, época y protocolo de muestreo deben coincidir razonablemente con la población de origen para que el diagnóstico sea fiable. Si su parcela se aleja mucho de esa población (otra variedad, otro nivel productivo, secano en vez de regadío, etc.), use estos índices como orientación complementaria, no como criterio único. ${zonaTexto}`;
+    }
+
+    function actualizarAvisoDrisOlivo() {
+        const texto = textoAvisoDrisOlivo();
+        const cajaSidebar = document.getElementById("aviso-ambito-dris");
+        const cajaTab = document.getElementById("aviso-ambito-dris-tab");
+        if (cajaSidebar) cajaSidebar.innerHTML = texto;
+        if (cajaTab) cajaTab.innerHTML = texto;
+    }
+
+    function cargarEjemploMuestra() {
+        const cultivo = document.getElementById("cultivo").value;
+        
+        document.getElementById("finca_nombre").value = "Finca La Mancha - Parcela Norte";
+        document.getElementById("finca_fecha").value = "2026-07-06";
+        
+        if (cultivo === "olivo") {
+            document.getElementById("val_N").value = "1.32";
+            document.getElementById("val_P").value = "0.080";
+            document.getElementById("val_K").value = "0.52";
+            document.getElementById("val_Ca").value = "1.70";
+            document.getElementById("val_Mg").value = "0.24";
+            document.getElementById("val_Fe").value = "72.9";
+            document.getElementById("val_Mn").value = "37.9";
+            document.getElementById("val_Zn").value = "15.3";
+            document.getElementById("val_Cu").value = "58.2";
+            document.getElementById("val_B").value = "17.8";
+        } else if (cultivo === "citricos") {
+            document.getElementById("val_N").value = "2.15";
+            document.getElementById("val_P").value = "0.105";
+            document.getElementById("val_K").value = "0.65";
+            document.getElementById("val_Ca").value = "2.80";
+            document.getElementById("val_Mg").value = "0.22";
+            document.getElementById("val_Fe").value = "48.0";
+            document.getElementById("val_Mn").value = "18.5";
+            document.getElementById("val_Zn").value = "12.2";
+            document.getElementById("val_Cu").value = "14.5";
+            document.getElementById("val_B").value = "15.0";
+        } else if (cultivo === "viña") {
+            // Ejemplo de Viña en La Mancha con deficiencias típicas (clorosis, potasio bajo)
+            document.getElementById("val_N").value = "2.81";
+            document.getElementById("val_P").value = "0.200";
+            document.getElementById("val_K").value = "1.71";
+            document.getElementById("val_Ca").value = "2.46";
+            document.getElementById("val_Mg").value = "0.37";
+            document.getElementById("val_Fe").value = "100.0";
+            document.getElementById("val_Mn").value = "6.0";
+            document.getElementById("val_Zn").value = "22.0";
+            document.getElementById("val_Cu").value = "371.0"; // Alto por tratamientos cúpricos
+            document.getElementById("val_B").value = "90.0";
+        } else if (cultivo === "aguacate") {
+            document.getElementById("val_N").value = "1.50";
+            document.getElementById("val_P").value = "0.085";
+            document.getElementById("val_K").value = "0.75";
+            document.getElementById("val_Ca").value = "1.10";
+            document.getElementById("val_Mg").value = "0.25";
+            document.getElementById("val_Fe").value = "42.0";
+            document.getElementById("val_Mn").value = "25.0";
+            document.getElementById("val_Zn").value = "18.0";
+            document.getElementById("val_Cu").value = "4.5";
+            document.getElementById("val_B").value = "24.0";
+            document.getElementById("val_Cl").value = "0.15";
+        } else if (cultivo === "melocoton") {
+            document.getElementById("finca_fecha").value = "2026-07-10";
+            document.getElementById("val_N").value = "2.60";
+            document.getElementById("val_P").value = "0.18";
+            document.getElementById("val_K").value = "2.10";
+            document.getElementById("val_Ca").value = "2.20";
+            document.getElementById("val_Mg").value = "0.40";
+            document.getElementById("val_Fe").value = "95.0";
+            document.getElementById("val_Mn").value = "50.0";
+            document.getElementById("val_Zn").value = "25.0";
+            document.getElementById("val_Cu").value = "8.0";
+            document.getElementById("val_B").value = "30.0";
+        } else if (cultivo === "pistacho") {
+            document.getElementById("finca_fecha").value = "2026-08-01";
+            document.getElementById("val_N").value = "2.10";
+            document.getElementById("val_P").value = "0.11";
+            document.getElementById("val_K").value = "1.60";
+            document.getElementById("val_Ca").value = "1.70";
+            document.getElementById("val_Mg").value = "0.33";
+            document.getElementById("val_Fe").value = "90.0";
+            document.getElementById("val_Mn").value = "40.0";
+            document.getElementById("val_Zn").value = "18.0";
+            document.getElementById("val_Cu").value = "10.0";
+            document.getElementById("val_B").value = "150.0";
+        } else if (cultivo === "tomate") {
+            document.getElementById("val_N").value = "3.20";
+            document.getElementById("val_P").value = "0.300";
+            document.getElementById("val_K").value = "2.80";
+            document.getElementById("val_Ca").value = "1.30";
+            document.getElementById("val_Mg").value = "0.35";
+            document.getElementById("val_Fe").value = "45.0";
+            document.getElementById("val_Mn").value = "22.0";
+            document.getElementById("val_Zn").value = "18.0";
+            document.getElementById("val_Cu").value = "4.0";
+            document.getElementById("val_B").value = "22.0";
+        } else {
+            document.getElementById("val_N").value = "2.00";
+            document.getElementById("val_P").value = "0.150";
+            document.getElementById("val_K").value = "1.00";
+            document.getElementById("val_Ca").value = "2.00";
+            document.getElementById("val_Mg").value = "0.30";
+            document.getElementById("val_Fe").value = "80.0";
+            document.getElementById("val_Mn").value = "50.0";
+            document.getElementById("val_Zn").value = "30.0";
+            document.getElementById("val_Cu").value = "12.0";
+            document.getElementById("val_B").value = "40.0";
+        }
+
+        procesarAnalisisFoliar();
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        
+        // Activar el botón correspondiente
+        if (tabId === 'estado-tab') document.getElementById('btn-tab-estado').classList.add('active');
+        if (tabId === 'equilibrio-tab') document.getElementById('btn-tab-equilibrio').classList.add('active');
+        if (tabId === 'dris-tab') document.getElementById('btn-tab-dris').classList.add('active');
+        if (tabId === 'dris-generic-tab') document.getElementById('btn-tab-dris-generic').classList.add('active');
+        if (tabId === 'correccion-tab') document.getElementById('btn-tab-correccion').classList.add('active');
+        if (tabId === 'historico-tab') { document.getElementById('btn-tab-historico').classList.add('active'); renderHistorico(); }
+    }
+
+    function procesarAnalisisFoliar() {
+        const cultivo = document.getElementById("cultivo").value;
+        let normas = {};
+
+        // Actualizar datos de la Finca en pantalla y en impresión
+        const fincaNombre = document.getElementById("finca_nombre").value || "No Especificada";
+        const fincaFecha = document.getElementById("finca_fecha").value || "No Especificada";
+        const asesorNombre = document.getElementById("asesor_nombre").value || "No Especificado";
+        const cultivoTexto = document.getElementById("cultivo").options[document.getElementById("cultivo").selectedIndex].text;
+
+        document.getElementById("screen_finca").textContent = fincaNombre;
+        document.getElementById("screen_fecha").textContent = fincaFecha;
+        document.getElementById("screen_cultivo").textContent = cultivoTexto;
+        document.getElementById("screen_asesor").textContent = asesorNombre;
+
+        document.getElementById("print_finca").textContent = fincaNombre;
+        document.getElementById("print_fecha").textContent = fincaFecha;
+        document.getElementById("print_cultivo").textContent = cultivoTexto;
+        document.getElementById("print_asesor").textContent = asesorNombre;
+
+        if (cultivo === "personalizado") {
+            const elements = ['N', 'P', 'K', 'Ca', 'Mg', 'Fe', 'Mn', 'Zn', 'Cu', 'B'];
+            elements.forEach(el => {
+                const optVal = parseFloat(document.getElementById("norm_" + el).value);
+                normas[el] = { mb: optVal*0.7, o_min: optVal*0.9, o_max: optVal*1.1, alto_max: optVal*1.3, unit: el==='N'||el==='P'||el==='K'||el==='Ca'||el==='Mg'?'%':'mg/kg' };
+            });
+        } else {
+            normas = BASE_DE_DATOS_CULTIVOS[resolveNormasKey(cultivo)];
+        }
+
+        const valores = {
+            N: parseFloat(document.getElementById("val_N").value),
+            P: parseFloat(document.getElementById("val_P").value),
+            K: parseFloat(document.getElementById("val_K").value),
+            Ca: parseFloat(document.getElementById("val_Ca").value),
+            Mg: parseFloat(document.getElementById("val_Mg").value),
+            Fe: parseFloat(document.getElementById("val_Fe").value),
+            Mn: parseFloat(document.getElementById("val_Mn").value),
+            Zn: parseFloat(document.getElementById("val_Zn").value),
+            Cu: parseFloat(document.getElementById("val_Cu").value),
+            B: parseFloat(document.getElementById("val_B").value)
+        };
+
+        if (cultivo === "caqui") {
+            valores.Na = parseFloat(document.getElementById("val_Na").value);
+            valores.S = parseFloat(document.getElementById("val_S").value);
+            const valClCaqui = parseFloat(document.getElementById("val_Cl_caqui").value);
+            if (!isNaN(valClCaqui)) valores.Cl = valClCaqui;
+        }
+
+        // Aviso de ventana de muestreo: compara la fecha analítica con la época óptima citada en bibliografía
+        const banner = document.getElementById("banner-diagnostico");
+        const datosCultivoActual = BASE_DE_DATOS_CULTIVOS[resolveNormasKey(cultivo)];
+        let avisoFecha = "";
+        if (datosCultivoActual && datosCultivoActual.ventanaMuestreo && datosCultivoActual.ventanaMuestreo.meses.length > 0 && document.getElementById("finca_fecha").value) {
+            const mesMuestra = parseInt(document.getElementById("finca_fecha").value.split("-")[1], 10);
+            if (!datosCultivoActual.ventanaMuestreo.meses.includes(mesMuestra)) {
+                avisoFecha = `<div class="alert-box alert-warning" style="margin-top:10px;"><strong>⚠️ Fecha de muestreo fuera de la ventana de referencia:</strong> la tabla usada corresponde a "${datosCultivoActual.ventanaMuestreo.texto}". Los umbrales de suficiencia solo son directamente comparables si la muestra se tomó en ese periodo fenológico; interprete los resultados con cautela.</div>`;
+            }
+        }
+
+        // Cloruro (Cl⁻), solo Aguacate: nutriente de toxicidad, sin banda de deficiencia
+        if (cultivo === "aguacate" && normas.Cl) {
+            const valCl = parseFloat(document.getElementById("val_Cl").value);
+            if (!isNaN(valCl)) valores.Cl = valCl;
+        }
+
+        const tbody = document.getElementById("tabla-suficiencia-body");
+        tbody.innerHTML = "";
+
+        const listDop = [];
+        const sinBibliografia = [];
+
+        // 1. EVALUACIÓN DE SUFICIENCIA Y CÁLCULO DOP
+        for (let el in valores) {
+            const val = valores[el];
+            const ref = normas[el];
+
+            if (el === "Cl" && cultivo !== "caqui") continue; // en Aguacate el Cl se trata aparte (umbral de toxicidad); en Caqui es un elemento más del sistema DRIS de 13 elementos
+
+            if (!ref || ref.mb === null || ref.mb === undefined || isNaN(val)) {
+                sinBibliografia.push(el);
+                continue;
+            }
+
+            const opt = (ref.o_min + ref.o_max) / 2;
+            const dop = opt !== 0 ? ((val - opt) / opt) * 100 : NaN;
+            listDop.push({ element: el, dop: dop, val: val });
+
+            const clasif = clasificarValor(val, ref);
+            const dopTexto = isNaN(dop) ? "N/D" : `${dop.toFixed(1)}%`;
+            const dopColor = isNaN(dop) ? "#627D98" : (dop < 0 ? 'var(--danger)' : 'var(--success)');
+
+            const row = `<tr>
+                <td><strong>${el}</strong> <span style="font-size:11px; color:#52606D;">(${ref.unit})</span></td>
+                <td>${val}</td>
+                <td>${ref.o_min.toFixed(2)} - ${ref.o_max.toFixed(2)}</td>
+                <td><span class="badge ${clasif.badgeClass}">${clasif.estado}</span></td>
+                <td style="font-weight:bold; color:${dopColor}">${dopTexto}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        }
+
+        // Fila informativa de Cloruro (Aguacate) — umbral de toxicidad, no de suficiencia
+        if (cultivo === "aguacate" && normas.Cl && !isNaN(valores.Cl)) {
+            const refCl = normas.Cl;
+            let estadoCl = "SEGURO", badgeCl = "badge-optimo";
+            if (valores.Cl > refCl.alto_max) { estadoCl = "TOXICIDAD EXTREMA"; badgeCl = "badge-muy-alto"; }
+            else if (valores.Cl > refCl.o_max) { estadoCl = "RIESGO DE TOXICIDAD"; badgeCl = "badge-alto"; }
+            tbody.innerHTML += `<tr>
+                <td><strong>Cl⁻</strong> <span style="font-size:11px; color:#52606D;">(${refCl.unit})</span></td>
+                <td>${valores.Cl}</td>
+                <td>&lt; ${refCl.o_max.toFixed(2)} (seguro)</td>
+                <td><span class="badge ${badgeCl}">${estadoCl}</span></td>
+                <td style="color:#627D98;">N/A</td>
+            </tr>`;
+        }
+
+        // Nutrientes sin bibliografía contrastada para este cultivo: se muestran pero sin clasificar
+        sinBibliografia.forEach(el => {
+            const val = valores[el];
+            if (isNaN(val)) return;
+            const notaSinDato = (normas[el] && normas[el].nota) ? normas[el].nota : "Sin bibliografía contrastada todavía para este cultivo.";
+            tbody.innerHTML += `<tr>
+                <td><strong>${el}</strong></td>
+                <td>${val}</td>
+                <td>—</td>
+                <td><span class="badge" style="background-color:#ECEFF1; color:#52606D; border:1px solid #CFD8DC;">SIN DATO</span></td>
+                <td title="${notaSinDato}" style="color:#627D98; font-size:11px;">N/D</td>
+            </tr>`;
+        });
+
+        // Transparencia bibliográfica: fuente general del cultivo + notas/matices por nutriente
+        const divFuentes = document.getElementById("fuentes-bibliograficas");
+        if (cultivo !== "personalizado" && datosCultivoActual) {
+            let notasHtml = `<div class="note"><strong>Fuente de las tablas de referencia:</strong> ${datosCultivoActual.fuenteCultivo}</div>`;
+            for (let el in valores) {
+                if (el === "Cl") continue;
+                const ref = datosCultivoActual[el];
+                if (ref && ref.nota) {
+                    notasHtml += `<div class="note">• <strong>${el}:</strong> ${ref.nota}</div>`;
+                }
+            }
+            divFuentes.innerHTML = notasHtml;
+        } else {
+            divFuentes.innerHTML = "";
+        }
+
+        // 2. ORDEN DE LIMITACIÓN (DOP)
+        listDop.sort((a,b) => a.dop - b.dop);
+        if (listDop.length > 0) {
+            const elementoMasLimitante = listDop[0].element;
+            const dMasLimitante = listDop[0].dop;
+            banner.innerHTML = `<strong>Factor limitante crítico detectado por DOP:</strong> El elemento más limitante es el <strong>${elementoMasLimitante}</strong> con un déficit del <strong>${Math.abs(dMasLimitante).toFixed(1)}%</strong> sobre su nivel fisiológico óptimo de producción.` + avisoFecha;
+        } else {
+            banner.innerHTML = `Sin nutrientes clasificables con la bibliografía disponible para este cultivo.` + avisoFecha;
+        }
+
+        // 3. RATIOS DE EQUILIBRIO — usa calibración específica del cultivo si existe (ej. Viña/CSR), si no, umbral genérico
+        const tbodyRatios = document.getElementById("tabla-ratios-body");
+        tbodyRatios.innerHTML = "";
+
+        const especifico = RATIOS_ESPECIFICOS_CULTIVO[cultivo];
+        let controlRatios;
+        let ratiosSonGenericos = !especifico;
+
+        if (especifico) {
+            controlRatios = especifico.ratios.map(r => ({
+                name: r.name,
+                val: r.calc(valores),
+                min: r.min !== undefined ? r.min : null,
+                max: r.max !== undefined ? r.max : null,
+                labelBajo: r.labelBajo || "Desbalanceado (Bajo)",
+                labelAlto: r.labelAlto || "Desbalanceado (Alto)"
+            }));
+        } else {
+            controlRatios = [
+                { name: "N/P", val: valores.N / valores.P, min: 20, max: 24 },
+                { name: "N/K", val: valores.N / valores.K, min: 2, max: 4 },
+                { name: "K/P", val: valores.K / valores.P, min: 5, max: 8 },
+                { name: "Ca/K", val: valores.Ca / valores.K, min: 2, max: 3 },
+                { name: "K/Mg", val: valores.K / valores.Mg, min: 3, max: 4 },
+                { name: "Ca/Mg", val: valores.Ca / valores.Mg, min: 6, max: 7 }
+            ];
+        }
+
+        if (ratiosSonGenericos) {
+            tbodyRatios.innerHTML += `<tr><td colspan="4" style="font-size:11.5px; color:#627D98; font-style:italic;">Umbrales genéricos universales (no calibrados específicamente para este cultivo). Se sustituirán por valores propios de bibliografía a medida que estén disponibles.</td></tr>`;
+        } else {
+            tbodyRatios.innerHTML += `<tr><td colspan="4" style="font-size:11.5px; color:#627D98; font-style:italic;">Fuente: ${especifico.fuente}</td></tr>`;
+        }
+
+        const textosGenericos = {
+            "N/P": { bajo: "Desbalanceado (Bajo). Posible deficiencia de Nitrógeno o exceso relativo de Fósforo.", alto: "Desbalanceado (Alto). Posible exceso de Nitrógeno o deficiencia relativa de Fósforo." },
+            "N/K": { bajo: "Desbalanceado (Bajo). Posible deficiencia de Nitrógeno o exceso relativo de Potasio.", alto: "Desbalanceado (Alto). Posible exceso de Nitrógeno o deficiencia relativa de Potasio." },
+            "K/P": { bajo: "Desbalanceado (Bajo). Posible deficiencia de Potasio o exceso relativo de Fósforo.", alto: "Desbalanceado (Alto). Posible exceso de Potasio o deficiencia relativa de Fósforo." },
+            "Ca/K": { bajo: "Desbalanceado (Bajo). Posible deficiencia de Calcio o exceso relativo de Potasio.", alto: "Desbalanceado (Alto). El exceso de Calcio bloquea de forma competitiva la absorción de Potasio." },
+            "K/Mg": { bajo: "Desbalanceado (Bajo). Antagonismo catiónico: deficiencia de Potasio o exceso de Magnesio.", alto: "Desbalanceado (Alto). El exceso de Potasio bloquea de forma competitiva la absorción de Magnesio." },
+            "Ca/Mg": { bajo: "Desbalanceado (Bajo). Posible deficiencia de Calcio o exceso relativo de Magnesio.", alto: "Desbalanceado (Alto). El exceso de Calcio bloquea de forma competitiva la absorción de Magnesio." }
+        };
+
+        controlRatios.forEach(ratio => {
+            let evalText = "Equilibrada";
+            let color = "var(--success)";
+
+            if (!isFinite(ratio.val) || isNaN(ratio.val)) {
+                const row = `<tr>
+                    <td><strong>${ratio.name}</strong></td>
+                    <td>N/D</td>
+                    <td>${ratio.min !== null ? ratio.min : '—'} - ${ratio.max !== null ? ratio.max : '—'}</td>
+                    <td style="color:#627D98;">No calculable (denominador nulo o dato faltante).</td>
+                </tr>`;
+                tbodyRatios.innerHTML += row;
+                return;
+            }
+
+            if (ratio.min !== null && ratio.val < ratio.min) {
+                color = "var(--warning)";
+                evalText = ratiosSonGenericos ? (textosGenericos[ratio.name] ? textosGenericos[ratio.name].bajo : ratio.labelBajo) : ratio.labelBajo;
+            } else if (ratio.max !== null && ratio.val > ratio.max) {
+                color = "var(--danger)";
+                evalText = ratiosSonGenericos ? (textosGenericos[ratio.name] ? textosGenericos[ratio.name].alto : ratio.labelAlto) : ratio.labelAlto;
+            }
+
+            const row = `<tr>
+                <td><strong>${ratio.name}</strong></td>
+                <td>${ratio.val.toFixed(2)}</td>
+                <td>${ratio.min !== null ? ratio.min : '—'} - ${ratio.max !== null ? ratio.max : '—'}</td>
+                <td style="color:${color}; font-weight:600;">${evalText}</td>
+            </tr>`;
+            tbodyRatios.innerHTML += row;
+        });
+
+        // 4. MÓDULO EXCLUSIVO DRIS OLIVAR (Si se selecciona Olivo)
+        if (cultivo === "olivo") {
+            procesarDrisOlivoCompleto(valores);
+        } else if (cultivo === "almendro") {
+            procesarDrisAlmendro(valores);
+        } else if (cultivo === "caqui") {
+            procesarDrisCaqui(valores);
+        }
+
+        // 5. PLAN DE ABONADO EUROCHEM CON FACTORES DE CORRECCIÓN
+        const divRecs = document.getElementById("recomendaciones-abonado-list");
+        divRecs.innerHTML = "";
+
+        const catalog = {
+            N: { type: "macro", fertilizer: "Abonado de Suelo / Fertirrigación con Urea de bajo biuret (<0.5%) al 1.0% o similar", base: "Plan general de suelo" },
+            P: { type: "macro", fertilizer: "Abonado de Suelo / Fertirrigación con Fosfato Monopotásico al 0.8%-1.0% o similar", base: "Plan general de suelo" },
+            K: { type: "macro", fertilizer: "Abonado de Suelo / Fertirrigación con Nitrato de Potasio soluble al 1.5% o similar", base: "Plan general de suelo" },
+            Ca: { type: "secondary", fertilizer: "Quelato de Calcio (Ca-EDTA) soluble al 1.0%", base: "Aplicación foliar como Último Término" },
+            Mg: { type: "secondary", fertilizer: "Quelato de Magnesio (Mg-EDTA) al 1.0% o Sulfato de Magnesio soluble al 1.5%", base: "Aplicación foliar como Último Término" },
+            Fe: { type: "micro", fertilizer: "Quelato de Hierro (Fe-EDTA/DTPA) al 0.15%", base: "Aplicación foliar específica" },
+            Mn: { type: "micro", fertilizer: "Quelato de Manganeso (Mn-EDTA) al 0.15%", base: "Aplicación foliar específica" },
+            Zn: { type: "micro", fertilizer: "Quelato de Zinc (Zn-EDTA) al 0.10%", base: "Aplicación foliar específica" },
+            Cu: { type: "micro", fertilizer: "Quelato de Cobre (Cu-EDTA) soluble al 0.05%", base: "Aplicación foliar específica" },
+            B: { type: "micro", fertilizer: "Boro Soluble (Ácido Bórico o Borato Sódico) al 0.15%", base: "Aplicación foliar específica" }
+        };
+
+        listDop.forEach(item => {
+            const el = item.element;
+            const val = item.val;
+            const ref = normas[el];
+            const rec = catalog[el];
+
+            if (!rec) return;
+
+            const clasif = clasificarValor(val, ref);
+            if (!clasif) return; // sin bibliografía contrastada: no se emite recomendación
+
+            const factor = clasif.factor;
+            let noteColor = "var(--success)";
+            let statusText = "Óptimo (Mantener dosis estándar)";
+
+            if (clasif.estado === "MUY BAJO") {
+                noteColor = "var(--danger)";
+                statusText = "MUY BAJO (Deficiencia Crítica)";
+            } else if (clasif.estado === "BAJO") {
+                noteColor = "var(--warning)";
+                statusText = "BAJO (Carencia Ligera / Hambre Oculta)";
+            } else if (clasif.estado === "MUY ALTO / EXCESO") {
+                noteColor = "var(--indigo)";
+                statusText = "MUY ALTO / EXCESO (Riesgo de Toxicidad)";
+            } else if (clasif.estado === "ALTO") {
+                noteColor = "#00796B";
+                statusText = "ALTO (Consumo de lujo)";
+            }
+
+            let actionText = "";
+
+            if (rec.type === "macro") {
+                if (factor > 1.0) {
+                    actionText = `<strong>RECOMENDACIÓN GENERAL DE ABONADO (SUELO):</strong> Se recomienda <strong>SUBIR LA DOSIS</strong> aplicada en el suelo o mediante fertirrigación para este elemento. Aplique un <strong>factor corrector de ${factor.toFixed(1)}x</strong> sobre la dosis base para suplir el fuerte déficit detectado en el análisis de hojas.`;
+                } else if (factor < 1.0) {
+                    actionText = `<strong>RECOMENDACIÓN GENERAL DE ABONADO (SUELO):</strong> Se recomienda <strong>BAJAR O ANULAR LA DOSIS</strong> aplicada en el suelo o mediante fertirrigación (<strong>factor corrector de ${factor.toFixed(1)}x</strong>) para reducir costes y evitar consumos de lujo o toxicidades.`;
+                } else {
+                    actionText = `<strong>RECOMENDACIÓN GENERAL DE ABONADO (SUELO):</strong> Mantener dosis estándar del plan de abonado general (<strong>factor corrector de 1.0x</strong>).`;
+                }
+            } else if (rec.type === "micro") {
+                if (factor > 1.0) {
+                    actionText = `<strong>TRATAMIENTO CORRECTOR FOLIAR DIRECTO:</strong> Se recomienda realizar <strong>APLICACIONES FOLIARES ESPECÍFICAS</strong> del producto <strong>${rec.fertilizer}</strong> con un <strong>factor corrector de ${factor.toFixed(1)}x</strong>. Las aplicaciones foliares son altamente eficientes para micronutrientes debido a su inmediata asimilación por la cutícula y estomas foliares.`;
+                } else if (factor < 1.0) {
+                    actionText = `<strong>RECOMENDACIÓN FOLIAR:</strong> Anular aportes foliares específicos de este micronutriente (<strong>factor corrector de ${factor.toFixed(1)}x</strong>) para evitar sobrecostes y toxicidad vegetal.`;
+                } else {
+                    actionText = `<strong>RECOMENDACIÓN FOLIAR:</strong> Estado óptimo. Se pueden realizar aplicaciones estándar de mantenimiento preventivo si el cultivo presenta alta demanda fisiológica (<strong>factor corrector de 1.0x</strong>).`;
+                }
+            } else if (rec.type === "secondary") {
+                if (factor > 1.0) {
+                    actionText = `<strong>RECOMENDACIÓN FOLIAR EN ÚLTIMO TÉRMINO:</strong> Se sugiere recurrir a la aspersión foliar con <strong>${rec.fertilizer}</strong> con un <strong>factor de ajuste de ${factor.toFixed(1)}x únicamente en ÚLTIMO TÉRMINO</strong>. Tenga en cuenta que el ${el} es un elemento estructural muy poco móvil a través del floema, por lo que la aspersión foliar solo corregirá los tejidos y frutos tratados de forma local; la corrección definitiva debe ejecutarse por vía radicular en el suelo.`;
+                } else if (factor < 1.0) {
+                    actionText = `<strong>RECOMENDACIÓN FOLIAR:</strong> Exceso detectado (<strong>factor corrector de ${factor.toFixed(1)}x</strong>). Se debe anular todo aporte foliar de ${el}.`;
+                } else {
+                    actionText = `<strong>RECOMENDACIÓN FOLIAR:</strong> Nivel óptimo. No se requiere intervención (<strong>factor corrector de 1.0x</strong>).`;
+                }
+            }
+
+            const card = document.createElement("div");
+            card.className = "recom-card";
+            card.style.borderLeftColor = noteColor;
+            card.innerHTML = `
+                <h3>${el} (${statusText})</h3>
+                <p style="margin: 6px 0 4px 0; font-size:14px;">${actionText}</p>
+                <p style="margin: 4px 0; font-size:13px; color:#52606D;"><strong>Producto de Referencia:</strong> ${rec.fertilizer}</p>
+                <p style="margin: 4px 0; font-size:13px;"><strong>Factor de Ajuste Sugerido:</strong> <span class="factor-value">${factor.toFixed(1)}x</span></p>
+            `;
+            divRecs.appendChild(card);
+        });
+
+        document.getElementById("bienvenida-box").style.display = "none";
+        document.getElementById("resultados-box").style.display = "block";
+        switchTab('estado-tab');
+    }
+
+    function procesarDrisOlivoCompleto(valores) {
+        // --- 1. MODELO DRIS DE MACROS DE 3 PUNTOS POR SISTEMA DE CULTIVO (UCO / Beaufils) ---
+        const normasDris3 = {
+            secano: {
+                NP: { mean: 14.50, sd: 1.85 },
+                NK: { mean: 2.10, sd: 0.35 },
+                KP: { mean: 6.90, sd: 0.95 }
+            },
+            regadio: {
+                NP: { mean: 15.20, sd: 1.40 },
+                NK: { mean: 1.85, sd: 0.25 },
+                KP: { mean: 8.20, sd: 0.80 }
+            },
+            superintensivo: {
+                NP: { mean: 13.80, sd: 1.10 },
+                NK: { mean: 1.65, sd: 0.20 },
+                KP: { mean: 8.35, sd: 0.75 }
+            }
+        };
+
+        const sistema = document.getElementById("dris-manejo").value;
+        const zona = document.getElementById("dris-zona").value;
+        const normasActivas3 = normasDris3[sistema];
+
+        const rNP = valores.N / valores.P;
+        const rNK = valores.N / valores.K;
+        const rKP = valores.K / valores.P;
+
+        // Fórmula de Beaufils: el divisor debe ser el Coeficiente de Variación en % (100*sd/mean),
+        // no la desviación estándar en bruto de la relación. Usar "sd" directamente como si fuera el
+        // CV (bug detectado: producía índices de miles en vez de decenas) infla el resultado en un
+        // factor ~ (mean/100), disparando falsos "Déficit/Exceso Fuerte" en cualquier análisis real.
+        function beaufilsFunc(val, mean, sd) {
+            const cv = (sd / mean) * 100;
+            if (val > mean) {
+                return ((val / mean) - 1) * (1000 / cv);
+            } else if (val < mean) {
+                return (1 - (mean / val)) * (1000 / cv);
+            }
+            return 0;
+        }
+
+        const fNP = beaufilsFunc(rNP, normasActivas3.NP.mean, normasActivas3.NP.sd);
+        const fNK = beaufilsFunc(rNK, normasActivas3.NK.mean, normasActivas3.NK.sd);
+        const fKP = beaufilsFunc(rKP, normasActivas3.KP.mean, normasActivas3.KP.sd);
+
+        const indN_3 = (fNP + fNK) / 2;
+        const indP_3 = (-fNP - fKP) / 2;
+        const indK_3 = (-fNK + fKP) / 2;
+        const ibn3 = Math.abs(indN_3) + Math.abs(indP_3) + Math.abs(indK_3);
+
+        // Renderizar Tabla 3-Puntos
+        const tbodyMacros = document.getElementById("tabla-dris-macros-body");
+        tbodyMacros.innerHTML = "";
+
+        const listMacrosDris = [
+            { name: "Nitrógeno (N)", val: indN_3 },
+            { name: "Fósforo (P)", val: indP_3 },
+            { name: "Potasio (K)", val: indK_3 }
+        ];
+
+        listMacrosDris.sort((a,b) => a.val - b.val);
+
+        listMacrosDris.forEach((item, idx) => {
+            let desc = "Equilibrado";
+            let color = "var(--success)";
+            let prioridad = "Baja / Mantenimiento";
+
+            if (item.val < -10) {
+                desc = "Déficit Fuerte";
+                color = "var(--danger)";
+                prioridad = `Alta (Prioridad ${idx + 1})`;
+            } else if (item.val < -2) {
+                desc = "Déficit Ligero";
+                color = "var(--warning)";
+                prioridad = `Moderada (Prioridad ${idx + 1})`;
+            } else if (item.val > 10) {
+                desc = "Exceso Fuerte";
+                color = "var(--indigo)";
+                prioridad = "No Aplicar / Reducir";
+            } else if (item.val > 2) {
+                desc = "Exceso Ligero";
+                color = "#00796B";
+                prioridad = "No Aplicar";
+            }
+
+            const row = `<tr>
+                <td><strong>${item.name}</strong></td>
+                <td style="font-weight:bold; color:${item.val < 0 ? 'var(--danger)' : 'var(--success)'}">${item.val.toFixed(1)}</td>
+                <td style="color:${color}; font-weight:600;">${desc}</td>
+                <td><strong>${prioridad}</strong></td>
+            </tr>`;
+            tbodyMacros.innerHTML += row;
+        });
+        document.getElementById("val-ibn3").textContent = ibn3.toFixed(1);
+
+
+        // --- 2. MODELO DRIS COMPLETO DE 10 PUNTOS (CSR / JONES) ---
+        const normas10P = {
+            NP: { mean: 14.85, cv: 16.50 },
+            NK: { mean: 1.95, cv: 18.20 },
+            NCa: { mean: 1.52, cv: 21.10 },
+            NMg: { mean: 11.40, cv: 19.80 },
+            NB: { mean: 0.045, cv: 23.50 },
+            KP: { mean: 7.62, cv: 17.40 },
+            KCa: { mean: 0.78, cv: 22.60 },
+            KMg: { mean: 5.85, cv: 20.30 },
+            KB: { mean: 0.023, cv: 25.80 },
+            PCa: { mean: 0.102, cv: 24.10 },
+            PMg: { mean: 0.768, cv: 21.50 },
+            CaMg: { mean: 7.50, cv: 18.90 },
+            FeMn: { mean: 1.65, cv: 22.10 },
+            FeZn: { mean: 5.20, cv: 26.40 },
+            FeCu: { mean: 9.80, cv: 24.70 },
+            ZnCu: { mean: 1.88, cv: 28.20 },
+            MnZn: { mean: 3.15, cv: 25.10 }
+        };
+
+        // Relaciones calculadas para 10P
+        const r_NP = valores.N / valores.P;
+        const r_NK = valores.N / valores.K;
+        const r_NCa = valores.N / valores.Ca;
+        const r_NMg = valores.N / valores.Mg;
+        const r_NB = valores.N / valores.B;
+
+        const r_KP = valores.K / valores.P;
+        const r_KCa = valores.K / valores.Ca;
+        const r_KMg = valores.K / valores.Mg;
+        const r_KB = valores.K / valores.B;
+
+        const r_PCa = valores.P / valores.Ca;
+        const r_PMg = valores.P / valores.Mg;
+
+        const r_CaMg = valores.Ca / valores.Mg;
+
+        const r_FeMn = valores.Fe / valores.Mn;
+        const r_FeZn = valores.Fe / valores.Zn;
+        const r_FeCu = valores.Fe / valores.Cu;
+
+        const r_ZnCu = valores.Zn / valores.Cu;
+        const r_MnZn = valores.Mn / valores.Zn;
+
+        // Función Elwali-Gascho / Jones
+        function jonesFunc(val, mean, cv) {
+            if (val >= mean) {
+                return ((val / mean) - 1) * (1000 / cv);
+            } else {
+                return (1 - (mean / val)) * (1000 / cv);
+            }
+        }
+
+        const f_NP = jonesFunc(r_NP, normas10P.NP.mean, normas10P.NP.cv);
+        const f_NK = jonesFunc(r_NK, normas10P.NK.mean, normas10P.NK.cv);
+        const f_NCa = jonesFunc(r_NCa, normas10P.NCa.mean, normas10P.NCa.cv);
+        const f_NMg = jonesFunc(r_NMg, normas10P.NMg.mean, normas10P.NMg.cv);
+        const f_NB = jonesFunc(r_NB, normas10P.NB.mean, normas10P.NB.cv);
+
+        const f_KP = jonesFunc(r_KP, normas10P.KP.mean, normas10P.KP.cv);
+        const f_KCa = jonesFunc(r_KCa, normas10P.KCa.mean, normas10P.KCa.cv);
+        const f_KMg = jonesFunc(r_KMg, normas10P.KMg.mean, normas10P.KMg.cv);
+        const f_KB = jonesFunc(r_KB, normas10P.KB.mean, normas10P.KB.cv);
+
+        const f_PCa = jonesFunc(r_PCa, normas10P.PCa.mean, normas10P.PCa.cv);
+        const f_PMg = jonesFunc(r_PMg, normas10P.PMg.mean, normas10P.PMg.cv);
+
+        const f_CaMg = jonesFunc(r_CaMg, normas10P.CaMg.mean, normas10P.CaMg.cv);
+
+        const f_FeMn = jonesFunc(r_FeMn, normas10P.FeMn.mean, normas10P.FeMn.cv);
+        const f_FeZn = jonesFunc(r_FeZn, normas10P.FeZn.mean, normas10P.FeZn.cv);
+        const f_FeCu = jonesFunc(r_FeCu, normas10P.FeCu.mean, normas10P.FeCu.cv);
+
+        const f_ZnCu = jonesFunc(r_ZnCu, normas10P.ZnCu.mean, normas10P.ZnCu.cv);
+        const f_MnZn = jonesFunc(r_MnZn, normas10P.MnZn.mean, normas10P.MnZn.cv);
+
+        // Ecuaciones de compilación para los 10 índices netos
+        const indN_10 = (f_NP + f_NK + f_NCa + f_NMg + f_NB) / 5;
+        const indP_10 = (f_PCa + f_PMg - f_NP - f_KP) / 4;
+        const indK_10 = (f_KP + f_KCa + f_KMg + f_KB - f_NK) / 5;
+        const indCa_10 = (f_CaMg - f_NCa - f_KCa - f_PCa) / 4;
+        const indMg_10 = (-f_NMg - f_KMg - f_PMg - f_CaMg) / 4;
+        const indB_10 = (-f_NB - f_KB) / 2;
+        const indFe_10 = (f_FeMn + f_FeZn + f_FeCu) / 3;
+        const indMn_10 = (f_MnZn - f_FeMn) / 2;
+        const indZn_10 = (f_ZnCu - f_FeZn - f_MnZn) / 3;
+        const indCu_10 = (-f_FeCu - f_ZnCu) / 2;
+
+        const ibn10 = Math.abs(indN_10) + Math.abs(indP_10) + Math.abs(indK_10) + Math.abs(indCa_10) + Math.abs(indMg_10) + Math.abs(indFe_10) + Math.abs(indMn_10) + Math.abs(indZn_10) + Math.abs(indCu_10) + Math.abs(indB_10);
+
+        // Renderizar Tabla 10-Puntos
+        const tbody10P = document.getElementById("tabla-dris-10p-body");
+        tbody10P.innerHTML = "";
+
+        const list10PDris = [
+            { name: "Nitrógeno (N)", val: indN_10 },
+            { name: "Fósforo (P)", val: indP_10 },
+            { name: "Potasio (K)", val: indK_10 },
+            { name: "Calcio (Ca)", val: indCa_10 },
+            { name: "Magnesio (Mg)", val: indMg_10 },
+            { name: "Hierro (Fe)", val: indFe_10 },
+            { name: "Manganeso (Mn)", val: indMn_10 },
+            { name: "Zinc (Zn)", val: indZn_10 },
+            { name: "Cobre (Cu)", val: indCu_10 },
+            { name: "Boro (B)", val: indB_10 }
+        ];
+
+        list10PDris.sort((a,b) => a.val - b.val);
+
+        list10PDris.forEach((item, idx) => {
+            let desc = "Equilibrado";
+            let color = "var(--success)";
+            let prioridad = "Baja / Mantenimiento";
+
+            if (item.val < -10) {
+                desc = "Déficit Fuerte";
+                color = "var(--danger)";
+                prioridad = `Alta (Prioridad ${idx + 1})`;
+            } else if (item.val < -2) {
+                desc = "Déficit Ligero";
+                color = "var(--warning)";
+                prioridad = `Moderada (Prioridad ${idx + 1})`;
+            } else if (item.val > 10) {
+                desc = "Exceso Fuerte";
+                color = "var(--indigo)";
+                prioridad = "No Aplicar / Reducir";
+            } else if (item.val > 2) {
+                desc = "Exceso Ligero";
+                color = "#00796B";
+                prioridad = "No Aplicar";
+            }
+
+            const row = `<tr>
+                <td><strong>${item.name}</strong></td>
+                <td style="font-weight:bold; color:${item.val < 0 ? 'var(--danger)' : 'var(--success)'}">${item.val.toFixed(1)}</td>
+                <td style="color:${color}; font-weight:600;">${desc}</td>
+                <td><strong>${prioridad}</strong></td>
+            </tr>`;
+            tbody10P.innerHTML += row;
+        });
+        document.getElementById("val-ibn10").textContent = ibn10.toFixed(1);
+
+        // ALERTAS CONDICIONALES DE CAMPO
+        const divAlertas = document.getElementById("alertas-condicionales-dris");
+        divAlertas.innerHTML = "";
+
+        if (sistema === "secano" && indK_3 < -12) {
+            const b = document.createElement("div");
+            b.className = "alert-box alert-warning";
+            b.innerHTML = `<strong>Alerta DRIS en Secano Tradicional:</strong> Se observa un fuerte déficit de Potasio (Índice DRIS: ${indK_3.toFixed(1)}). En olivares de secano, la falta prolongada de humedad estival restringe la absorción radicular de Potasio y Boro por flujo de masa. El índice DRIS negativo refleja este bloqueo. Se sugiere priorizar correcciones mediante aplicaciones foliares concentradas a inicios de primavera (brotación) y durante el post-endurecimiento del hueso, evitando la dependencia exclusiva del sistema radicular seco.`;
+            divAlertas.appendChild(b);
+        }
+
+        if (sistema === "superintensivo" && indN_3 > 10) {
+            const b = document.createElement("div");
+            b.className = "alert-box alert-warning";
+            b.innerHTML = `<strong>Alerta DRIS en Superintensivo:</strong> Se observa un exceso severo de Nitrógeno (Índice DRIS: ${indN_3.toFixed(1)}). El exceso relativo de Nitrógeno frente al Fósforo y Potasio en sistemas en seto estimula un excesivo vigor vegetativo y el alargamiento de entrenudos. Esto acelera el sombreado interior de la pared productiva y reduce la tasa de renovación de brotes fructíferos. Se recomienda suprimir aportes nitrogenados y reequilibrar con fertilizaciones ricas en Fósforo y Potasio para mantener la estructura compacta del seto.`;
+            divAlertas.appendChild(b);
+        }
+
+        if (zona === "Guadalquivir_Arcillas" && indK_3 < -15 && indN_3 > 5) {
+            const b = document.createElement("div");
+            b.className = "alert-box alert-warning";
+            b.innerHTML = `<strong>Alerta Específica para Valle del Guadalquivir:</strong> Los suelos arcillosos/vérticos presentan una alta tasa de fijación de Potasio en los espacios interlaminares de las arcillas durante el secado del suelo. El exceso relativo de Nitrógeno agrava este escenario. Se aconseja fraccionar los aportes de Potasio mediante fertirrigación continua en el bulbo húmedo para saturar la capacidad de fijación edáfica y restablecer el balance DRIS foliar.`;
+            divAlertas.appendChild(b);
+        }
+    }
+
+    // ============================================================
+    // DRIS ALMENDRO (Ferrández-Cámara et al. 2021, Horticulturae 7, 481)
+    // ============================================================
+    // Cada variedad tiene 10 normas (una por cada par entre N,P,K,Ca,Mg), en dos formas:
+    // 'ratio' (num/den) y 'product' (a×b). Mean/SD/CV tomados literalmente de la Tabla 4 del artículo.
+    const NORMAS_ALMENDRO_DRIS = {
+        ferraduel: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 17.05, sd: 4.06, cv: 23.84 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 2.30,  sd: 0.58, cv: 25.19 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 9.13,  sd: 1.88, cv: 20.63 },
+            { type: 'ratio',   num: 'N', den: 'Mg', mean: 1.76,  sd: 0.32, cv: 18.28 },
+            { type: 'ratio',   num: 'K', den: 'P',  mean: 7.74,  sd: 2.31, cv: 29.89 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.80,  sd: 0.19, cv: 23.77 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.57,  sd: 0.18, cv: 31.01 },
+            { type: 'product', a: 'P',   b: 'Mg',   mean: 0.11,  sd: 0.03, cv: 25.40 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 4.14,  sd: 1.10, cv: 26.52 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 5.27, sd: 1.11, cv: 21.07 }
+        ],
+        ferragnes: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 17.71, sd: 4.04, cv: 22.81 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 2.33,  sd: 0.57, cv: 24.62 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 9.13,  sd: 1.71, cv: 18.71 },
+            { type: 'product', a: 'N',   b: 'Mg',   mean: 1.91,  sd: 0.36, cv: 18.71 },
+            { type: 'ratio',   num: 'P', den: 'K',  mean: 0.14,  sd: 0.05, cv: 33.63 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.86,  sd: 0.22, cv: 25.21 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.54,  sd: 0.16, cv: 28.92 },
+            { type: 'product', a: 'P',   b: 'Mg',   mean: 0.11,  sd: 0.02, cv: 20.57 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 4.12,  sd: 1.09, cv: 26.43 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 4.84, sd: 0.79, cv: 16.30 }
+        ],
+        // Nota: se corrigen tres probables erratas de etiquetado de la Tabla 4 original para Garrigues,
+        // detectadas al contrastar cada media publicada contra las concentraciones foliares medias reales
+        // de Garrigues (Tabla 1 del mismo artículo: N=2.00, P=0.09, K=0.67, Ca=4.05, Mg=0.99):
+        //  - La norma publicada como "P/K" (media 7.45) solo es compatible con K/P (K/P real ≈ 7.44;
+        //    P/K real ≈ 0.13, incompatible con 7.45).
+        //  - La norma publicada como "P × Mg" (media 11.75) solo es compatible con Mg/P (Mg/P real = 11.0;
+        //    P×Mg real ≈ 0.089, incompatible con 11.75).
+        //  - La norma publicada como "N × Mg" (media 0.56) es mucho más compatible con Mg/N (Mg/N real
+        //    ≈ 0.495) que con N×Mg (N×Mg real ≈ 1.98, incompatible con 0.56).
+        // Dado que son 3 de las 10 normas de esta variedad, se recomienda encarecidamente contrastar
+        // con los autores antes de un uso crítico; el resto de normas de Garrigues sí son coherentes
+        // con la Tabla 1 y se han dejado tal cual se publicaron.
+        garrigues: [
+            { type: 'ratio',   num: 'N', den: 'P',  mean: 21.03, sd: 2.70, cv: 12.85 },
+            { type: 'ratio',   num: 'N', den: 'K',  mean: 3.25,  sd: 1.27, cv: 39.20 },
+            { type: 'product', a: 'N',   b: 'Ca',   mean: 7.01,  sd: 1.49, cv: 21.28 },
+            { type: 'ratio',   num: 'Mg', den: 'N',  mean: 0.56,  sd: 0.15, cv: 27.33 },
+            { type: 'ratio',   num: 'K', den: 'P',  mean: 7.45,  sd: 2.92, cv: 39.24 },
+            { type: 'product', a: 'K',   b: 'Mg',   mean: 0.63,  sd: 0.28, cv: 43.82 },
+            { type: 'product', a: 'P',   b: 'Ca',   mean: 0.34,  sd: 0.08, cv: 24.67 },
+            { type: 'ratio',   num: 'Mg', den: 'P',  mean: 11.75, sd: 3.60, cv: 30.65 },
+            { type: 'product', a: 'K',   b: 'Ca',   mean: 2.47,  sd: 1.15, cv: 46.70 },
+            { type: 'ratio',   num: 'Ca', den: 'Mg', mean: 3.92, sd: 0.66, cv: 16.74 }
+        ]
+    };
+
+    function beaufilsRatioF(sampleRatio, mean, cv) {
+        if (sampleRatio > mean) return ((sampleRatio / mean) - 1) * (1000 / cv);
+        if (sampleRatio < mean) return (1 - (mean / sampleRatio)) * (1000 / cv);
+        return 0;
+    }
+    // Convención de Beaufils para normas tipo producto (a·b): el término se suma con el MISMO signo
+    // a los índices de ambos nutrientes implicados (a diferencia de las normas tipo ratio, que suman
+    // con signo opuesto al numerador/denominador). Ver Beaufils (1973); Walworth & Sumner (1987).
+    function beaufilsProductF(sampleProduct, mean, sd) {
+        return (sampleProduct - mean) * (10 / sd);
+    }
+
+    function calcDrisIndicesAlmendro(valores, normsList, nutrientes) {
+        const indices = {};
+        nutrientes.forEach(nut => {
+            let suma = 0, n = 0;
+            normsList.forEach(norm => {
+                if (norm.type === 'ratio') {
+                    const ratioVal = valores[norm.num] / valores[norm.den];
+                    const f = beaufilsRatioF(ratioVal, norm.mean, norm.cv);
+                    if (norm.num === nut) { suma += f; n++; }
+                    else if (norm.den === nut) { suma -= f; n++; }
+                } else if (norm.type === 'product') {
+                    if (norm.a === nut || norm.b === nut) {
+                        const prodVal = valores[norm.a] * valores[norm.b];
+                        const f = beaufilsProductF(prodVal, norm.mean, norm.sd);
+                        suma += f;
+                        n++;
+                    }
+                }
+            });
+            indices[nut] = n > 0 ? suma / n : 0;
+        });
+        return indices;
+    }
+
+    function procesarDrisAlmendro(valores) {
+        const variedad = document.getElementById("almendro-variedad").value;
+        const tbody = document.getElementById("tabla-dris-generic-body");
+        tbody.innerHTML = "";
+        if (variedad === "generico") {
+            document.getElementById("dris-generic-ibn").textContent = "N/D";
+            return;
+        }
+        const normsList = NORMAS_ALMENDRO_DRIS[variedad];
+        const nutrientes = ['N', 'P', 'K', 'Ca', 'Mg'];
+        const indices = calcDrisIndicesAlmendro(valores, normsList, nutrientes);
+        renderDrisGenericTable(indices, nutrientes, { N: 'Nitrógeno', P: 'Fósforo', K: 'Potasio', Ca: 'Calcio', Mg: 'Magnesio' });
+    }
+
+    // ============================================================
+    // DRIS CAQUI 'ROJO BRILLANTE' (Morales et al. 2022, Agronomy 12, 1269)
+    // ============================================================
+    // Las 78 normas (todas de tipo ratio puro, sin productos) cubren cada par posible entre los
+    // 13 elementos N,P,K,Ca,Mg,Na,S,Cl,B,Cu,Fe,Mn,Zn exactamente una vez (Tabla 1 del artículo).
+    const NORMS_DRIS_CAQUI = [
+        { num: 'N', den: 'Na', mean: 149.086, sd: 69.8038 },
+        { num: 'N', den: 'S', mean: 8.468, sd: 1.891 },
+        { num: 'N', den: 'Cl', mean: 3.169, sd: 2.322 },
+        { num: 'N', den: 'B', mean: 0.060, sd: 0.046 },
+        { num: 'N', den: 'Cu', mean: 0.495, sd: 0.210 },
+        { num: 'N', den: 'Fe', mean: 0.039, sd: 0.015 },
+        { num: 'N', den: 'Zn', mean: 0.057, sd: 0.024 },
+        { num: 'Ca', den: 'N', mean: 1.060, sd: 0.573 },
+        { num: 'K', den: 'N', mean: 0.765, sd: 0.169 },
+        { num: 'Mg', den: 'N', mean: 0.303, sd: 0.132 },
+        { num: 'P', den: 'N', mean: 0.058, sd: 0.009 },
+        { num: 'Mn', den: 'N', mean: 80.440, sd: 63.845 },
+        { num: 'P', den: 'Ca', mean: 0.078, sd: 0.061 },
+        { num: 'P', den: 'Mg', mean: 0.231, sd: 0.124 },
+        { num: 'P', den: 'S', mean: 0.489, sd: 0.096 },
+        { num: 'P', den: 'Cl', mean: 0.184, sd: 0.161 },
+        { num: 'P', den: 'B', mean: 0.003, sd: 0.003 },
+        { num: 'P', den: 'Cu', mean: 0.028, sd: 0.012 },
+        { num: 'P', den: 'Fe', mean: 0.002, sd: 0.001 },
+        { num: 'K', den: 'P', mean: 13.252, sd: 2.485 },
+        { num: 'Na', den: 'P', mean: 0.133, sd: 0.052 },
+        { num: 'Mn', den: 'P', mean: 1689.810, sd: 1398.100 },
+        { num: 'Zn', den: 'P', mean: 353.202, sd: 147.619 },
+        { num: 'K', den: 'Ca', mean: 1.009, sd: 0.665 },
+        { num: 'K', den: 'Mg', mean: 3.117, sd: 1.571 },
+        { num: 'K', den: 'Na', mean: 115.132, sd: 51.830 },
+        { num: 'K', den: 'S', mean: 6.478, sd: 1.720 },
+        { num: 'K', den: 'Cl', mean: 2.467, sd: 1.977 },
+        { num: 'K', den: 'B', mean: 0.044, sd: 0.035 },
+        { num: 'K', den: 'Cu', mean: 0.370, sd: 0.165 },
+        { num: 'K', den: 'Zn', mean: 0.045, sd: 0.023 },
+        { num: 'Fe', den: 'K', mean: 39.738, sd: 15.495 },
+        { num: 'Mn', den: 'K', mean: 135.820, sd: 122.740 },
+        { num: 'Ca', den: 'Mg', mean: 3.344, sd: 0.834 },
+        { num: 'Ca', den: 'Cl', mean: 2.387, sd: 0.762 },
+        { num: 'Ca', den: 'B', mean: 0.046, sd: 0.026 },
+        { num: 'Ca', den: 'Cu', mean: 0.510, sd: 0.339 },
+        { num: 'Na', den: 'Ca', mean: 0.009, sd: 0.005 },
+        { num: 'S', den: 'Ca', mean: 0.157, sd: 0.098 },
+        { num: 'Fe', den: 'Ca', mean: 34.013, sd: 17.862 },
+        { num: 'Mn', den: 'Ca', mean: 95.052, sd: 71.053 },
+        { num: 'Zn', den: 'Ca', mean: 23.796, sd: 15.013 },
+        { num: 'Mg', den: 'Na', mean: 41.094, sd: 16.650 },
+        { num: 'Mg', den: 'S', mean: 2.424, sd: 0.836 },
+        { num: 'Mg', den: 'Cl', mean: 0.768, sd: 0.337 },
+        { num: 'Mg', den: 'B', mean: 0.015, sd: 0.009 },
+        { num: 'Mg', den: 'Cu', mean: 0.145, sd: 0.085 },
+        { num: 'Mg', den: 'Zn', mean: 0.017, sd: 0.009 },
+        { num: 'Fe', den: 'Mg', mean: 106.796, sd: 40.603 },
+        { num: 'Mn', den: 'Mg', mean: 321.806, sd: 245.416 },
+        { num: 'Na', den: 'S', mean: 0.063, sd: 0.025 },
+        { num: 'Na', den: 'Cl', mean: 0.022, sd: 0.015 },
+        { num: 'Na', den: 'B', mean: 0.0004, sd: 0.0002 },
+        { num: 'Na', den: 'Cu', mean: 0.004, sd: 0.002 },
+        { num: 'Na', den: 'Mn', mean: 0.0001, sd: 0.0001 },
+        { num: 'Na', den: 'Zn', mean: 0.0004, sd: 0.0002 },
+        { num: 'Fe', den: 'Na', mean: 4104.840, sd: 1700.294 },
+        { num: 'S', den: 'Cl', mean: 0.364, sd: 0.233 },
+        { num: 'S', den: 'B', mean: 0.007, sd: 0.006 },
+        { num: 'S', den: 'Cu', mean: 0.059, sd: 0.028 },
+        { num: 'S', den: 'Fe', mean: 0.005, sd: 0.002 },
+        { num: 'S', den: 'Zn', mean: 0.007, sd: 0.003 },
+        { num: 'Mn', den: 'S', mean: 821.265, sd: 717.909 },
+        { num: 'Cl', den: 'B', mean: 0.020, sd: 0.012 },
+        { num: 'Cl', den: 'Cu', mean: 0.232, sd: 0.177 },
+        { num: 'Cl', den: 'Mn', mean: 0.008, sd: 0.007 },
+        { num: 'Fe', den: 'Cl', mean: 82.127, sd: 49.408 },
+        { num: 'Zn', den: 'Cl', mean: 54.806, sd: 37.647 },
+        { num: 'B', den: 'Cu', mean: 12.442, sd: 8.851 },
+        { num: 'B', den: 'Zn', mean: 1.461, sd: 1.061 },
+        { num: 'Fe', den: 'B', mean: 1.453, sd: 0.915 },
+        { num: 'Mn', den: 'B', mean: 3.824, sd: 2.735 },
+        { num: 'Fe', den: 'Cu', mean: 15.117, sd: 7.301 },
+        { num: 'Mn', den: 'Cu', mean: 46.064, sd: 42.338 },
+        { num: 'Zn', den: 'Cu', mean: 9.448, sd: 5.431 },
+        { num: 'Fe', den: 'Mn', mean: 0.487, sd: 0.354 },
+        { num: 'Fe', den: 'Zn', mean: 1.727, sd: 0.788 },
+        { num: 'Mn', den: 'Zn', mean: 4.455, sd: 3.675 }
+    ];
+    const NUTRIENTES_CAQUI = ['N', 'P', 'K', 'Ca', 'Mg', 'Na', 'S', 'Cl', 'B', 'Cu', 'Fe', 'Mn', 'Zn'];
+
+    // Índice lineal de Jones (Sección 2.5 del artículo): f(Y/X) = [(Y/X)_muestra - (y/x)_norma] / SD_norma.
+    // El índice de cada nutriente es la media de sus f(+) como numerador menos sus f como denominador.
+    function calcDrisIndicesCaqui(valores) {
+        const indices = {};
+        NUTRIENTES_CAQUI.forEach(nut => {
+            let suma = 0, n = 0;
+            NORMS_DRIS_CAQUI.forEach(norm => {
+                const ratioVal = valores[norm.num] / valores[norm.den];
+                const f = (ratioVal - norm.mean) / norm.sd;
+                if (norm.num === nut) { suma += f; n++; }
+                else if (norm.den === nut) { suma -= f; n++; }
+            });
+            indices[nut] = n > 0 ? suma / n : 0;
+        });
+        return indices;
+    }
+
+    function procesarDrisCaqui(valores) {
+        const indices = calcDrisIndicesCaqui(valores);
+        const nombres = { N: 'Nitrógeno', P: 'Fósforo', K: 'Potasio', Ca: 'Calcio', Mg: 'Magnesio', Na: 'Sodio', S: 'Azufre', Cl: 'Cloruro', B: 'Boro', Cu: 'Cobre', Fe: 'Hierro', Mn: 'Manganeso', Zn: 'Zinc' };
+        renderDrisGenericTable(indices, NUTRIENTES_CAQUI, nombres);
+    }
+
+    // Renderizado compartido para las tablas DRIS de Almendro y Caqui (Punto: pestaña "Sistema DRIS").
+    function renderDrisGenericTable(indices, nutrientes, nombres) {
+        const tbody = document.getElementById("tabla-dris-generic-body");
+        tbody.innerHTML = "";
+        const lista = nutrientes.map(nut => ({ nut, val: indices[nut] })).sort((a, b) => a.val - b.val);
+        let ibn = 0;
+        lista.forEach((item, idx) => {
+            ibn += Math.abs(item.val);
+            let desc = "Equilibrado", color = "var(--success)", prioridad = "Baja / Mantenimiento";
+            if (item.val < -10) { desc = "Déficit Fuerte"; color = "var(--danger)"; prioridad = `Alta (Prioridad ${idx + 1})`; }
+            else if (item.val < -2) { desc = "Déficit Ligero"; color = "var(--warning)"; prioridad = `Moderada (Prioridad ${idx + 1})`; }
+            else if (item.val > 10) { desc = "Exceso Fuerte"; color = "var(--indigo)"; prioridad = "No Aplicar / Reducir"; }
+            else if (item.val > 2) { desc = "Exceso Ligero"; color = "#00796B"; prioridad = "No Aplicar"; }
+
+            const row = `<tr>
+                <td><strong>${nombres[item.nut] || item.nut}</strong></td>
+                <td style="font-weight:bold; color:${item.val < 0 ? 'var(--danger)' : 'var(--success)'}">${item.val.toFixed(1)}</td>
+                <td style="color:${color}; font-weight:600;">${desc}</td>
+                <td><strong>${prioridad}</strong></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+        document.getElementById("dris-generic-ibn").textContent = ibn.toFixed(1);
+    }
+
+    // ============================================================
+    // HISTÓRICO MULTI-AÑO DE ANALÍTICAS FOLIARES (localStorage)
+    // ============================================================
+    const HIST_STORAGE_KEY = "nutrileaf_historico_v1";
+    const HIST_NUTRIENTES = ['N', 'P', 'K', 'Ca', 'Mg', 'Fe', 'Mn', 'Zn', 'Cu', 'B'];
+
+    function leerHistoricoStorage() {
+        try {
+            const raw = localStorage.getItem(HIST_STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            console.warn("No se pudo leer el histórico de localStorage:", e);
+            return [];
+        }
+    }
+
+    function guardarHistoricoStorage(lista) {
+        try {
+            localStorage.setItem(HIST_STORAGE_KEY, JSON.stringify(lista));
+        } catch (e) {
+            alert("No se pudo guardar en el histórico (almacenamiento local lleno o bloqueado por el navegador).");
+        }
+    }
+
+    function guardarEnHistorico() {
+        const finca = (document.getElementById("finca_nombre").value || "").trim() || "No Especificada";
+        const fecha = document.getElementById("finca_fecha").value;
+        if (!fecha) {
+            alert("Introduce la fecha de muestreo antes de guardar en el histórico.");
+            return;
+        }
+        const cultivo = document.getElementById("cultivo").value;
+        const cultivoTexto = document.getElementById("cultivo").options[document.getElementById("cultivo").selectedIndex].text;
+        const asesor = (document.getElementById("asesor_nombre").value || "").trim() || "No Especificado";
+
+        const valores = {};
+        HIST_NUTRIENTES.forEach(el => {
+            const v = parseFloat(document.getElementById("val_" + el).value);
+            if (!isNaN(v)) valores[el] = v;
+        });
+        if (cultivo === "aguacate") {
+            const vCl = parseFloat(document.getElementById("val_Cl").value);
+            if (!isNaN(vCl)) valores.Cl = vCl;
+        }
+        if (Object.keys(valores).length === 0) {
+            alert("No hay valores analíticos introducidos todavía. Rellena el formulario y calcula el diagnóstico antes de guardar.");
+            return;
+        }
+
+        const id = `${finca}|||${fecha}|||${cultivo}`;
+        let historico = leerHistoricoStorage();
+        historico = historico.filter(r => r.id !== id); // si ya existe la misma finca+fecha+cultivo, se sobrescribe
+        historico.push({ id, finca, fecha, cultivo, cultivoTexto, asesor, valores });
+        guardarHistoricoStorage(historico);
+
+        poblarSelectoresHistorico(finca, cultivo);
+        renderHistorico();
+        alert(`Analítica de "${finca}" (${fecha}) guardada en el histórico.`);
+    }
+
+    function borrarDeHistorico(id) {
+        if (!confirm("¿Borrar esta analítica del histórico? Esta acción no se puede deshacer.")) return;
+        let historico = leerHistoricoStorage();
+        historico = historico.filter(r => r.id !== id);
+        guardarHistoricoStorage(historico);
+        renderHistorico();
+    }
+
+    function poblarSelectoresHistorico(preferirFinca, preferirCultivo) {
+        const historico = leerHistoricoStorage();
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const cultivoSel = document.getElementById("hist-cultivo-selector");
+        if (!fincaSel || !cultivoSel) return;
+
+        const fincasPrevia = fincaSel.value;
+        const fincas = [...new Set(historico.map(r => r.finca))].sort();
+        fincaSel.innerHTML = "";
+        if (fincas.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "(sin analíticas guardadas)";
+            fincaSel.appendChild(opt);
+        } else {
+            fincas.forEach(f => {
+                const opt = document.createElement("option");
+                opt.value = f;
+                opt.textContent = f;
+                fincaSel.appendChild(opt);
+            });
+            if (preferirFinca && fincas.includes(preferirFinca)) fincaSel.value = preferirFinca;
+            else if (fincas.includes(fincasPrevia)) fincaSel.value = fincasPrevia;
+        }
+
+        const fincaActiva = fincaSel.value;
+        const cultivosPrevio = cultivoSel.value;
+        const cultivosDisponibles = [...new Set(historico.filter(r => r.finca === fincaActiva).map(r => r.cultivo))];
+        cultivoSel.innerHTML = "";
+        cultivosDisponibles.forEach(c => {
+            const registroEjemplo = historico.find(r => r.finca === fincaActiva && r.cultivo === c);
+            const opt = document.createElement("option");
+            opt.value = c;
+            opt.textContent = registroEjemplo ? registroEjemplo.cultivoTexto : c;
+            cultivoSel.appendChild(opt);
+        });
+        if (preferirCultivo && cultivosDisponibles.includes(preferirCultivo)) cultivoSel.value = preferirCultivo;
+        else if (cultivosDisponibles.includes(cultivosPrevio)) cultivoSel.value = cultivosPrevio;
+    }
+
+    const HIST_ESTADO_ABREV = { "MUY BAJO": "MB", "BAJO": "B", "ÓPTIMO": "OK", "ALTO": "A", "MUY ALTO / EXCESO": "MA" };
+
+    function celdaHistNutriente(registro, el) {
+        const val = registro.valores[el];
+        if (val === undefined || val === null) return `<td style="color:#B0BEC5;">—</td>`;
+        const ref = BASE_DE_DATOS_CULTIVOS[registro.cultivo] ? BASE_DE_DATOS_CULTIVOS[registro.cultivo][el] : null;
+        const clasif = ref ? clasificarValor(val, ref) : null;
+        if (!clasif) return `<td>${val}</td>`;
+        const abrev = HIST_ESTADO_ABREV[clasif.estado] || clasif.estado;
+        return `<td>${val} <span class="badge ${clasif.badgeClass}" style="font-size:9px; padding:1px 4px;" title="${clasif.estado}">${abrev}</span></td>`;
+    }
+
+    function renderHistorico() {
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const cultivoSel = document.getElementById("hist-cultivo-selector");
+        if (!fincaSel || !cultivoSel) return;
+        if (fincaSel.options.length === 0) poblarSelectoresHistorico();
+
+        const finca = fincaSel.value;
+        const historico = leerHistoricoStorage().filter(r => r.finca === finca);
+        historico.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        const tbody = document.getElementById("tabla-historico-body");
+        const msgVacio = document.getElementById("historico-vacio-msg");
+        tbody.innerHTML = "";
+        if (historico.length === 0) {
+            msgVacio.style.display = "block";
+        } else {
+            msgVacio.style.display = "none";
+            historico.forEach(r => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${r.fecha}</td>
+                    <td>${r.cultivoTexto}</td>
+                    <td>${r.asesor}</td>
+                    ${celdaHistNutriente(r, 'N')}
+                    ${celdaHistNutriente(r, 'P')}
+                    ${celdaHistNutriente(r, 'K')}
+                    ${celdaHistNutriente(r, 'Ca')}
+                    ${celdaHistNutriente(r, 'Mg')}
+                    ${celdaHistNutriente(r, 'Fe')}
+                    ${celdaHistNutriente(r, 'Mn')}
+                    ${celdaHistNutriente(r, 'Zn')}
+                    ${celdaHistNutriente(r, 'Cu')}
+                    ${celdaHistNutriente(r, 'B')}
+                    <td><button class="btn" style="width:auto; padding:3px 8px; font-size:11px; background-color:var(--danger);" onclick="borrarDeHistorico('${r.id.replace(/'/g, "\\'")}')">Borrar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        dibujarSparklinesHistorico(finca, cultivoSel.value);
+    }
+
+    function dibujarSparklinesHistorico(finca, cultivo) {
+        const grid = document.getElementById("historico-sparklines-grid");
+        const msgVacio = document.getElementById("historico-sparklines-vacio");
+        grid.innerHTML = "";
+
+        const serie = leerHistoricoStorage()
+            .filter(r => r.finca === finca && r.cultivo === cultivo)
+            .sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        if (serie.length < 2) {
+            msgVacio.style.display = "block";
+            return;
+        }
+        msgVacio.style.display = "none";
+
+        const ref = BASE_DE_DATOS_CULTIVOS[cultivo];
+        const macros = ['N', 'P', 'K', 'Ca', 'Mg'];
+        macros.forEach(el => {
+            const puntos = serie.filter(r => r.valores[el] !== undefined).map(r => ({ fecha: r.fecha, valor: r.valores[el] }));
+            if (puntos.length < 2) return;
+            grid.appendChild(crearTarjetaSparkline(el, puntos, ref ? ref[el] : null));
+        });
+    }
+
+    function crearTarjetaSparkline(elemento, puntos, ref) {
+        const W = 240, H = 90, PAD = 8;
+        const valores = puntos.map(p => p.valor);
+        let minV = Math.min(...valores), maxV = Math.max(...valores);
+        if (ref && ref.o_min !== undefined && ref.o_max !== undefined) {
+            minV = Math.min(minV, ref.o_min);
+            maxV = Math.max(maxV, ref.o_max);
+        }
+        if (minV === maxV) { minV -= 1; maxV += 1; }
+        const rangoV = maxV - minV;
+
+        const escalaX = i => PAD + (i / (puntos.length - 1)) * (W - 2 * PAD);
+        const escalaY = v => H - PAD - ((v - minV) / rangoV) * (H - 2 * PAD);
+
+        let bandaOptima = "";
+        if (ref && ref.o_min !== undefined && ref.o_max !== undefined) {
+            const yTop = escalaY(ref.o_max), yBot = escalaY(ref.o_min);
+            bandaOptima = `<rect x="${PAD}" y="${yTop}" width="${W - 2 * PAD}" height="${Math.max(1, yBot - yTop)}" fill="#2E7D32" opacity="0.12"></rect>`;
+        }
+
+        const puntosLinea = puntos.map((p, i) => `${escalaX(i)},${escalaY(p.valor)}`).join(" ");
+        const circulos = puntos.map((p, i) => `<circle cx="${escalaX(i)}" cy="${escalaY(p.valor)}" r="3" fill="#1565C0"></circle>`).join("");
+
+        const tendenciaInicial = puntos[0].valor;
+        const tendenciaFinal = puntos[puntos.length - 1].valor;
+        const diff = tendenciaFinal - tendenciaInicial;
+        const flecha = diff > 0 ? "▲" : (diff < 0 ? "▼" : "→");
+        const colorFlecha = diff > 0 ? "var(--success)" : (diff < 0 ? "var(--danger)" : "#627D98");
+
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "12px";
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <strong style="font-size:13px;">${elemento}</strong>
+                <span style="font-size:12px; color:${colorFlecha}; font-weight:bold;">${flecha} ${tendenciaInicial.toFixed(2)} → ${tendenciaFinal.toFixed(2)}</span>
+            </div>
+            <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; display:block;">
+                ${bandaOptima}
+                <polyline points="${puntosLinea}" fill="none" stroke="#1565C0" stroke-width="2"></polyline>
+                ${circulos}
+            </svg>
+            <div style="font-size:10px; color:#888; margin-top:3px;">
+                ${puntos.map(p => p.fecha).join(" · ")}${ref ? ` &nbsp;|&nbsp; banda verde = rango óptimo (${ref.o_min}-${ref.o_max} ${ref.unit})` : ""}
+            </div>
+        `;
+        return div;
+    }
+
+    function exportarHistoricoCSV() {
+        const fincaSel = document.getElementById("hist-finca-selector");
+        const finca = fincaSel.value;
+        const historico = leerHistoricoStorage().filter(r => r.finca === finca).sort((a, b) => a.fecha.localeCompare(b.fecha));
+        if (historico.length === 0) {
+            alert("No hay analíticas guardadas para esta finca todavía.");
+            return;
+        }
+        const cabecera = ["Finca", "Fecha", "Cultivo", "Asesor", ...HIST_NUTRIENTES, "Cl"];
+        const filas = historico.map(r => [
+            r.finca, r.fecha, r.cultivoTexto, r.asesor,
+            ...HIST_NUTRIENTES.map(el => r.valores[el] !== undefined ? r.valores[el] : ""),
+            r.valores.Cl !== undefined ? r.valores.Cl : ""
+        ]);
+        const csv = [cabecera, ...filas].map(fila => fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\n");
+        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `historico_foliar_${finca.replace(/[^a-z0-9]+/gi, "_")}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    window.onload = function() {
+        actualizarNormasUI();
+        poblarSelectoresHistorico();
+        renderHistorico();
+    };
+</script>
+
+</body>
+</html>
