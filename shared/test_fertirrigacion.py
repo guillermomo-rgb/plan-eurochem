@@ -135,11 +135,44 @@ def test_gotero_sonneveld_balance_perfecto_sin_solubles():
     monthly = monthly_data_por_defecto()
     agua = analizar_agua(**WATER_DEFAULT)
     r = calcular_gotero_sonneveld(
-        mes=monthly[1], agua=agua, acid_type="Ninguno", acid_custom={}, neut_hco3=0.0,
+        mes=monthly[1], agua=agua, water_ec_ds_m=0.95, acid_type="Ninguno", acid_custom={}, neut_hco3=0.0,
     )
     # Sin ácido ni solubles, el gotero es exactamente el agua base (menos el HCO3 no neutralizado)
-    assert math.isclose(r.meq["ca"], agua.meq_ca)
-    assert math.isclose(r.meq["hco3"], agua.meq_hco3)  # neut_hco3=0 -> sin cambio
+    assert math.isclose(r.meq_total["ca"], agua.meq_ca)
+    assert math.isclose(r.meq_total["hco3"], agua.meq_hco3)  # neut_hco3=0 -> sin cambio
+    assert r.meq_fert["ca"] == 0.0 and r.meq_acido["ca"] == 0.0
+    # mg/L = meq/L * peso equivalente (mismo criterio que analizar_agua)
+    assert math.isclose(r.mg_total["ca"], agua.meq_ca * 20.04, rel_tol=1e-9)
+    # Sin solubles ni ácido, la CE de la gota es solo la del agua base
+    assert math.isclose(r.ec_total, 0.95)
+    assert r.ec_fert == 0.0 and r.ec_acido == 0.0
+
+
+def test_gotero_sonneveld_desglosa_fuentes_con_fert_y_acido():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrato Cálcico Soluble", "dosis": 50.0}]
+    agua = analizar_agua(**WATER_DEFAULT)
+    r = calcular_gotero_sonneveld(
+        mes=monthly[5], agua=agua, water_ec_ds_m=0.95,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=2.0,
+    )
+    # Nitrato Cálcico Soluble: ca=26.3%, conc=50/100=0.5 g/L -> meq Ca = 0.5*26.3*10/28.0
+    esperado_ca_fert = (0.5 * 26.3 * 10) / 28.0
+    assert math.isclose(r.meq_fert["ca"], esperado_ca_fert, rel_tol=1e-9)
+    # El ácido nítrico aporta NO3 (+neut_hco3) y resta ese mismo bicarbonato del agua
+    assert math.isclose(r.meq_acido["no3"], 2.0)
+    assert math.isclose(r.meq_acido["hco3"], -2.0)
+    assert math.isclose(r.meq_total["hco3"], agua.meq_hco3 - 2.0)
+    # Total = agua + fert + ácido, por cada ion
+    for ion in ("ca", "no3"):
+        assert math.isclose(
+            r.meq_total[ion], r.meq_agua[ion] + r.meq_fert[ion] + r.meq_acido[ion], rel_tol=1e-9,
+        )
+    # CE: agua + aporte del ácido (0.05 dS/m por meq neutralizado) + aporte del fertilizante
+    assert math.isclose(r.ec_acido, 2.0 * 0.05)
+    assert r.ec_fert > 0.0
+    assert math.isclose(r.ec_total, r.ec_agua + r.ec_fert + r.ec_acido, rel_tol=1e-9)
 
 
 def test_dictamen_alerta_salinidad_y_tanque():

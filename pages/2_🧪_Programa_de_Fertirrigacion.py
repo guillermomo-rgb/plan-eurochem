@@ -326,7 +326,7 @@ reparto_anual = calcular_reparto_anual(
 )
 
 sonneveld = calcular_gotero_sonneveld(
-    mes=monthly_data[st.session_state.sonneveld_month], agua=agua,
+    mes=monthly_data[st.session_state.sonneveld_month], agua=agua, water_ec_ds_m=st.session_state.water_ec,
     acid_type=st.session_state.acid_type, acid_custom=acid_custom, neut_hco3=acido.neut_hco3_meq_l,
 )
 sugerencias = sugerencias_fase(
@@ -494,10 +494,43 @@ with fase_placeholder.container():
 
 # ---------------------------------------------------------------- Render Punto 7 (Sonneveld)
 with sonneveld_placeholder.container():
-    st.markdown("**meq/L en el gotero**")
-    df_got = pd.DataFrame({"Ion": list(sonneveld.meq.keys()), "meq/L": list(sonneveld.meq.values())})
-    st.dataframe(df_got.style.format({"meq/L": "{:.2f}"}), use_container_width=True, hide_index=True)
-    st.write(f"Electroneutralidad del gotero: {sonneveld.electroneutralidad_pct:.1f}%")
+    CATIONES_LABEL = {"ca": "Ca²⁺", "mg": "Mg²⁺", "k": "K⁺", "na": "Na⁺", "nh4": "NH₄⁺"}
+    ANIONES_LABEL = {"no3": "NO₃⁻", "p": "H₂PO₄⁻", "s": "SO₄²⁻", "cl": "Cl⁻", "hco3": "HCO₃⁻"}
+
+    def _tabla_ion(etiquetas: dict) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "Ion": label,
+            "meq/L Agua": sonneveld.meq_agua[key], "meq/L Fert": sonneveld.meq_fert[key],
+            "meq/L Ácido": sonneveld.meq_acido[key], "meq/L Total": sonneveld.meq_total[key],
+            "mg/L Total": sonneveld.mg_total[key],
+        } for key, label in etiquetas.items()])
+
+    st.markdown("**Cationes en solución gotero (meq/L y mg/L, por origen)**")
+    df_cat = _tabla_ion(CATIONES_LABEL)
+    st.dataframe(df_cat.style.format({c: "{:.2f}" for c in df_cat.columns if c != "Ion"}), use_container_width=True, hide_index=True)
+
+    st.markdown("**Aniones en solución gotero (meq/L y mg/L, por origen)**")
+    df_ani = _tabla_ion(ANIONES_LABEL)
+    st.dataframe(df_ani.style.format({c: "{:.2f}" for c in df_ani.columns if c != "Ion"}), use_container_width=True, hide_index=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("**Equilibrio de cargas**")
+        st.write(f"Suma cationes: {sonneveld.total_cat_meq:.2f} meq/L ({sonneveld.total_cat_mg:.0f} mg/L)")
+        st.write(f"Suma aniones: {sonneveld.total_ani_meq:.2f} meq/L ({sonneveld.total_ani_mg:.0f} mg/L)")
+        st.write(f"Diferencia de carga: {sonneveld.diferencia_carga_meq:.2f} meq/L")
+        st.write(f"Electroneutralidad: {sonneveld.electroneutralidad_pct:.1f}%")
+    with c2:
+        st.markdown("**CE de la gota, por origen**")
+        st.write(f"CE del agua: {sonneveld.ec_agua:.2f} dS/m")
+        st.write(f"CE aportada por el fertilizante: {sonneveld.ec_fert:.2f} dS/m")
+        st.write(f"CE aportada por el ácido: {sonneveld.ec_acido:.2f} dS/m")
+        st.write(f"**CE total de la gota: {sonneveld.ec_total:.2f} dS/m**")
+    with c3:
+        st.markdown("**Tríada catiónica (% molar K:Ca:Mg)**")
+        st.progress(min(sonneveld.triad_pct["k"] / 100, 1.0), text=f"K: {sonneveld.triad_pct['k']:.0f}%")
+        st.progress(min(sonneveld.triad_pct["ca"] / 100, 1.0), text=f"Ca: {sonneveld.triad_pct['ca']:.0f}%")
+        st.progress(min(sonneveld.triad_pct["mg"] / 100, 1.0), text=f"Mg: {sonneveld.triad_pct['mg']:.0f}%")
 
     st.markdown("**Relaciones molares Sonneveld**")
     ratios = [
@@ -509,11 +542,6 @@ with sonneveld_placeholder.container():
     ]
     df_ratios = pd.DataFrame([{"Relación": r[0], "Valor": r[1], "Rango óptimo": r[2], "Diagnóstico": r[3][0]} for r in ratios])
     st.dataframe(df_ratios.style.format({"Valor": "{:.2f}"}), use_container_width=True, hide_index=True)
-
-    st.markdown("**Tríada catiónica (% molar K:Ca:Mg)**")
-    st.progress(min(sonneveld.triad_pct["k"] / 100, 1.0), text=f"K: {sonneveld.triad_pct['k']:.0f}%")
-    st.progress(min(sonneveld.triad_pct["ca"] / 100, 1.0), text=f"Ca: {sonneveld.triad_pct['ca']:.0f}%")
-    st.progress(min(sonneveld.triad_pct["mg"] / 100, 1.0), text=f"Mg: {sonneveld.triad_pct['mg']:.0f}%")
 
     fase_info = FASES_INFO[monthly_data[st.session_state.sonneveld_month]["fase"]]
     st.markdown(f"**Fase: {fase_info['label']}** — prioridad: {fase_info['prioridad']}")
