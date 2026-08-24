@@ -81,8 +81,16 @@ h1 {{
 [data-testid="stSidebar"] {{
     background-color: {AZUL_MARINO};
 }}
-[data-testid="stSidebar"] * {{
+[data-testid="stSidebar"] *:not(input):not(textarea) {{
     color: #EAF0F7 !important;
+}}
+/* Los campos de texto/número mantienen fondo claro (estilo BaseWeb por
+   defecto): si su texto también se pintase claro (como el resto de la
+   barra lateral) quedaría casi invisible sobre ese fondo — texto oscuro
+   aquí a propósito, no por descuido. */
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea {{
+    color: {AZUL_MARINO} !important;
 }}
 [data-testid="stSidebarNav"] a[aria-current="page"] {{
     background-color: rgba(255,255,255,0.12) !important;
