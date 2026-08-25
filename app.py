@@ -3,9 +3,11 @@
 (carpeta pages/) para cada herramienta — ver la barra lateral."""
 import streamlit as st
 
+from shared.ui_common import render_header
+
 st.set_page_config(page_title="Eurochem Agro — Herramientas", page_icon="🌱", layout="wide")
 
-st.title("🌱 Eurochem Agro — Herramientas Agronómicas")
+render_header("Eurochem Agro — Herramientas Agronómicas", "🌱")
 st.write(
     "Selecciona una herramienta en la barra lateral. Convertidas desde las versiones "
     "HTML originales, revisando y validando la lógica de cálculo en el proceso."
@@ -31,7 +33,5 @@ st.markdown(
 
 st.subheader("Fuera de alcance de esta conversión")
 st.markdown(
-    "- Comparador de planes de abonado (coste Plan Eurochem vs. alternativas) del "
-    "Plan de Abonado Integrado\n"
     "- Histórico multi-año, sparklines y exportación CSV de NutriLeaf Pro\n"
 )

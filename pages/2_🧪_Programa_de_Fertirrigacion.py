@@ -15,18 +15,20 @@ from shared.fertirrigacion_calc import (  # noqa: E402
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, sugerencias_fase,
-    generar_dictamen_experto, ACIDOS_PRESETS,
+    generar_dictamen_experto, calcular_reparto_anual, calcular_resumen_anual, ACIDOS_PRESETS,
 )
+from shared.ui_common import render_header, render_print_button  # noqa: E402
 
 st.set_page_config(page_title="Programa de Fertirrigación", page_icon="🧪", layout="wide")
-st.title("🧪 Programa de Fertirrigación")
+render_header("Programa de Fertirrigación", "🧪")
+render_print_button()
 
 # ---------------------------------------------------------------- Estado inicial
 DEFAULTS = dict(
     crop="Caqui (Kaki)", yield_val=10.0,
     extra_n=0.0, extra_p=0.0, extra_k=0.0, extra_mg=0.0, extra_ca=0.0, extra_s=0.0,
-    ca_mg_l=80.0, mg_mg_l=24.0, na_mg_l=46.0, k_mg_l=15.0, nh4_mg_l=0.0,
-    no3_mg_l=10.0, h2po4_mg_l=0.0, so4_mg_l=96.0, cl_mg_l=71.0, hco3_mg_l=244.0,
+    water_ca_mg_l=80.0, water_mg_mg_l=24.0, water_na_mg_l=46.0, water_k_mg_l=15.0, nh4_mg_l=0.0,
+    water_no3_mg_l=10.0, h2po4_mg_l=0.0, water_so4_mg_l=96.0, water_cl_mg_l=71.0, water_hco3_mg_l=244.0,
     water_ec=0.95, water_ph=7.5, water_b=0.10, water_fe=0.02,
     acid_type="Nítrico (60%)", acid_target_hco3=1.5,
     acid_custom_n=0.0, acid_custom_p=0.0, acid_custom_s=0.0,
@@ -36,6 +38,8 @@ DEFAULTS = dict(
 )
 for k, v in DEFAULTS.items():
     st.session_state.setdefault(k, v)
+st.session_state.setdefault("custom_crops", {})
+st.session_state.setdefault("custom_limites", {})
 if "coeffs" not in st.session_state:
     st.session_state.coeffs = dict(CULTIVO_EXTRACCIONES[st.session_state.crop])
 if "monthly_data" not in st.session_state:
@@ -46,7 +50,7 @@ if "acid_density" not in st.session_state or "acid_purity" not in st.session_sta
     st.session_state.acid_purity = preset["purity"]
     st.session_state.acid_eq_wt = preset["eq_wt"]
 
-crops_disponibles = list(CULTIVO_EXTRACCIONES.keys())
+crops_disponibles = list(CULTIVO_EXTRACCIONES.keys()) + list(st.session_state.custom_crops.keys())
 NIVEL_ICONO = {"ok": "✅", "moderado": "⚠️", "severo": "❌"}
 NIVEL_ICONO_DICTAMEN = {"ok": "✅", "warn": "⚠️", "danger": "❌"}
 
@@ -60,18 +64,48 @@ with tabs[0]:
     st.subheader("Cultivo y rendimiento esperado")
     c1, c2 = st.columns(2)
     with c1:
-        nuevo_crop = st.selectbox("Cultivo", crops_disponibles, index=crops_disponibles.index(st.session_state.crop))
+        nuevo_crop = st.selectbox(
+            "Cultivo", crops_disponibles, index=crops_disponibles.index(st.session_state.crop),
+            format_func=lambda c: f"{c} (personalizado)" if c in st.session_state.custom_crops else c,
+        )
         if nuevo_crop != st.session_state.crop:
             st.session_state.crop = nuevo_crop
-            st.session_state.coeffs = dict(CULTIVO_EXTRACCIONES[nuevo_crop])
+            st.session_state.coeffs = dict(st.session_state.custom_crops.get(nuevo_crop) or CULTIVO_EXTRACCIONES[nuevo_crop])
     with c2:
         st.session_state.yield_val = st.number_input("Rendimiento esperado (t/ha)", value=st.session_state.yield_val, step=1.0)
 
+    with st.expander("➕ Añadir Cultivo Nuevo"):
+        nc1, nc2 = st.columns(2)
+        nc_nombre = nc1.text_input("Nombre del cultivo", key="nc_nombre")
+        nc_salino = nc2.number_input("Límite de salinidad de la gota (dS/m)", value=2.0, step=0.1, key="nc_salino")
+        ncc = st.columns(6)
+        nc_n = ncc[0].number_input("N (Nitrógeno)", value=0.0, step=0.1, key="nc_n")
+        nc_p = ncc[1].number_input("P₂O₅", value=0.0, step=0.1, key="nc_p")
+        nc_k = ncc[2].number_input("K₂O", value=0.0, step=0.1, key="nc_k")
+        nc_mg = ncc[3].number_input("MgO", value=0.0, step=0.1, key="nc_mg")
+        nc_ca = ncc[4].number_input("CaO", value=0.0, step=0.1, key="nc_ca")
+        nc_s = ncc[5].number_input("SO₃", value=0.0, step=0.1, key="nc_s")
+        if st.button("💾 Guardar cultivo nuevo"):
+            if not nc_nombre.strip():
+                st.error("Introduce un nombre para el cultivo.")
+            else:
+                nombre = nc_nombre.strip()
+                st.session_state.custom_crops[nombre] = {"n": nc_n, "p": nc_p, "k": nc_k, "mg": nc_mg, "ca": nc_ca, "s": nc_s}
+                st.session_state.custom_limites[nombre] = nc_salino
+                st.session_state.crop = nombre
+                st.session_state.coeffs = dict(st.session_state.custom_crops[nombre])
+                st.success(f'Cultivo "{nombre}" guardado. Ya está seleccionado arriba.')
+                st.rerun()
+
     with st.expander("✏️ Editar coeficientes de extracción (kg/t)"):
         cc = st.columns(6)
-        labels = [("n", "N"), ("p", "P₂O₅"), ("k", "K₂O"), ("mg", "MgO"), ("ca", "CaO"), ("s", "SO₃")]
+        labels = [("n", "N (Nitrógeno)"), ("p", "P₂O₅"), ("k", "K₂O"), ("mg", "MgO"), ("ca", "CaO"), ("s", "SO₃")]
         for i, (key, label) in enumerate(labels):
-            st.session_state.coeffs[key] = cc[i].number_input(label, value=float(st.session_state.coeffs[key]), step=0.1, key=f"coeff_{key}")
+            # Sin `key=`: el valor mostrado debe reflejar siempre st.session_state.coeffs,
+            # que cambia al elegir otro cultivo. Con un `key` fijo por nutriente, Streamlit
+            # ignoraría el nuevo `value=` tras el primer render (mismo bug que el selector de
+            # mes en el Punto 5), y los coeficientes se quedarían congelados en el primer cultivo.
+            st.session_state.coeffs[key] = cc[i].number_input(label, value=float(st.session_state.coeffs[key]), step=0.1)
 
     with st.expander("➕ Compensación / margen de seguridad extra (E)"):
         ce = st.columns(6)
@@ -90,18 +124,18 @@ with tabs[1]:
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("**Cationes (mg/L)**")
-        st.session_state.ca_mg_l = st.number_input("Ca²⁺", value=st.session_state.ca_mg_l)
-        st.session_state.mg_mg_l = st.number_input("Mg²⁺", value=st.session_state.mg_mg_l)
-        st.session_state.na_mg_l = st.number_input("Na⁺", value=st.session_state.na_mg_l)
-        st.session_state.k_mg_l = st.number_input("K⁺", value=st.session_state.k_mg_l)
+        st.session_state.water_ca_mg_l = st.number_input("Ca²⁺", value=st.session_state.water_ca_mg_l)
+        st.session_state.water_mg_mg_l = st.number_input("Mg²⁺", value=st.session_state.water_mg_mg_l)
+        st.session_state.water_na_mg_l = st.number_input("Na⁺", value=st.session_state.water_na_mg_l)
+        st.session_state.water_k_mg_l = st.number_input("K⁺", value=st.session_state.water_k_mg_l)
         st.session_state.nh4_mg_l = st.number_input("NH₄⁺", value=st.session_state.nh4_mg_l)
     with c2:
         st.markdown("**Aniones (mg/L)**")
-        st.session_state.no3_mg_l = st.number_input("NO₃⁻", value=st.session_state.no3_mg_l)
+        st.session_state.water_no3_mg_l = st.number_input("NO₃⁻", value=st.session_state.water_no3_mg_l)
         st.session_state.h2po4_mg_l = st.number_input("H₂PO₄⁻", value=st.session_state.h2po4_mg_l)
-        st.session_state.so4_mg_l = st.number_input("SO₄²⁻", value=st.session_state.so4_mg_l)
-        st.session_state.cl_mg_l = st.number_input("Cl⁻", value=st.session_state.cl_mg_l)
-        st.session_state.hco3_mg_l = st.number_input("HCO₃⁻", value=st.session_state.hco3_mg_l)
+        st.session_state.water_so4_mg_l = st.number_input("SO₄²⁻", value=st.session_state.water_so4_mg_l)
+        st.session_state.water_cl_mg_l = st.number_input("Cl⁻", value=st.session_state.water_cl_mg_l)
+        st.session_state.water_hco3_mg_l = st.number_input("HCO₃⁻", value=st.session_state.water_hco3_mg_l)
     with c3:
         st.markdown("**Otros parámetros**")
         st.session_state.water_ec = st.number_input("CE (dS/m)", value=st.session_state.water_ec, step=0.05)
@@ -133,7 +167,7 @@ with tabs[2]:
     if st.session_state.acid_type == "Personalizado":
         st.markdown("**Aporte del ácido personalizado (kg elemento / meq HCO₃⁻ neutralizado / m³)**")
         cc = st.columns(3)
-        st.session_state.acid_custom_n = cc[0].number_input("N", value=st.session_state.acid_custom_n)
+        st.session_state.acid_custom_n = cc[0].number_input("N (Nitrógeno)", value=st.session_state.acid_custom_n)
         st.session_state.acid_custom_p = cc[1].number_input("P₂O₅", value=st.session_state.acid_custom_p)
         st.session_state.acid_custom_s = cc[2].number_input("SO₃", value=st.session_state.acid_custom_s)
 
@@ -240,17 +274,17 @@ with tabs[6]:
 # ================================================================== CÁLCULO CENTRAL (equivalente a calculateAll())
 monthly_data = st.session_state.monthly_data
 water_composition = dict(
-    no3_mg_l=st.session_state.no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
-    k_mg_l=st.session_state.k_mg_l, mg_mg_l=st.session_state.mg_mg_l,
-    ca_mg_l=st.session_state.ca_mg_l, so4_mg_l=st.session_state.so4_mg_l,
+    no3_mg_l=st.session_state.water_no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
+    k_mg_l=st.session_state.water_k_mg_l, mg_mg_l=st.session_state.water_mg_mg_l,
+    ca_mg_l=st.session_state.water_ca_mg_l, so4_mg_l=st.session_state.water_so4_mg_l,
 )
 vol_anual = sum(monthly_data[m]["water"] for m in range(1, 13))
 
 agua = analizar_agua(
-    ca_mg_l=st.session_state.ca_mg_l, mg_mg_l=st.session_state.mg_mg_l,
-    na_mg_l=st.session_state.na_mg_l, k_mg_l=st.session_state.k_mg_l, nh4_mg_l=st.session_state.nh4_mg_l,
-    no3_mg_l=st.session_state.no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
-    so4_mg_l=st.session_state.so4_mg_l, cl_mg_l=st.session_state.cl_mg_l, hco3_mg_l=st.session_state.hco3_mg_l,
+    ca_mg_l=st.session_state.water_ca_mg_l, mg_mg_l=st.session_state.water_mg_mg_l,
+    na_mg_l=st.session_state.water_na_mg_l, k_mg_l=st.session_state.water_k_mg_l, nh4_mg_l=st.session_state.nh4_mg_l,
+    no3_mg_l=st.session_state.water_no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
+    so4_mg_l=st.session_state.water_so4_mg_l, cl_mg_l=st.session_state.water_cl_mg_l, hco3_mg_l=st.session_state.water_hco3_mg_l,
     water_ec_ds_m=st.session_state.water_ec, ph=st.session_state.water_ph,
     b_mg_l=st.session_state.water_b, fe_mg_l=st.session_state.water_fe, vol_anual_m3_ha=vol_anual,
 )
@@ -275,8 +309,9 @@ balance = calcular_balance_anual(
         mg=st.session_state.extra_mg, ca=st.session_state.extra_ca, s=st.session_state.extra_s,
     ),
 )
+resumen_anual = calcular_resumen_anual(base=balance.base, fondo=fondo, creditos=creditos)
 meses_conflicto = meses_con_conflicto_tanque(monthly_data=monthly_data)
-umbral_salino = LIMITES_SALINOS.get(st.session_state.crop, 1.5)
+umbral_salino = st.session_state.custom_limites.get(st.session_state.crop, LIMITES_SALINOS.get(st.session_state.crop, 1.5))
 
 fase_actual = calcular_fase_mensual(
     month=monthly_data[st.session_state.mes_editado if "mes_editado" in st.session_state else 5],
@@ -285,8 +320,14 @@ fase_actual = calcular_fase_mensual(
     target=balance.target, umbral_salino=umbral_salino,
 )
 
+reparto_anual = calcular_reparto_anual(
+    monthly_data=monthly_data, water_composition=water_composition, water_ec_ds_m=st.session_state.water_ec,
+    acid_type=st.session_state.acid_type, acid_custom=acid_custom, neut_hco3=acido.neut_hco3_meq_l,
+    target=balance.target, umbral_salino=umbral_salino,
+)
+
 sonneveld = calcular_gotero_sonneveld(
-    mes=monthly_data[st.session_state.sonneveld_month], agua=agua,
+    mes=monthly_data[st.session_state.sonneveld_month], agua=agua, water_ec_ds_m=st.session_state.water_ec,
     acid_type=st.session_state.acid_type, acid_custom=acid_custom, neut_hco3=acido.neut_hco3_meq_l,
 )
 sugerencias = sugerencias_fase(
@@ -296,7 +337,7 @@ sugerencias = sugerencias_fase(
 )
 
 dictamen = generar_dictamen_experto(
-    ec_gota=fase_actual.ec_gota, ras_val=agua.ras, meq_cl=agua.meq_cl, hco3_mg_l=st.session_state.hco3_mg_l,
+    ec_gota=fase_actual.ec_gota, ras_val=agua.ras, meq_cl=agua.meq_cl, hco3_mg_l=st.session_state.water_hco3_mg_l,
     meses_conflicto_tanque=meses_conflicto, crop=st.session_state.crop, umbral_salino=umbral_salino,
 )
 
@@ -325,6 +366,32 @@ with balance_placeholder.container():
     cc = st.columns(6)
     for i, (key, label) in enumerate(cols.items()):
         cc[i].metric(f"Cobertura fondo {label}", f"{balance.cobertura_fondo_pct[key]:.1f}%")
+
+    st.markdown("---")
+    st.subheader("📋 Resumen final: granulado + ácido + agua + solubles frente al objetivo")
+    df_resumen = pd.DataFrame([{
+        "Nutriente": f.nutriente, "Granulado (fondo)": f.granulado, "Ácido": f.acido,
+        "Agua": f.agua, "Solubles (fertirrigación)": f.soluble, "Total aportado": f.total_aportado,
+        "Necesidad total": f.necesidad_base, "Balance (falta/excede)": f.balance,
+        "% cubierto": f.pct_cubierto,
+    } for f in resumen_anual])
+    cols_numericas_resumen = [c for c in df_resumen.columns if c != "Nutriente"]
+    st.dataframe(
+        df_resumen.style.format({c: "{:.1f}" for c in cols_numericas_resumen}),
+        use_container_width=True, hide_index=True,
+    )
+    for f in resumen_anual:
+        if abs(f.pct_cubierto - 100) <= 10:
+            st.success(f"✅ {f.nutriente}: cubierto ({f.pct_cubierto:.0f}% del objetivo, balance {f.balance:+.1f} kg/ha).")
+        elif f.balance < 0:
+            st.warning(f"⚠️ {f.nutriente}: faltan {abs(f.balance):.1f} kg/ha ({f.pct_cubierto:.0f}% del objetivo cubierto).")
+        else:
+            st.warning(f"⚠️ {f.nutriente}: excede en {f.balance:.1f} kg/ha ({f.pct_cubierto:.0f}% del objetivo).")
+    st.caption(
+        "Ácido = crédito de N/P₂O₅/SO₃ que aporta el ácido regulador al neutralizar bicarbonatos "
+        "(no aporta a K₂O/MgO/CaO). No incluye ni el foliar (F) ni la compensación extra (E), que "
+        "quedan reflejados en la tabla de arriba."
+    )
 
 # ---------------------------------------------------------------- Render Punto 2 (agua)
 with agua_placeholder.container():
@@ -376,6 +443,19 @@ with fondo_placeholder.container():
     st.write(f"**Total: {fondo.total_dosis:.0f} kg/ha — N: {fondo.n:.1f} | P₂O₅: {fondo.p:.1f} | "
              f"K₂O: {fondo.k:.1f} | MgO: {fondo.mg:.1f} | CaO: {fondo.ca:.1f} | SO₃: {fondo.s:.1f} kg/ha**")
 
+    st.markdown("**% de las necesidades totales del cultivo cubierto por el fondo**")
+    cols_nut = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    df_cobertura = pd.DataFrame({
+        "Nutriente": list(cols_nut.values()),
+        "Fondo (kg/ha)": [fondo.__dict__[k] for k in cols_nut],
+        "Necesidad total (kg/ha)": [balance.base[k] for k in cols_nut],
+        "% de la necesidad": [balance.cobertura_fondo_pct[k] for k in cols_nut],
+    })
+    st.dataframe(
+        df_cobertura.style.format({"Fondo (kg/ha)": "{:.1f}", "Necesidad total (kg/ha)": "{:.1f}", "% de la necesidad": "{:.1f}%"}),
+        use_container_width=True, hide_index=True,
+    )
+
 with foliar_placeholder.container():
     st.markdown("**Totales foliares aplicados**")
     df_foliar = pd.DataFrame([{"Producto": i.name, "Dosis": i.dosis, "N": i.n, "P₂O₅": i.p, "K₂O": i.k,
@@ -415,12 +495,69 @@ with fase_placeholder.container():
         st.warning(f"⚠️ La CE de la gota ({fase_actual.ec_gota:.2f} dS/m) supera el umbral del cultivo ({umbral_salino:.1f} dS/m).")
     st.metric("Bomba inyectora estimada", f"{fase_actual.bomba_l_h:.0f} L/h")
 
+    st.markdown("---")
+    st.markdown(f"**📊 Reparto anual de unidades por mes — vía fertirrigación (% sobre el objetivo, ya con el fondo descontado)**")
+    cols_reparto = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    filas_reparto = []
+    for fila in reparto_anual:
+        registro = {"Mes": fila.mes}
+        for key, label in cols_reparto.items():
+            registro[f"{label} (kg/ha)"] = fila.kg[key]
+            registro[f"{label} (%)"] = fila.pct_objetivo[key]
+        registro["CE gota (dS/m)"] = fila.ec_gota
+        registro["¿Supera CE cultivo?"] = "⚠️ Sí" if fila.supera_umbral_salino else "OK"
+        filas_reparto.append(registro)
+    df_reparto = pd.DataFrame(filas_reparto)
+    cols_numericas_reparto = [c for c in df_reparto.columns if c not in ("Mes", "¿Supera CE cultivo?")]
+    st.dataframe(
+        df_reparto.style.format({c: "{:.1f}" for c in cols_numericas_reparto}),
+        use_container_width=True, hide_index=True,
+    )
+    st.caption(
+        f"El % de cada nutriente es sobre el objetivo en gotero (necesidad total menos lo ya cubierto por el "
+        f"fondo, el agua de riego y el ácido regulador). El umbral de CE de la gota usado es el de "
+        f"{st.session_state.crop}: {umbral_salino:.1f} dS/m."
+    )
+
 # ---------------------------------------------------------------- Render Punto 7 (Sonneveld)
 with sonneveld_placeholder.container():
-    st.markdown("**meq/L en el gotero**")
-    df_got = pd.DataFrame({"Ion": list(sonneveld.meq.keys()), "meq/L": list(sonneveld.meq.values())})
-    st.dataframe(df_got.style.format({"meq/L": "{:.2f}"}), use_container_width=True, hide_index=True)
-    st.write(f"Electroneutralidad del gotero: {sonneveld.electroneutralidad_pct:.1f}%")
+    CATIONES_LABEL = {"ca": "Ca²⁺", "mg": "Mg²⁺", "k": "K⁺", "na": "Na⁺", "nh4": "NH₄⁺"}
+    ANIONES_LABEL = {"no3": "NO₃⁻", "p": "H₂PO₄⁻", "s": "SO₄²⁻", "cl": "Cl⁻", "hco3": "HCO₃⁻"}
+
+    def _tabla_ion(etiquetas: dict) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "Ion": label,
+            "meq/L Agua": sonneveld.meq_agua[key], "meq/L Fert": sonneveld.meq_fert[key],
+            "meq/L Ácido": sonneveld.meq_acido[key], "meq/L Total": sonneveld.meq_total[key],
+            "mg/L Total": sonneveld.mg_total[key],
+        } for key, label in etiquetas.items()])
+
+    st.markdown("**Cationes en solución gotero (meq/L y mg/L, por origen)**")
+    df_cat = _tabla_ion(CATIONES_LABEL)
+    st.dataframe(df_cat.style.format({c: "{:.2f}" for c in df_cat.columns if c != "Ion"}), use_container_width=True, hide_index=True)
+
+    st.markdown("**Aniones en solución gotero (meq/L y mg/L, por origen)**")
+    df_ani = _tabla_ion(ANIONES_LABEL)
+    st.dataframe(df_ani.style.format({c: "{:.2f}" for c in df_ani.columns if c != "Ion"}), use_container_width=True, hide_index=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("**Equilibrio de cargas**")
+        st.write(f"Suma cationes: {sonneveld.total_cat_meq:.2f} meq/L ({sonneveld.total_cat_mg:.0f} mg/L)")
+        st.write(f"Suma aniones: {sonneveld.total_ani_meq:.2f} meq/L ({sonneveld.total_ani_mg:.0f} mg/L)")
+        st.write(f"Diferencia de carga: {sonneveld.diferencia_carga_meq:.2f} meq/L")
+        st.write(f"Electroneutralidad: {sonneveld.electroneutralidad_pct:.1f}%")
+    with c2:
+        st.markdown("**CE de la gota, por origen**")
+        st.write(f"CE del agua: {sonneveld.ec_agua:.2f} dS/m")
+        st.write(f"CE aportada por el fertilizante: {sonneveld.ec_fert:.2f} dS/m")
+        st.write(f"CE aportada por el ácido: {sonneveld.ec_acido:.2f} dS/m")
+        st.write(f"**CE total de la gota: {sonneveld.ec_total:.2f} dS/m**")
+    with c3:
+        st.markdown("**Tríada catiónica (% molar K:Ca:Mg)**")
+        st.progress(min(sonneveld.triad_pct["k"] / 100, 1.0), text=f"K: {sonneveld.triad_pct['k']:.0f}%")
+        st.progress(min(sonneveld.triad_pct["ca"] / 100, 1.0), text=f"Ca: {sonneveld.triad_pct['ca']:.0f}%")
+        st.progress(min(sonneveld.triad_pct["mg"] / 100, 1.0), text=f"Mg: {sonneveld.triad_pct['mg']:.0f}%")
 
     st.markdown("**Relaciones molares Sonneveld**")
     ratios = [
@@ -432,11 +569,6 @@ with sonneveld_placeholder.container():
     ]
     df_ratios = pd.DataFrame([{"Relación": r[0], "Valor": r[1], "Rango óptimo": r[2], "Diagnóstico": r[3][0]} for r in ratios])
     st.dataframe(df_ratios.style.format({"Valor": "{:.2f}"}), use_container_width=True, hide_index=True)
-
-    st.markdown("**Tríada catiónica (% molar K:Ca:Mg)**")
-    st.progress(min(sonneveld.triad_pct["k"] / 100, 1.0), text=f"K: {sonneveld.triad_pct['k']:.0f}%")
-    st.progress(min(sonneveld.triad_pct["ca"] / 100, 1.0), text=f"Ca: {sonneveld.triad_pct['ca']:.0f}%")
-    st.progress(min(sonneveld.triad_pct["mg"] / 100, 1.0), text=f"Mg: {sonneveld.triad_pct['mg']:.0f}%")
 
     fase_info = FASES_INFO[monthly_data[st.session_state.sonneveld_month]["fase"]]
     st.markdown(f"**Fase: {fase_info['label']}** — prioridad: {fase_info['prioridad']}")

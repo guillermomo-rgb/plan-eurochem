@@ -326,6 +326,42 @@ def calcular_balance_anual(*, yield_val: float, coeffs: dict, fondo: ResultadoFo
 
 
 @dataclass
+class FilaResumenAnual:
+    nutriente: str
+    granulado: float = 0.0  # abonado de fondo
+    acido: float = 0.0  # crédito del ácido regulador (N, P₂O₅, SO₃ — no aporta a K/Mg/Ca)
+    agua: float = 0.0  # crédito del agua de riego
+    soluble: float = 0.0  # fertirrigación (total anual aplicado vía solubles)
+    total_aportado: float = 0.0
+    necesidad_base: float = 0.0
+    balance: float = 0.0  # total_aportado - necesidad_base (>0 excede, <0 falta)
+    pct_cubierto: float = 0.0
+
+
+def calcular_resumen_anual(*, base: dict, fondo: ResultadoFondo, creditos: CreditosAnuales) -> list[FilaResumenAnual]:
+    """Junta en una sola fila por nutriente lo aportado por cada una de las 4 fuentes anuales
+    (granulado de fondo, ácido regulador, agua de riego, fertirrigación soluble) frente a la
+    necesidad total del cultivo — para ver de un vistazo si el conjunto del programa cubre,
+    falta o excede el objetivo final, sin tener que sumar a mano las filas de calcular_balance_anual()."""
+    etiquetas = {"n": "N", "p": "P₂O₅", "k": "K₂O", "mg": "MgO", "ca": "CaO", "s": "SO₃"}
+    filas = []
+    for key, label in etiquetas.items():
+        granulado = fondo.__dict__[key]
+        acido = creditos.acid.get(key, 0.0)
+        agua = creditos.water.get(key, 0.0)
+        soluble = creditos.solub.get(key, 0.0)
+        total = granulado + acido + agua + soluble
+        necesidad = base[key]
+        balance = total - necesidad
+        pct = (total / necesidad * 100) if necesidad > 0 else 0.0
+        filas.append(FilaResumenAnual(
+            nutriente=label, granulado=granulado, acido=acido, agua=agua, soluble=soluble,
+            total_aportado=total, necesidad_base=necesidad, balance=balance, pct_cubierto=pct,
+        ))
+    return filas
+
+
+@dataclass
 class ResultadoFase:
     sol_sum: dict
     water_credit: dict
@@ -416,6 +452,38 @@ def calcular_fase_mensual(
     )
 
 
+@dataclass
+class FilaReparto:
+    mes: str
+    kg: dict = field(default_factory=dict)  # por nutriente, aportado vía fertirrigación ese mes
+    pct_objetivo: dict = field(default_factory=dict)  # kg / target (ya descuenta fondo y créditos) * 100
+    ec_gota: float = 0.0
+    supera_umbral_salino: bool = False
+
+
+def calcular_reparto_anual(
+    *, monthly_data: dict, water_composition: dict, water_ec_ds_m: float, acid_type: str,
+    acid_custom: dict, neut_hco3: float, target: dict, umbral_salino: float,
+) -> list[FilaReparto]:
+    """Recorre los 12 meses con calcular_fase_mensual() para poder ver de un vistazo el reparto
+    de unidades fertilizantes vía fertirrigación mes a mes (kg y % del objetivo, que ya tiene
+    restado el abonado de fondo) y si la CE de la gota supera el límite de salinidad del cultivo
+    en algún mes."""
+    filas = []
+    for m in range(1, 13):
+        month = monthly_data[m]
+        fase = calcular_fase_mensual(
+            month=month, water_composition=water_composition, water_ec_ds_m=water_ec_ds_m,
+            acid_type=acid_type, acid_custom=acid_custom, neut_hco3=neut_hco3,
+            target=target, umbral_salino=umbral_salino,
+        )
+        filas.append(FilaReparto(
+            mes=month["name"], kg=dict(fase.suma_total), pct_objetivo=dict(fase.pct_objetivo),
+            ec_gota=fase.ec_gota, supera_umbral_salino=fase.supera_umbral_salino,
+        ))
+    return filas
+
+
 def meses_con_conflicto_tanque(*, monthly_data: dict) -> list[str]:
     meses = []
     for m in range(1, 13):
@@ -433,63 +501,121 @@ def meses_con_conflicto_tanque(*, monthly_data: dict) -> list[str]:
     return meses
 
 
+# Pesos equivalentes (mg/meq) de cada ion elemental — mismos valores que analizar_agua(), para
+# poder convertir cualquier meq/L (venga del agua, del fertilizante o del ácido) a mg/L de forma
+# consistente en todo el módulo.
+EQ_WEIGHTS = {
+    "ca": 20.04, "mg": 12.16, "k": 39.1, "na": 23.0, "nh4": 18.04,
+    "no3": 62.0, "p": 97.0, "s": 48.03, "cl": 35.45, "hco3": 61.02,
+}
+_CATIONES = ("ca", "mg", "k", "na", "nh4")
+_ANIONES = ("no3", "p", "s", "cl", "hco3")
+
+
 @dataclass
 class ResultadoGoteroSonneveld:
-    meq: dict  # ca, mg, k, na, nh4, no3, p, s, cl, hco3 en el gotero
-    total_cat: float
-    total_ani: float
-    electroneutralidad_pct: float
-    r_k_ca_mg: float
-    r_ca_mg: float
-    r_k_mg: float
-    r_n_k: float
-    r_n_p: float
-    comentarios: dict  # una clave por ratio -> (texto, nivel)
-    triad_pct: dict  # k, ca, mg
+    # Cada ion desglosado por fuente (agua / fertilizante soluble / ácido regulador) y en total,
+    # en meq/L y en mg/L — mismas claves que EQ_WEIGHTS.
+    meq_agua: dict = field(default_factory=dict)
+    meq_fert: dict = field(default_factory=dict)
+    meq_acido: dict = field(default_factory=dict)
+    meq_total: dict = field(default_factory=dict)
+    mg_agua: dict = field(default_factory=dict)
+    mg_fert: dict = field(default_factory=dict)
+    mg_acido: dict = field(default_factory=dict)
+    mg_total: dict = field(default_factory=dict)
+    total_cat_meq: float = 0.0
+    total_ani_meq: float = 0.0
+    total_cat_mg: float = 0.0
+    total_ani_mg: float = 0.0
+    diferencia_carga_meq: float = 0.0
+    electroneutralidad_pct: float = 0.0
+    # CE de la gota desglosada por fuente (misma fórmula que ec_gota de calcular_fase_mensual)
+    ec_agua: float = 0.0
+    ec_fert: float = 0.0
+    ec_acido: float = 0.0
+    ec_total: float = 0.0
+    r_k_ca_mg: float = 0.0
+    r_ca_mg: float = 0.0
+    r_k_mg: float = 0.0
+    r_n_k: float = 0.0
+    r_n_p: float = 0.0
+    comentarios: dict = field(default_factory=dict)  # una clave por ratio -> (texto, nivel)
+    triad_pct: dict = field(default_factory=dict)  # k, ca, mg
 
 
 def calcular_gotero_sonneveld(
-    *, mes: dict, agua: ResultadoAgua, acid_type: str, acid_custom: dict, neut_hco3: float,
+    *, mes: dict, agua: ResultadoAgua, water_ec_ds_m: float, acid_type: str, acid_custom: dict, neut_hco3: float,
 ) -> ResultadoGoteroSonneveld:
-    got_nh4 = agua.meq_nh4
-    got_no3 = agua.meq_no3
-    got_p = agua.meq_h2po4
-    got_s = agua.meq_so4
-    got_k = agua.meq_k
-    got_ca = agua.meq_ca
-    got_mg = agua.meq_mg
-    got_hco3 = max(0.0, agua.meq_hco3 - neut_hco3)
+    meq_agua = {
+        "ca": agua.meq_ca, "mg": agua.meq_mg, "k": agua.meq_k, "na": agua.meq_na, "nh4": agua.meq_nh4,
+        "no3": agua.meq_no3, "p": agua.meq_h2po4, "s": agua.meq_so4, "cl": agua.meq_cl, "hco3": agua.meq_hco3,
+    }
+    meq_fert = {k: 0.0 for k in EQ_WEIGHTS}
+    meq_acido = {k: 0.0 for k in EQ_WEIGHTS}
+
+    if mes["water"] > 0:
+        for item in mes["solubles"]:
+            prod = SOLUBLES_DB.get(item["name"])
+            if not prod:
+                continue
+            conc_g_l = item["dosis"] / mes["water"]
+            meq_fert["nh4"] += (conc_g_l * prod["nh4"] * 10) / 14.0
+            meq_fert["no3"] += (conc_g_l * prod["no3"] * 10) / 14.0
+            meq_fert["p"] += (conc_g_l * prod["p"] * 10) / 71.0
+            meq_fert["s"] += (conc_g_l * prod["s"] * 10) / 40.0
+            meq_fert["k"] += (conc_g_l * prod["k"] * 10) / 47.1
+            meq_fert["ca"] += (conc_g_l * prod["ca"] * 10) / 28.0
+            meq_fert["mg"] += (conc_g_l * prod["mg"] * 10) / 20.15
 
     if acid_type == "Nítrico (60%)":
-        got_no3 += neut_hco3
+        meq_acido["no3"] += neut_hco3
     elif acid_type == "Fosfórico (75%)":
-        got_p += neut_hco3
+        meq_acido["p"] += neut_hco3
     elif acid_type == "Sulfúrico (98%)":
-        got_s += neut_hco3
+        meq_acido["s"] += neut_hco3
     elif acid_type == "Personalizado" and acid_custom:
         if acid_custom.get("n", 0.0) > 0:
-            got_no3 += neut_hco3
+            meq_acido["no3"] += neut_hco3
         if acid_custom.get("p", 0.0) > 0:
-            got_p += neut_hco3
+            meq_acido["p"] += neut_hco3
         if acid_custom.get("s", 0.0) > 0:
-            got_s += neut_hco3
+            meq_acido["s"] += neut_hco3
+    # El ácido siempre neutraliza (resta) bicarbonato del agua, con independencia del tipo de ácido.
+    meq_acido["hco3"] = -min(neut_hco3, meq_agua["hco3"])
 
-    for item in mes["solubles"]:
-        prod = SOLUBLES_DB.get(item["name"])
-        if prod and mes["water"] > 0:
-            conc_g_l = item["dosis"] / mes["water"]
-            got_nh4 += (conc_g_l * prod["nh4"] * 10) / 14.0
-            got_no3 += (conc_g_l * prod["no3"] * 10) / 14.0
-            got_p += (conc_g_l * prod["p"] * 10) / 71.0
-            got_s += (conc_g_l * prod["s"] * 10) / 40.0
-            got_k += (conc_g_l * prod["k"] * 10) / 47.1
-            got_ca += (conc_g_l * prod["ca"] * 10) / 28.0
-            got_mg += (conc_g_l * prod["mg"] * 10) / 20.15
+    meq_total = {k: meq_agua[k] + meq_fert[k] + meq_acido[k] for k in EQ_WEIGHTS}
+    meq_total["hco3"] = max(0.0, meq_total["hco3"])
 
-    total_cat = got_ca + got_mg + got_k + agua.meq_na + got_nh4
-    total_ani = got_no3 + got_p + got_s + agua.meq_cl + got_hco3
-    electroneutralidad_pct = abs(total_cat - total_ani) / ((total_cat + total_ani) / 2) * 100 if (total_cat + total_ani) > 0 else 0.0
+    def _a_mg(meq_dict: dict) -> dict:
+        return {k: meq_dict[k] * EQ_WEIGHTS[k] for k in EQ_WEIGHTS}
 
+    mg_agua, mg_fert, mg_acido, mg_total = _a_mg(meq_agua), _a_mg(meq_fert), _a_mg(meq_acido), _a_mg(meq_total)
+
+    total_cat_meq = sum(meq_total[k] for k in _CATIONES)
+    total_ani_meq = sum(meq_total[k] for k in _ANIONES)
+    total_cat_mg = sum(mg_total[k] for k in _CATIONES)
+    total_ani_mg = sum(mg_total[k] for k in _ANIONES)
+    diferencia_carga_meq = total_cat_meq - total_ani_meq
+    electroneutralidad_pct = (
+        abs(diferencia_carga_meq) / ((total_cat_meq + total_ani_meq) / 2) * 100
+        if (total_cat_meq + total_ani_meq) > 0 else 0.0
+    )
+
+    # CE de la gota por fuente — misma fórmula que ec_gota en calcular_fase_mensual (ec_coeff por
+    # soluble + 0.05 dS/m por cada meq/L de bicarbonato neutralizado).
+    ec_agua = water_ec_ds_m
+    ec_fert = 0.0
+    if mes["water"] > 0:
+        for item in mes["solubles"]:
+            prod = SOLUBLES_DB.get(item["name"])
+            if prod:
+                ec_fert += (item["dosis"] / mes["water"]) * prod["ec_coeff"]
+    ec_acido = neut_hco3 * 0.05 if mes["water"] > 0 else 0.0
+    ec_total = ec_agua + ec_fert + ec_acido
+
+    got_ca, got_mg, got_k = meq_total["ca"], meq_total["mg"], meq_total["k"]
+    got_no3, got_nh4, got_p = meq_total["no3"], meq_total["nh4"], meq_total["p"]
     r_k_ca_mg = got_k / (got_ca + got_mg) if (got_ca + got_mg) > 0 else 0.0
     r_ca_mg = got_ca / got_mg if got_mg > 0 else 0.0
     r_k_mg = got_k / got_mg if got_mg > 0 else 0.0
@@ -533,9 +659,12 @@ def calcular_gotero_sonneveld(
         triad_pct = {"k": 33.3, "ca": 33.3, "mg": 33.3}
 
     return ResultadoGoteroSonneveld(
-        meq={"ca": got_ca, "mg": got_mg, "k": got_k, "na": agua.meq_na, "nh4": got_nh4,
-             "no3": got_no3, "p": got_p, "s": got_s, "cl": agua.meq_cl, "hco3": got_hco3},
-        total_cat=total_cat, total_ani=total_ani, electroneutralidad_pct=electroneutralidad_pct,
+        meq_agua=meq_agua, meq_fert=meq_fert, meq_acido=meq_acido, meq_total=meq_total,
+        mg_agua=mg_agua, mg_fert=mg_fert, mg_acido=mg_acido, mg_total=mg_total,
+        total_cat_meq=total_cat_meq, total_ani_meq=total_ani_meq,
+        total_cat_mg=total_cat_mg, total_ani_mg=total_ani_mg,
+        diferencia_carga_meq=diferencia_carga_meq, electroneutralidad_pct=electroneutralidad_pct,
+        ec_agua=ec_agua, ec_fert=ec_fert, ec_acido=ec_acido, ec_total=ec_total,
         r_k_ca_mg=r_k_ca_mg, r_ca_mg=r_ca_mg, r_k_mg=r_k_mg, r_n_k=r_n_k, r_n_p=r_n_p,
         comentarios=comentarios, triad_pct=triad_pct,
     )

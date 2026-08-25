@@ -17,9 +17,11 @@ from shared.nutrileaf_calc import (  # noqa: E402
     calcular_dris_olivo_3p, calcular_dris_olivo_10p, alertas_condicionales_olivo,
     calcular_dris_almendro, calcular_dris_caqui,
 )
+from shared.ui_common import render_header, render_print_button  # noqa: E402
 
 st.set_page_config(page_title="NutriLeaf Pro", page_icon="🌿", layout="wide")
-st.title("🌿 NutriLeaf Pro — Diagnóstico Foliar")
+render_header("NutriLeaf Pro — Diagnóstico Foliar", "🌿")
+render_print_button()
 
 CULTIVOS_SELECCIONABLES = {
     "olivo": "Olivo", "viña": "Viña", "almendro": "Almendro", "caqui": "Caqui 'Rojo Brillante'",
@@ -30,7 +32,7 @@ ELEMENTOS_BASE = ["N", "P", "K", "Ca", "Mg", "Fe", "Mn", "Zn", "Cu", "B"]
 BADGE_COLOR = {"muy-bajo": "🔴", "bajo": "🟠", "optimo": "🟢", "alto": "🔵", "muy-alto": "🟣", "muted": "⚪"}
 
 DEFAULTS = dict(
-    cultivo="olivo", almendro_variedad="ferraduel",
+    nl_cultivo="olivo", almendro_variedad="ferraduel",
     dris_sistema="secano", dris_zona="otra",
 )
 for k, v in DEFAULTS.items():
@@ -42,11 +44,11 @@ for el in ELEMENTOS_BASE:
 
 st.sidebar.subheader("Configuración")
 cultivo_keys = list(CULTIVOS_SELECCIONABLES.keys())
-st.session_state.cultivo = st.sidebar.selectbox(
-    "Cultivo", cultivo_keys, index=cultivo_keys.index(st.session_state.cultivo),
+st.session_state.nl_cultivo = st.sidebar.selectbox(
+    "Cultivo", cultivo_keys, index=cultivo_keys.index(st.session_state.nl_cultivo),
     format_func=lambda k: CULTIVOS_SELECCIONABLES[k],
 )
-cultivo = st.session_state.cultivo
+cultivo = st.session_state.nl_cultivo
 
 if cultivo == "almendro":
     variedades = {"generico": "Genérico (sin DRIS)", "ferraduel": "Ferraduel", "ferragnes": "Ferragnès", "garrigues": "Garrigues"}
@@ -88,17 +90,21 @@ if cultivo == "personalizado":
 else:
     normas = datos_cultivo or {}
 
+# "N" y "S" se etiquetan con el nombre completo: sueltas, el traductor automático del navegador
+# las confunde con los puntos cardinales "Norte"/"Sur" (ver bug reportado en Fertirrigación).
+ETIQUETA_ELEMENTO = {"N": "N (Nitrógeno)", "S": "S (Azufre)"}
 cc = st.columns(5)
 valores = {}
 for i, el in enumerate(ELEMENTOS_BASE):
-    valores[el] = cc[i % 5].number_input(f"{el} ({(normas.get(el) or {}).get('unit', '')})", value=st.session_state[f"val_{el}"], key=f"valin_{el}", step=0.01, format="%.3f")
+    etiqueta = ETIQUETA_ELEMENTO.get(el, el)
+    valores[el] = cc[i % 5].number_input(f"{etiqueta} ({(normas.get(el) or {}).get('unit', '')})", value=st.session_state[f"val_{el}"], key=f"valin_{el}", step=0.01, format="%.3f")
 
 if cultivo == "caqui":
     st.markdown("**Elementos adicionales del sistema DRIS de Caqui (13 elementos)**")
     cc2 = st.columns(3)
-    valores["Na"] = cc2[0].number_input("Na (%)", value=st.session_state["val_Na"], key="valin_Na", format="%.4f")
-    valores["S"] = cc2[1].number_input("S (%)", value=st.session_state["val_S"], key="valin_S", format="%.3f")
-    valores["Cl"] = cc2[2].number_input("Cl (%)", value=st.session_state["val_Cl"], key="valin_Cl_caqui", format="%.3f")
+    valores["Na"] = cc2[0].number_input("Na (Sodio) (%)", value=st.session_state["val_Na"], key="valin_Na", format="%.4f")
+    valores["S"] = cc2[1].number_input("S (Azufre) (%)", value=st.session_state["val_S"], key="valin_S", format="%.3f")
+    valores["Cl"] = cc2[2].number_input("Cl (Cloruro) (%)", value=st.session_state["val_Cl"], key="valin_Cl_caqui", format="%.3f")
 elif cultivo == "aguacate":
     valores["Cl"] = st.number_input("Cl⁻ (%) — umbral de toxicidad", value=st.session_state["val_Cl"], key="valin_Cl_aguacate", format="%.3f")
 

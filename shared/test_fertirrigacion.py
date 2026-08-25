@@ -8,7 +8,7 @@ from fertirrigacion_calc import (
     analizar_agua, calcular_acido, calcular_fondo, calcular_foliar,
     calcular_creditos_anuales, calcular_balance_anual, calcular_fase_mensual,
     meses_con_conflicto_tanque, calcular_gotero_sonneveld, generar_dictamen_experto,
-    creditos_acido_mes, creditos_agua_mes,
+    creditos_acido_mes, creditos_agua_mes, calcular_reparto_anual, calcular_resumen_anual,
 )
 from fertirrigacion_data import monthly_data_por_defecto, CULTIVO_EXTRACCIONES
 
@@ -135,11 +135,44 @@ def test_gotero_sonneveld_balance_perfecto_sin_solubles():
     monthly = monthly_data_por_defecto()
     agua = analizar_agua(**WATER_DEFAULT)
     r = calcular_gotero_sonneveld(
-        mes=monthly[1], agua=agua, acid_type="Ninguno", acid_custom={}, neut_hco3=0.0,
+        mes=monthly[1], agua=agua, water_ec_ds_m=0.95, acid_type="Ninguno", acid_custom={}, neut_hco3=0.0,
     )
     # Sin ácido ni solubles, el gotero es exactamente el agua base (menos el HCO3 no neutralizado)
-    assert math.isclose(r.meq["ca"], agua.meq_ca)
-    assert math.isclose(r.meq["hco3"], agua.meq_hco3)  # neut_hco3=0 -> sin cambio
+    assert math.isclose(r.meq_total["ca"], agua.meq_ca)
+    assert math.isclose(r.meq_total["hco3"], agua.meq_hco3)  # neut_hco3=0 -> sin cambio
+    assert r.meq_fert["ca"] == 0.0 and r.meq_acido["ca"] == 0.0
+    # mg/L = meq/L * peso equivalente (mismo criterio que analizar_agua)
+    assert math.isclose(r.mg_total["ca"], agua.meq_ca * 20.04, rel_tol=1e-9)
+    # Sin solubles ni ácido, la CE de la gota es solo la del agua base
+    assert math.isclose(r.ec_total, 0.95)
+    assert r.ec_fert == 0.0 and r.ec_acido == 0.0
+
+
+def test_gotero_sonneveld_desglosa_fuentes_con_fert_y_acido():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrato Cálcico Soluble", "dosis": 50.0}]
+    agua = analizar_agua(**WATER_DEFAULT)
+    r = calcular_gotero_sonneveld(
+        mes=monthly[5], agua=agua, water_ec_ds_m=0.95,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=2.0,
+    )
+    # Nitrato Cálcico Soluble: ca=26.3%, conc=50/100=0.5 g/L -> meq Ca = 0.5*26.3*10/28.0
+    esperado_ca_fert = (0.5 * 26.3 * 10) / 28.0
+    assert math.isclose(r.meq_fert["ca"], esperado_ca_fert, rel_tol=1e-9)
+    # El ácido nítrico aporta NO3 (+neut_hco3) y resta ese mismo bicarbonato del agua
+    assert math.isclose(r.meq_acido["no3"], 2.0)
+    assert math.isclose(r.meq_acido["hco3"], -2.0)
+    assert math.isclose(r.meq_total["hco3"], agua.meq_hco3 - 2.0)
+    # Total = agua + fert + ácido, por cada ion
+    for ion in ("ca", "no3"):
+        assert math.isclose(
+            r.meq_total[ion], r.meq_agua[ion] + r.meq_fert[ion] + r.meq_acido[ion], rel_tol=1e-9,
+        )
+    # CE: agua + aporte del ácido (0.05 dS/m por meq neutralizado) + aporte del fertilizante
+    assert math.isclose(r.ec_acido, 2.0 * 0.05)
+    assert r.ec_fert > 0.0
+    assert math.isclose(r.ec_total, r.ec_agua + r.ec_fert + r.ec_acido, rel_tol=1e-9)
 
 
 def test_dictamen_alerta_salinidad_y_tanque():
@@ -151,6 +184,84 @@ def test_dictamen_alerta_salinidad_y_tanque():
     assert niveles[0] == "danger"  # salinidad superada
     assert niveles[-1] == "danger"  # conflicto de tanque
     assert "Julio" in alertas[-1].mensaje
+
+
+def test_cobertura_fondo_pct_relativa_a_necesidad_base():
+    monthly = monthly_data_por_defecto()
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    acido = calcular_acido(meq_hco3=0.0, target_hco3=1.5, purity=60.0, density=1.37, eq_wt=63.0)
+    creditos = calcular_creditos_anuales(
+        monthly_data=monthly, water_composition=water_comp,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=acido.neut_hco3_meq_l,
+    )
+    fondo = calcular_fondo([{"name": "ENTEC Evo 24", "dosis": 200.0}])  # 24% N de 200 kg = 48 kg/ha
+    balance = calcular_balance_anual(
+        yield_val=10.0, coeffs=CULTIVO_EXTRACCIONES["Caqui (Kaki)"], fondo=fondo,
+        creditos=creditos, extra={},
+    )
+    base_n = 10.0 * CULTIVO_EXTRACCIONES["Caqui (Kaki)"]["n"]  # 40.0 kg/ha
+    assert math.isclose(balance.cobertura_fondo_pct["n"], 48.0 / base_n * 100, rel_tol=1e-9)
+
+
+def test_reparto_anual_recorre_12_meses_y_coincide_con_fase_mensual():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrofoska Solub 18-18-18", "dosis": 50.0}]
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    kwargs = dict(
+        water_composition=water_comp, water_ec_ds_m=0.95, acid_type="Nítrico (60%)",
+        acid_custom={}, neut_hco3=0.0, target={"n": 10, "p": 10, "k": 10, "mg": 10, "ca": 10, "s": 10},
+        umbral_salino=1.5,
+    )
+    esperado_mayo = calcular_fase_mensual(month=monthly[5], **kwargs)
+    filas = calcular_reparto_anual(monthly_data=monthly, **kwargs)
+
+    assert len(filas) == 12
+    mayo = filas[4]  # índice 4 = mes 5 = Mayo
+    assert mayo.mes == "Mayo"
+    assert math.isclose(mayo.kg["n"], esperado_mayo.suma_total["n"], rel_tol=1e-9)
+    assert math.isclose(mayo.pct_objetivo["n"], esperado_mayo.pct_objetivo["n"], rel_tol=1e-9)
+    assert mayo.ec_gota == esperado_mayo.ec_gota
+
+    enero = filas[0]
+    assert enero.mes == "Enero"
+    assert all(math.isclose(v, 0.0) for v in enero.kg.values())
+
+
+def test_resumen_anual_suma_las_4_fuentes_frente_a_la_necesidad():
+    monthly = monthly_data_por_defecto()
+    monthly[5]["water"] = 100.0
+    monthly[5]["solubles"] = [{"name": "Nitrofoska Solub 18-18-18", "dosis": 50.0}]
+    water_comp = {k: WATER_DEFAULT[k] for k in
+                  ("no3_mg_l", "h2po4_mg_l", "k_mg_l", "mg_mg_l", "ca_mg_l", "so4_mg_l")}
+    acido = calcular_acido(meq_hco3=4.0, target_hco3=1.5, purity=60.0, density=1.37, eq_wt=63.0)
+    creditos = calcular_creditos_anuales(
+        monthly_data=monthly, water_composition=water_comp,
+        acid_type="Nítrico (60%)", acid_custom={}, neut_hco3=acido.neut_hco3_meq_l,
+    )
+    fondo = calcular_fondo([{"name": "ENTEC Evo 24", "dosis": 200.0}])  # N: 48 kg/ha
+    balance = calcular_balance_anual(
+        yield_val=10.0, coeffs=CULTIVO_EXTRACCIONES["Caqui (Kaki)"], fondo=fondo,
+        creditos=creditos, extra={},
+    )
+    filas = calcular_resumen_anual(base=balance.base, fondo=fondo, creditos=creditos)
+    fila_n = next(f for f in filas if f.nutriente == "N")
+
+    assert math.isclose(fila_n.granulado, fondo.n)
+    assert math.isclose(fila_n.acido, creditos.acid["n"])
+    assert math.isclose(fila_n.agua, creditos.water["n"])
+    assert math.isclose(fila_n.soluble, creditos.solub["n"])
+    esperado_total = fondo.n + creditos.acid["n"] + creditos.water["n"] + creditos.solub["n"]
+    assert math.isclose(fila_n.total_aportado, esperado_total, rel_tol=1e-9)
+    assert math.isclose(fila_n.necesidad_base, balance.base["n"])
+    assert math.isclose(fila_n.balance, esperado_total - balance.base["n"], rel_tol=1e-9)
+    assert math.isclose(fila_n.pct_cubierto, esperado_total / balance.base["n"] * 100, rel_tol=1e-9)
+
+    # K no recibe crédito de ácido en este modelo (solo N, P y S) — debe quedar en 0
+    fila_k = next(f for f in filas if f.nutriente == "K₂O")
+    assert fila_k.acido == 0.0
 
 
 if __name__ == "__main__":
