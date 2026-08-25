@@ -32,7 +32,7 @@ ELEMENTOS_BASE = ["N", "P", "K", "Ca", "Mg", "Fe", "Mn", "Zn", "Cu", "B"]
 BADGE_COLOR = {"muy-bajo": "🔴", "bajo": "🟠", "optimo": "🟢", "alto": "🔵", "muy-alto": "🟣", "muted": "⚪"}
 
 DEFAULTS = dict(
-    cultivo="olivo", almendro_variedad="ferraduel",
+    nl_cultivo="olivo", almendro_variedad="ferraduel",
     dris_sistema="secano", dris_zona="otra",
 )
 for k, v in DEFAULTS.items():
@@ -44,11 +44,11 @@ for el in ELEMENTOS_BASE:
 
 st.sidebar.subheader("Configuración")
 cultivo_keys = list(CULTIVOS_SELECCIONABLES.keys())
-st.session_state.cultivo = st.sidebar.selectbox(
-    "Cultivo", cultivo_keys, index=cultivo_keys.index(st.session_state.cultivo),
+st.session_state.nl_cultivo = st.sidebar.selectbox(
+    "Cultivo", cultivo_keys, index=cultivo_keys.index(st.session_state.nl_cultivo),
     format_func=lambda k: CULTIVOS_SELECCIONABLES[k],
 )
-cultivo = st.session_state.cultivo
+cultivo = st.session_state.nl_cultivo
 
 if cultivo == "almendro":
     variedades = {"generico": "Genérico (sin DRIS)", "ferraduel": "Ferraduel", "ferragnes": "Ferragnès", "garrigues": "Garrigues"}

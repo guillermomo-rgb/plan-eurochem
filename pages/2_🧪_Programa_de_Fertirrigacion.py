@@ -27,8 +27,8 @@ render_print_button()
 DEFAULTS = dict(
     crop="Caqui (Kaki)", yield_val=10.0,
     extra_n=0.0, extra_p=0.0, extra_k=0.0, extra_mg=0.0, extra_ca=0.0, extra_s=0.0,
-    ca_mg_l=80.0, mg_mg_l=24.0, na_mg_l=46.0, k_mg_l=15.0, nh4_mg_l=0.0,
-    no3_mg_l=10.0, h2po4_mg_l=0.0, so4_mg_l=96.0, cl_mg_l=71.0, hco3_mg_l=244.0,
+    water_ca_mg_l=80.0, water_mg_mg_l=24.0, water_na_mg_l=46.0, water_k_mg_l=15.0, nh4_mg_l=0.0,
+    water_no3_mg_l=10.0, h2po4_mg_l=0.0, water_so4_mg_l=96.0, water_cl_mg_l=71.0, water_hco3_mg_l=244.0,
     water_ec=0.95, water_ph=7.5, water_b=0.10, water_fe=0.02,
     acid_type="Nítrico (60%)", acid_target_hco3=1.5,
     acid_custom_n=0.0, acid_custom_p=0.0, acid_custom_s=0.0,
@@ -124,18 +124,18 @@ with tabs[1]:
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("**Cationes (mg/L)**")
-        st.session_state.ca_mg_l = st.number_input("Ca²⁺", value=st.session_state.ca_mg_l)
-        st.session_state.mg_mg_l = st.number_input("Mg²⁺", value=st.session_state.mg_mg_l)
-        st.session_state.na_mg_l = st.number_input("Na⁺", value=st.session_state.na_mg_l)
-        st.session_state.k_mg_l = st.number_input("K⁺", value=st.session_state.k_mg_l)
+        st.session_state.water_ca_mg_l = st.number_input("Ca²⁺", value=st.session_state.water_ca_mg_l)
+        st.session_state.water_mg_mg_l = st.number_input("Mg²⁺", value=st.session_state.water_mg_mg_l)
+        st.session_state.water_na_mg_l = st.number_input("Na⁺", value=st.session_state.water_na_mg_l)
+        st.session_state.water_k_mg_l = st.number_input("K⁺", value=st.session_state.water_k_mg_l)
         st.session_state.nh4_mg_l = st.number_input("NH₄⁺", value=st.session_state.nh4_mg_l)
     with c2:
         st.markdown("**Aniones (mg/L)**")
-        st.session_state.no3_mg_l = st.number_input("NO₃⁻", value=st.session_state.no3_mg_l)
+        st.session_state.water_no3_mg_l = st.number_input("NO₃⁻", value=st.session_state.water_no3_mg_l)
         st.session_state.h2po4_mg_l = st.number_input("H₂PO₄⁻", value=st.session_state.h2po4_mg_l)
-        st.session_state.so4_mg_l = st.number_input("SO₄²⁻", value=st.session_state.so4_mg_l)
-        st.session_state.cl_mg_l = st.number_input("Cl⁻", value=st.session_state.cl_mg_l)
-        st.session_state.hco3_mg_l = st.number_input("HCO₃⁻", value=st.session_state.hco3_mg_l)
+        st.session_state.water_so4_mg_l = st.number_input("SO₄²⁻", value=st.session_state.water_so4_mg_l)
+        st.session_state.water_cl_mg_l = st.number_input("Cl⁻", value=st.session_state.water_cl_mg_l)
+        st.session_state.water_hco3_mg_l = st.number_input("HCO₃⁻", value=st.session_state.water_hco3_mg_l)
     with c3:
         st.markdown("**Otros parámetros**")
         st.session_state.water_ec = st.number_input("CE (dS/m)", value=st.session_state.water_ec, step=0.05)
@@ -274,17 +274,17 @@ with tabs[6]:
 # ================================================================== CÁLCULO CENTRAL (equivalente a calculateAll())
 monthly_data = st.session_state.monthly_data
 water_composition = dict(
-    no3_mg_l=st.session_state.no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
-    k_mg_l=st.session_state.k_mg_l, mg_mg_l=st.session_state.mg_mg_l,
-    ca_mg_l=st.session_state.ca_mg_l, so4_mg_l=st.session_state.so4_mg_l,
+    no3_mg_l=st.session_state.water_no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
+    k_mg_l=st.session_state.water_k_mg_l, mg_mg_l=st.session_state.water_mg_mg_l,
+    ca_mg_l=st.session_state.water_ca_mg_l, so4_mg_l=st.session_state.water_so4_mg_l,
 )
 vol_anual = sum(monthly_data[m]["water"] for m in range(1, 13))
 
 agua = analizar_agua(
-    ca_mg_l=st.session_state.ca_mg_l, mg_mg_l=st.session_state.mg_mg_l,
-    na_mg_l=st.session_state.na_mg_l, k_mg_l=st.session_state.k_mg_l, nh4_mg_l=st.session_state.nh4_mg_l,
-    no3_mg_l=st.session_state.no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
-    so4_mg_l=st.session_state.so4_mg_l, cl_mg_l=st.session_state.cl_mg_l, hco3_mg_l=st.session_state.hco3_mg_l,
+    ca_mg_l=st.session_state.water_ca_mg_l, mg_mg_l=st.session_state.water_mg_mg_l,
+    na_mg_l=st.session_state.water_na_mg_l, k_mg_l=st.session_state.water_k_mg_l, nh4_mg_l=st.session_state.nh4_mg_l,
+    no3_mg_l=st.session_state.water_no3_mg_l, h2po4_mg_l=st.session_state.h2po4_mg_l,
+    so4_mg_l=st.session_state.water_so4_mg_l, cl_mg_l=st.session_state.water_cl_mg_l, hco3_mg_l=st.session_state.water_hco3_mg_l,
     water_ec_ds_m=st.session_state.water_ec, ph=st.session_state.water_ph,
     b_mg_l=st.session_state.water_b, fe_mg_l=st.session_state.water_fe, vol_anual_m3_ha=vol_anual,
 )
@@ -337,7 +337,7 @@ sugerencias = sugerencias_fase(
 )
 
 dictamen = generar_dictamen_experto(
-    ec_gota=fase_actual.ec_gota, ras_val=agua.ras, meq_cl=agua.meq_cl, hco3_mg_l=st.session_state.hco3_mg_l,
+    ec_gota=fase_actual.ec_gota, ras_val=agua.ras, meq_cl=agua.meq_cl, hco3_mg_l=st.session_state.water_hco3_mg_l,
     meses_conflicto_tanque=meses_conflicto, crop=st.session_state.crop, umbral_salino=umbral_salino,
 )
 

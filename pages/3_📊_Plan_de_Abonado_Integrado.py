@@ -28,7 +28,7 @@ render_header("Plan de Abonado Integrado", "📊")
 render_print_button()
 
 DEFAULTS = dict(
-    arcilla=20.0, arena=40.0, limo=40.0, ph=7.0, ce=0.5, carbonatos=0.0, caliza_activa=0.0,
+    arcilla=20.0, arena=40.0, limo=40.0, suelo_ph=7.0, ce=0.5, carbonatos=0.0, caliza_activa=0.0,
     cn=11.0, mo=1.5, nitratos_lab=10.0, n_kjeldahl=0.08, p_olsen=15.0,
     fe_ppm=2.0, mn_ppm=1.0, cu_ppm=0.3, zn_ppm=1.0,
     ca_meq=8.0, ca_ppm=1600.0, mg_meq=1.0, mg_ppm=120.0, k_meq=0.3, k_ppm=120.0, na_meq=0.2,
@@ -40,7 +40,7 @@ DEFAULTS = dict(
     key_fondo="nitrofoska_special_12_12_17", dosis_fondo=300.0,
     key_cob1="0", dosis_cob1=0.0, key_cob2="0", dosis_cob2=0.0,
     zona_vulnerable=False, produccion_integrada=False, regimen_olivar="secano_tradicional",
-    foliar_items=[],
+    pa_foliar_items=[],
     precio_venta=0.0, precio_venta_unit="kg",
     pf_precios={}, pf_planes_alternativos=[],
 )
@@ -64,7 +64,7 @@ with tabs[0]:
         st.session_state.profundidad = st.number_input("Profundidad de muestreo (cm)", value=st.session_state.profundidad)
     with c2:
         st.markdown("**Química general**")
-        st.session_state.ph = st.number_input("pH", value=st.session_state.ph, step=0.1)
+        st.session_state.suelo_ph = st.number_input("pH", value=st.session_state.suelo_ph, step=0.1)
         st.session_state.ce = st.number_input("CE (dS/m)", value=st.session_state.ce, step=0.1)
         st.session_state.carbonatos = st.number_input("Carbonatos totales (%)", value=st.session_state.carbonatos)
         st.session_state.caliza_activa = st.number_input("Caliza activa (%)", value=st.session_state.caliza_activa)
@@ -103,6 +103,8 @@ with tabs[0]:
     st.subheader("Cultivo objetivo y necesidades")
     c1, c2 = st.columns(2)
     with c1:
+        if st.session_state.cultivo not in cultivos_disponibles:
+            st.session_state.cultivo = cultivos_disponibles[0]
         st.session_state.cultivo = st.selectbox("Cultivo objetivo", cultivos_disponibles,
                                                   index=cultivos_disponibles.index(st.session_state.cultivo),
                                                   format_func=lambda k: CULTIVO_EXTRACTIONS[k]["label"])
@@ -166,15 +168,15 @@ with tabs[1]:
     sel_foliar = c1.selectbox("Producto foliar", list(FOLIARES_DB.keys()), key="pf_sel_foliar")
     dosis_foliar = c2.number_input("Dosis (kg-L/ha)", value=1.0, step=0.1, key="pf_dosis_foliar")
     if c3.button("➕ Añadir", key="pf_add_foliar"):
-        st.session_state.foliar_items.append({"name": sel_foliar, "dosis": dosis_foliar})
+        st.session_state.pa_foliar_items.append({"name": sel_foliar, "dosis": dosis_foliar})
         st.rerun()
-    for idx, item in enumerate(st.session_state.foliar_items):
+    for idx, item in enumerate(st.session_state.pa_foliar_items):
         cc = st.columns([3, 1, 1])
         cc[0].write(item["name"])
         nueva_dosis = cc[1].number_input("kg-L/ha", value=float(item["dosis"]), step=0.1, key=f"pf_foliar_dosis_{idx}", label_visibility="collapsed")
-        st.session_state.foliar_items[idx]["dosis"] = nueva_dosis
+        st.session_state.pa_foliar_items[idx]["dosis"] = nueva_dosis
         if cc[2].button("🗑️", key=f"pf_del_foliar_{idx}"):
-            st.session_state.foliar_items.pop(idx)
+            st.session_state.pa_foliar_items.pop(idx)
             st.rerun()
 
     plan_placeholder = st.empty()
@@ -245,7 +247,7 @@ with tabs[3]:
 coef = CULTIVO_EXTRACTIONS[st.session_state.cultivo]
 
 suelo = calcular_suelo(
-    arcilla=st.session_state.arcilla, ph=st.session_state.ph, ce=st.session_state.ce,
+    arcilla=st.session_state.arcilla, ph=st.session_state.suelo_ph, ce=st.session_state.ce,
     carbonatos=st.session_state.carbonatos, caliza_activa=st.session_state.caliza_activa,
     cn=st.session_state.cn, mo=st.session_state.mo, nitratos_lab=st.session_state.nitratos_lab,
     n_kjeldahl=st.session_state.n_kjeldahl, p_olsen=st.session_state.p_olsen,
@@ -275,7 +277,7 @@ plan = calcular_plan_npk(
     key_fondo=st.session_state.key_fondo, dosis_fondo=st.session_state.dosis_fondo,
     key_cob1=st.session_state.key_cob1, dosis_cob1=st.session_state.dosis_cob1,
     key_cob2=st.session_state.key_cob2, dosis_cob2=st.session_state.dosis_cob2,
-    foliar_items=st.session_state.foliar_items, balance_final_n=balance_n.balance_final_n,
+    foliar_items=st.session_state.pa_foliar_items, balance_final_n=balance_n.balance_final_n,
     p_necesidad=pk.p_necesidad_corregida, k_necesidad=pk.k_necesidad_corregida,
 )
 
